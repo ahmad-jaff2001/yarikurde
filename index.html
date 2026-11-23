@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>یاری کوردی | Yari Kurdi</title>
+    
+    <!-- فۆنت و ئایکۆنەکان -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #05030f;
+            --gold: #ffb800;
+            --gold-gradient: linear-gradient(135deg, #ffd000 0%, #ff8800 100%);
+            --text-main: #ffffff;
+            --text-muted: #a49ec8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            /* دانانی وێنە شین و مۆرەکە بۆ باکگراوندی هەموو وێبسایتەکە */
+            background: linear-gradient(to bottom, rgba(5, 3, 15, 0.65), rgba(5, 3, 15, 0.95)), 
+                        url('images/background.png') no-repeat center top / cover fixed;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 95px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            padding: 16px;
+            position: relative;
+        }
+
+        /* بەشی سەرەوە */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 4px 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 44px;
+            height: 44px;
+            background: var(--gold-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a0f00;
+            font-size: 22px;
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.4);
+        }
+
+        .brand-title {
+            font-size: 22px;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.6);
+        }
+
+        .brand-title span { color: var(--gold); }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .notif-btn {
+            position: relative;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ff2e54;
+            color: white;
+            font-size: 11px;
+            font-weight: 800;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--bg-dark);
+        }
+
+        .profile-pic {
+            position: relative;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(135deg, #00f0ff, #a855f7);
+            cursor: pointer;
+        }
+
+        .profile-pic img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #111;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 1px;
+            left: 1px;
+            width: 12px;
+            height: 12px;
+            background: #00e676;
+            border-radius: 50%;
+            border: 2px solid var(--bg-dark);
+        }
+
+        /* بانەری ژووری دەنگی */
+        .hero-banner {
+            position: relative;
+            background: linear-gradient(90deg, rgba(20, 10, 50, 0.4) 0%, rgba(20, 10, 50, 0.85) 100%),
+                        url('images/background.png') center/cover no-repeat;
+            border-radius: 24px;
+            padding: 22px;
+            margin-bottom: 20px;
+            border: 1.5px solid rgba(168, 85, 247, 0.5);
+            box-shadow: 0 12px 30px rgba(0, 119, 255, 0.2);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            min-height: 180px;
+        }
+
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gold-gradient);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 60%;
+        }
+
+        .mic-badge {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.25);
+            backdrop-filter: blur(5px);
+            border: 1.5px solid #a855f7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f3e8ff;
+            font-size: 19px;
+            margin-bottom: 10px;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+        }
+
+        .hero-title {
+            font-size: 23px;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 6px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+        }
+
+        .hero-title span {
+            color: var(--gold);
+            display: block;
+        }
+
+        .hero-sub {
+            font-size: 13px;
+            color: #e9d5ff;
+            margin-bottom: 16px;
+        }
+
+        .join-btn {
+            background: var(--gold-gradient);
+            color: #1a0f00;
+            border: none;
+            padding: 9px 20px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 184, 0, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .join-btn:active { transform: scale(0.95); }
+
+        .hero-character {
+            position: absolute;
+            left: -10px;
+            bottom: -5px;
+            width: 48%;
+            max-width: 200px;
+            z-index: 1;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
+        }
+
+        /* بەشی کارتەکانی یاری */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .game-card {
+            position: relative;
+            height: 190px;
+            border-radius: 24px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            background: #0d091e;
+        }
+
+        .game-card:hover { transform: translateY(-5px); }
+
+        .game-card img.bg-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .game-card:hover img.bg-img { transform: scale(1.08); }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(5, 3, 15, 0.98) 12%, rgba(5, 3, 15, 0.2) 60%, transparent 100%);
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-top-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            align-self: flex-start;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .game-name {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 2px;
+        }
+
+        .game-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .play-arrow {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ڕەنگی تایبەتی کارتەکان */
+        .card-chess { border-color: rgba(255, 184, 0, 0.5); box-shadow: 0 8px 25px rgba(255, 184, 0, 0.15); }
+        .card-chess .play-arrow { background: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
+        .card-chess .card-top-icon { color: #fbbf24; }
+
+        .card-domino { border-color: rgba(139, 92, 246, 0.5); box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15); }
+        .card-domino .play-arrow { background: #7c3aed; box-shadow: 0 0 12px #7c3aed; }
+        .card-domino .card-top-icon { color: #c4b5fd; }
+
+        .card-ludo { border-color: rgba(16, 185, 129, 0.5); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.15); }
+        .card-ludo .play-arrow { background: #10b981; box-shadow: 0 0 12px #10b981; }
+        .card-ludo .card-top-icon { color: #6ee7b7; }
+
+        .card-cards { border-color: rgba(239, 68, 68, 0.5); box-shadow: 0 8px 25px rgba(239, 68, 68, 0.15); }
+        .card-cards .play-arrow { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
+        .card-cards .card-top-icon { color: #fca5a5; }
+
+        /* بانەری یاری زیاتر بەڕێوەیە */
+        .coming-soon-img-box {
+            width: 100%;
+            border-radius: 22px;
+            overflow: hidden;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(0, 119, 255, 0.2);
+            transition: transform 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .coming-soon-img-box:active { transform: scale(0.97); }
+
+        .coming-soon-img-box img {
+            width: 100%;
+            display: block;
+        }
+
+        /* مینیوی خوارەوە */
+        .bottom-nav {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 32px);
+            max-width: 448px;
+            background: rgba(12, 8, 30, 0.92);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 30px;
+            padding: 8px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 10px 14px;
+            border-radius: 20px;
+            transition: 0.25s;
+            cursor: pointer;
+        }
+
+        .nav-item i { font-size: 20px; }
+
+        .nav-item.active {
+            background: linear-gradient(180deg, rgba(255, 184, 0, 0.2) 0%, rgba(255, 136, 0, 0.05) 100%);
+            color: var(--gold);
+            border: 1px solid rgba(255, 184, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.15);
+        }
+
+        /* ئاگادارکەرەوە (Toast) */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: #181030;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 50px;
+            border: 1px solid var(--gold);
+            font-size: 14px;
+            font-weight: 800;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 999;
+        }
+
+        .toast.show { transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div id="toast" class="toast">بەم زووانە ئەم بەشە چالاک دەبێت!</div>
+
+    <div class="app-container">
+        <!-- سەرەوەی وێبسایت -->
+        <header class="header">
+            <div class="brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div class="brand-title">یاری <span>کوردی</span></div>
+            </div>
+
+            <div class="header-actions">
+                <div class="notif-btn" onclick="showMessage('٣ ئاگادارکردنەوەی نوێت هەیە')">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="notif-badge">3</span>
+                </div>
+                <div class="profile-pic" onclick="showMessage('پڕۆفایلی یاریزان')">
+                    <!-- وێنەی کۆنترۆڵەرەکە بۆ پڕۆفایل -->
+                    <img src="images/controller.png" alt="Profile">
+                    <span class="online-dot"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- بانەری ژووری دەنگی -->
+        <section class="hero-banner">
+            <div class="hero-content">
+                <div class="mic-badge">
+                    <i class="fa-solid fa-microphone"></i>
+                </div>
+                <h1 class="hero-title">ژووری <span>گفتوگۆ و دەنگ</span></h1>
+                <p class="hero-sub">قسە بکە • یاری بکە • هاوڕێ بگرە</p>
+                <button class="join-btn" onclick="showMessage('چوونە ناو ژووری دەنگی...')">
+                    <span>ئێستا بەشداربە</span>
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+            </div>
+            <!-- وێنەی کوڕە گەیمەرەکە -->
+            <img src="images/gamer-hero.png" alt="Gamer Hero" class="hero-character">
+        </section>
+
+        <!-- یارییەکان -->
+        <main class="games-grid">
+            <!-- شەترەنج -->
+            <div class="game-card card-chess" onclick="openGame('chess.html', 'شەترەنج')">
+                <img src="images/chess.png" alt="Chess" class="bg-img">
+                <div class="card-overlay">
+                    <div class="card-top-icon"><i class="fa-solid fa-star"></i></div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="game-name">شەترەنج</div>
+                            <div class="game-desc">ستراتیژی و زیرەکی</div>
+                        </div>
+                        <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- دۆمینە (.jpg) -->
+            <div class="game-card card-domino" onclick="openGame('domino.html', 'دۆمینە')">
+                <img src="images/domino.jpg" alt="Dominoes" class="bg-img">
+                <div class="card-overlay">
+                    <div class="card-top-icon"><i class="fa-solid fa-dice-five"></i></div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="game-name">دۆمینە</div>
+                            <div class="game-desc">یارییە کلاسیکییەکە</div>
+                        </div>
+                        <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- لودۆ -->
+            <div class="game-card card-ludo" onclick="openGame('ludo.html', 'لودۆ')">
+                <img src="images/ludo.png" alt="Ludo" class="bg-img">
+                <div class="card-overlay">
+                    <div class="card-top-icon"><i class="fa-solid fa-dice"></i></div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="game-name">لودۆ</div>
+                            <div class="game-desc">پێکەوە یاری بکەن</div>
+                        </div>
+                        <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- کارت -->
+            <div class="game-card card-cards" onclick="openGame('cards.html', 'یاری کارت')">
+                <img src="images/cards.png" alt="Card Games" class="bg-img">
+                <div class="card-overlay">
+                    <div class="card-top-icon"><i class="fa-solid fa-diamond"></i></div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="game-name">یاری کارت</div>
+                            <div class="game-desc">خۆشی و جۆش و خرۆش</div>
+                        </div>
+                        <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- یاری زیاتر بەڕێوەیە -->
+        <section class="coming-soon-img-box" onclick="showMessage('بەم زووانە یاری نوێ زیاد دەکرێت!')">
+            <img src="images/comengson.png" alt="یاری زیاتر بەڕێوەیە">
+        </section>
+    </div>
+
+    <!-- مینیوی خوارەوە -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="setActiveNav(this, 'سەرەکی')">
+            <i class="fa-solid fa-house"></i>
+            <span>سەرەکی</span>
+        </div>
+        <div class="nav-item" onclick="setActiveNav(this, 'یارییەکان')">
+            <i class="fa-solid fa-gamepad"></i>
+            <span>یارییەکان</span>
+        </div>
+        <div class="nav-item" onclick="setActiveNav(this, 'ڕیزبەندی')">
+            <i class="fa-solid fa-trophy"></i>
+            <span>ڕیزبەندی</span>
+        </div>
+        <div class="nav-item" onclick="setActiveNav(this, 'هاوڕێکان')">
+            <i class="fa-solid fa-user-group"></i>
+            <span>هاوڕێکان</span>
+        </div>
+        <div class="nav-item" onclick="setActiveNav(this, 'ڕێکخستن')">
+            <i class="fa-solid fa-gear"></i>
+            <span>ڕێکخستن</span>
+        </div>
+    </nav>
+
+    <script>
+        function showMessage(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        function openGame(fileUrl, gameName) {
+            showMessage(`ئامادەکردنی یاری ${gameName}...`);
+        }
+
+        function setActiveNav(element, tabName) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            element.classList.add('active');
+            if (tabName !== 'سەرەکی') {
+                showMessage(`بەشی ${tabName}`);
+            }
+        }
+    </script>
+</body>
+</html>
