@@ -576,9 +576,8 @@
                 toast.classList.remove('show');
             }, 2500);
         }
-
-       function openGame(fileUrl, gameName) {
-            if (fileUrl === 'ludo.html' || fileUrl === 'chess.html') {
+function openGame(fileUrl, gameName) {
+            if (fileUrl === 'ludo.html' || fileUrl === 'chess.html' || fileUrl === 'domino.html') {
                 window.location.href = fileUrl;
             } else {
                 showMessage(`ئامادەکردنی یاری ${gameName}...`);
