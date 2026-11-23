@@ -540,8 +540,7 @@ function sendQuickChat(text) {
 function startBotGame() {
   document.getElementById('chessSetupPanel').classList.add('hidden');
   document.getElementById('activeGameArea').classList.remove('hidden');
-  document.getElementById('inGameAddFriendBtn').classList.add('hidden');
-  isOnlineGame = false; myColor = 'w';
+document.getElementById('inGameAddFriendBtn')?.classList.add('hidden');
   opponentInfo = { id: null, name: 'بۆتی YariKurdi', elo: 1300, avatar: '' };
   whiteTime = selectedBaseTime; blackTime = selectedBaseTime; gameActive = true;
   document.getElementById('oppName').textContent = opponentInfo.name;
