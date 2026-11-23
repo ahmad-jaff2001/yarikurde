@@ -40,6 +40,7 @@
             width: 100%;
             max-width: 480px;
             padding: 16px;
+            padding-bottom: 110px;
             position: relative;
         }
 
@@ -148,16 +149,16 @@
             background: linear-gradient(90deg, rgba(20, 10, 50, 0.4) 0%, rgba(20, 10, 50, 0.85) 100%),
                         url('images.png/background.png') center/cover no-repeat;
             border-radius: 24px;
-            padding: 22px;
+            padding: 16px 20px;
+            margin-top: 15px;
             margin-bottom: 20px;
             border: 1.5px solid rgba(168, 85, 247, 0.5);
             box-shadow: 0 12px 30px rgba(0, 119, 255, 0.2);
-            overflow: hidden;
+            overflow: visible;
             display: flex;
             align-items: center;
-            min-height: 180px;
+            height: 155px;
         }
-
         .hero-banner::after {
             content: '';
             position: absolute;
@@ -229,11 +230,11 @@
 
         .hero-character {
             position: absolute;
-            left: -10px;
-            bottom: -5px;
-            width: 48%;
-            max-width: 200px;
-            z-index: 1;
+            left: 5px;
+            bottom: 0;
+            height: 175px;
+            width: auto;
+            z-index: 2;
             pointer-events: none;
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
         }
@@ -375,28 +376,17 @@
             z-index: 100;
         }
 
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-muted);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 10px 14px;
-            border-radius: 20px;
-            transition: 0.25s;
-            cursor: pointer;
+        .nav-item.active {
+            background: linear-gradient(180deg, rgba(255, 184, 0, 0.5) 0%, rgba(255, 136, 0, 0.18) 100%);
+            border: 1px solid rgba(255, 184, 0, 0.75);
+            border-radius: 22px;
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.45), inset 0 0 12px rgba(255, 184, 0, 0.3);
+            color: #ffd000;
         }
 
         .nav-item i { font-size: 20px; }
 
-        .nav-item.active {
-            background: linear-gradient(180deg, rgba(255, 184, 0, 0.2) 0%, rgba(255, 136, 0, 0.05) 100%);
-            color: var(--gold);
-            border: 1px solid rgba(255, 184, 0, 0.4);
-            box-shadow: 0 0 20px rgba(255, 184, 0, 0.15);
-        }
+     
 
         .toast {
             position: fixed;
