@@ -78,9 +78,14 @@ class RoyalKonkanScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
 
-    // دروستکردنی پاشبنەمای چایخانەی فۆلکلۆری و ئاڵای کوردستان بە دیقەی 4K
-    this.bakeTeahouseTableTexture(w, h);
-    this.add.image(w / 2, h / 2, 'yk_konkan_teahouse_bg').setDisplaySize(w, h);
+    // بەکارهێنانی وێنەی مۆر و زێڕینی شاهانە وەک مێزی کۆنکان
+    const bgPlaceholder = this.add.rectangle(w / 2, h / 2, w, h, 0x090518);
+    this.load.image('custom_konkan_bg', 'images.png/konkan-bg.png');
+    this.load.once('complete', () => {
+      if (bgPlaceholder) bgPlaceholder.destroy();
+      this.add.image(w / 2, h / 2, 'custom_konkan_bg').setDisplaySize(w, h).setDepth(-1);
+    });
+    this.load.start();
 
     // دروستکردنی نەخشی پشتی کارتی شاهانە
     this.bakeRoyalCardBackTexture();

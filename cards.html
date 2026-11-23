@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>یاری کۆنکان | یاری کوردی</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: linear-gradient(to bottom, rgba(5, 3, 15, 0.78), rgba(5, 3, 15, 0.96)),
+                        url('images.png/background.png') no-repeat center top / cover fixed;
+            background-color: #05030f;
+            color: #ffffff;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px;
+        }
+        .royal-glass {
+            background: rgba(18, 11, 42, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1.5px solid rgba(255, 184, 0, 0.35);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="w-full max-w-md flex flex-col gap-3">
+        <!-- سەرپەڕە -->
+        <header class="flex items-center justify-between px-1 py-1">
+            <a href="index.html" class="w-10 h-10 rounded-full royal-glass flex items-center justify-center text-amber-400 hover:scale-105 transition">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-diamond text-rose-500 text-lg"></i>
+                <h1 class="text-lg font-black text-white">کۆنکانی <span class="text-amber-400">شاهانە</span></h1>
+            </div>
+            <div class="w-10"></div>
+        </header>
+
+        <!-- پانێڵی دەستپێک و هەڵبژاردن -->
+        <div id="konkanSetupPanel" class="royal-glass rounded-3xl p-5 flex flex-col gap-4 mt-4">
+            <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center text-3xl text-[#1a0f00] shadow-lg shadow-amber-500/30">
+                    🃏
+                </div>
+                <h2 class="text-xl font-black text-white">یاری کۆنکان</h2>
+                <p class="text-xs text-purple-200/80 mt-1">ژمارەی کارتەکان هەڵبژێرە و دەست پێبکە</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <button id="konk-mode-10" onclick="selectKonkanCardsCount(10)"
+                    class="py-2.5 rounded-xl text-xs font-black bg-amber-400 text-[#1a0d06] border border-amber-300 shadow transition">
+                    ١٠ کارتی (کلاسیک)
+                </button>
+                <button id="konk-mode-8" onclick="selectKonkanCardsCount(8)"
+                    class="py-2.5 rounded-xl text-xs font-bold bg-[#1a0d06] text-amber-100 border border-amber-500/30 transition">
+                    ٨ کارتی (خێرا)
+                </button>
+            </div>
+
+            <button onclick="startKonkanBotGame()"
+                class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 text-[#1a0f00] font-black text-sm shadow-lg shadow-amber-500/30 active:scale-95 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-robot"></i>
+                <span>یاری کردن لەگەڵ بۆت</span>
+            </button>
+        </div>
+
+        <!-- پانێڵی گەڕان (بۆ دۆخی ئۆنلاین) -->
+        <div id="konkanSearchingPanel" class="hidden royal-glass rounded-3xl p-6 text-center flex flex-col items-center gap-4">
+            <div class="text-3xl animate-bounce">⏳</div>
+            <div class="text-sm font-bold text-amber-300">گەڕان بەدوای یاریزاندا...</div>
+            <button onclick="cancelKonkanMatchmaking()" class="px-5 py-2 rounded-xl bg-rose-600 text-white text-xs font-bold">هەڵوەشاندنەوە</button>
+        </div>
+
+        <!-- گۆڕەپانی یاری کۆنکان -->
+        <div id="konkanActiveArea" class="hidden flex flex-col gap-2.5">
+            <!-- شریتی بەرامبەر و نۆرە -->
+            <div class="royal-glass rounded-2xl px-3.5 py-2 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🤖</span>
+                    <div>
+                        <div class="text-xs font-black text-white">
+                            <span id="konkOppName">بۆتی کۆنکان</span>
+                            <span id="konkOppElo" class="text-[10px] text-amber-400 mr-1">(1300)</span>
+                        </div>
+                        <div id="konkActionLog" class="text-[10px] text-amber-200/80">ئامادەیە</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="konkOppCountBadge" class="px-2.5 py-1 rounded-lg bg-rose-500/20 border border-rose-400/40 text-rose-200 text-xs font-black">10 کارت</span>
+                    <button onclick="exitKonkanGame()" class="w-8 h-8 rounded-lg bg-white/10 text-rose-300 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- شریتی نۆرە -->
+            <div class="flex justify-center">
+                <div id="konkTurnBanner" class="px-3.5 py-1 rounded-full bg-emerald-500/25 border border-emerald-400 text-emerald-200 text-xs font-black shadow">
+                    🟢 نۆرەی تۆیە
+                </div>
+            </div>
+
+            <!-- ستەیجی سەرەکی Phaser 3 -->
+            <div id="konkanPhaserStage" class="w-full rounded-2xl overflow-hidden shadow-2xl border border-amber-500/30"></div>
+
+            <!-- دوگمەکانی کۆنترۆڵکردنی دەست -->
+            <div class="royal-glass rounded-2xl p-2.5 flex flex-col gap-2">
+                <div class="flex items-center justify-between px-1 text-[11px] text-amber-200">
+                    <span>کارتەکانی دەستت: <strong id="konkMyCount" class="text-amber-400">10</strong></span>
+                    <div class="flex gap-1.5">
+                        <button onclick="konkanSortHand('rank')" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 font-bold">ڕیزبەندی ژمارە</button>
+                        <button onclick="konkanSortHand('suit')" class="px-2.5 py-1 rounded-lg bg-white/10 hover:bg-white/20 font-bold">ڕیزبەندی جۆر</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="konkanLayDownMeld()" class="py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>داگرتنی سێت</span>
+                    </button>
+                    <button onclick="konkanDiscardSelected()" class="py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                        <span>فڕێدانی کارت</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- پەنجەرەی کۆتایی یاری -->
+    <div id="gameOverModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="royal-glass rounded-3xl p-6 max-w-xs w-full text-center flex flex-col items-center gap-3 border-2 border-amber-400">
+            <div id="modalIcon" class="text-5xl">🏆</div>
+            <h3 id="modalTitle" class="text-xl font-black text-amber-400">کۆنکان!</h3>
+            <p id="modalSubtitle" class="text-xs text-gray-200">یارییەکەت بردەوە</p>
+            <div id="eloChangeBox" class="hidden text-xs font-bold text-emerald-400">
+                <span id="eloChangeText"></span>
+            </div>
+            <button onclick="document.getElementById('gameOverModal').classList.add('hidden'); startKonkanBotGame();"
+                class="w-full py-3 mt-2 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 text-[#1a0f00] font-black text-sm">
+                یارییەکی نوێ
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const playerName = 'یاریزان';
+    </script>
+    <script src="konkan-engine.js"></script>
+</body>
+</html>
