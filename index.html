@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>یاری کوردی | Yari Kurdi</title>
     
-    <!-- فۆنت و ئایکۆنەکان -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -27,9 +26,8 @@
         }
 
         body {
-            /* دانانی وێنە شین و مۆرەکە بۆ باکگراوندی هەموو وێبسایتەکە */
             background: linear-gradient(to bottom, rgba(5, 3, 15, 0.65), rgba(5, 3, 15, 0.95)), 
-                        url('images/background.png') no-repeat center top / cover fixed;
+                        url('images.png/background.png') no-repeat center top / cover fixed;
             background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
@@ -45,7 +43,6 @@
             position: relative;
         }
 
-        /* بەشی سەرەوە */
         .header {
             display: flex;
             justify-content: space-between;
@@ -146,11 +143,10 @@
             border: 2px solid var(--bg-dark);
         }
 
-        /* بانەری ژووری دەنگی */
         .hero-banner {
             position: relative;
             background: linear-gradient(90deg, rgba(20, 10, 50, 0.4) 0%, rgba(20, 10, 50, 0.85) 100%),
-                        url('images/background.png') center/cover no-repeat;
+                        url('images.png/background.png') center/cover no-repeat;
             border-radius: 24px;
             padding: 22px;
             margin-bottom: 20px;
@@ -242,7 +238,6 @@
             filter: drop-shadow(0 5px 15px rgba(0,0,0,0.8));
         }
 
-        /* بەشی کارتەکانی یاری */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -324,7 +319,6 @@
             flex-shrink: 0;
         }
 
-        /* ڕەنگی تایبەتی کارتەکان */
         .card-chess { border-color: rgba(255, 184, 0, 0.5); box-shadow: 0 8px 25px rgba(255, 184, 0, 0.15); }
         .card-chess .play-arrow { background: #f59e0b; box-shadow: 0 0 12px #f59e0b; }
         .card-chess .card-top-icon { color: #fbbf24; }
@@ -341,7 +335,6 @@
         .card-cards .play-arrow { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
         .card-cards .card-top-icon { color: #fca5a5; }
 
-        /* بانەری یاری زیاتر بەڕێوەیە */
         .coming-soon-img-box {
             width: 100%;
             border-radius: 22px;
@@ -359,7 +352,6 @@
             display: block;
         }
 
-        /* مینیوی خوارەوە */
         .bottom-nav {
             position: fixed;
             bottom: 16px;
@@ -402,7 +394,6 @@
             box-shadow: 0 0 20px rgba(255, 184, 0, 0.15);
         }
 
-        /* ئاگادارکەرەوە (Toast) */
         .toast {
             position: fixed;
             top: 20px;
@@ -428,7 +419,6 @@
     <div id="toast" class="toast">بەم زووانە ئەم بەشە چالاک دەبێت!</div>
 
     <div class="app-container">
-        <!-- سەرەوەی وێبسایت -->
         <header class="header">
             <div class="brand">
                 <div class="brand-logo">
@@ -443,14 +433,12 @@
                     <span class="notif-badge">3</span>
                 </div>
                 <div class="profile-pic" onclick="showMessage('پڕۆفایلی یاریزان')">
-                    <!-- وێنەی کۆنترۆڵەرەکە بۆ پڕۆفایل -->
-                    <img src="images/controller.png" alt="Profile">
+                    <img src="images.png/controller.png" alt="Profile">
                     <span class="online-dot"></span>
                 </div>
             </div>
         </header>
 
-        <!-- بانەری ژووری دەنگی -->
         <section class="hero-banner">
             <div class="hero-content">
                 <div class="mic-badge">
@@ -463,15 +451,12 @@
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
             </div>
-            <!-- وێنەی کوڕە گەیمەرەکە -->
-            <img src="images/gamer-hero.png" alt="Gamer Hero" class="hero-character">
+            <img src="images.png/gamer-hero.png" alt="Gamer Hero" class="hero-character">
         </section>
 
-        <!-- یارییەکان -->
         <main class="games-grid">
-            <!-- شەترەنج -->
             <div class="game-card card-chess" onclick="openGame('chess.html', 'شەترەنج')">
-                <img src="images/chess.png" alt="Chess" class="bg-img">
+                <img src="images.png/chess.png" alt="Chess" class="bg-img">
                 <div class="card-overlay">
                     <div class="card-top-icon"><i class="fa-solid fa-star"></i></div>
                     <div class="card-footer">
@@ -484,9 +469,8 @@
                 </div>
             </div>
 
-            <!-- دۆمینە (.jpg) -->
             <div class="game-card card-domino" onclick="openGame('domino.html', 'دۆمینە')">
-                <img src="images/domino.jpg" alt="Dominoes" class="bg-img">
+                <img src="images.png/domino.jpg" alt="Dominoes" class="bg-img">
                 <div class="card-overlay">
                     <div class="card-top-icon"><i class="fa-solid fa-dice-five"></i></div>
                     <div class="card-footer">
@@ -499,9 +483,8 @@
                 </div>
             </div>
 
-            <!-- لودۆ -->
             <div class="game-card card-ludo" onclick="openGame('ludo.html', 'لودۆ')">
-                <img src="images/ludo.png" alt="Ludo" class="bg-img">
+                <img src="images.png/ludo.png" alt="Ludo" class="bg-img">
                 <div class="card-overlay">
                     <div class="card-top-icon"><i class="fa-solid fa-dice"></i></div>
                     <div class="card-footer">
@@ -514,9 +497,8 @@
                 </div>
             </div>
 
-            <!-- کارت -->
             <div class="game-card card-cards" onclick="openGame('cards.html', 'یاری کارت')">
-                <img src="images/cards.png" alt="Card Games" class="bg-img">
+                <img src="images.png/cards.png" alt="Card Games" class="bg-img">
                 <div class="card-overlay">
                     <div class="card-top-icon"><i class="fa-solid fa-diamond"></i></div>
                     <div class="card-footer">
@@ -530,13 +512,11 @@
             </div>
         </main>
 
-        <!-- یاری زیاتر بەڕێوەیە -->
         <section class="coming-soon-img-box" onclick="showMessage('بەم زووانە یاری نوێ زیاد دەکرێت!')">
-            <img src="images/comengson.png" alt="یاری زیاتر بەڕێوەیە">
+            <img src="images.png/comengson.png" alt="یاری زیاتر بەڕێوەیە">
         </section>
     </div>
 
-    <!-- مینیوی خوارەوە -->
     <nav class="bottom-nav">
         <div class="nav-item active" onclick="setActiveNav(this, 'سەرەکی')">
             <i class="fa-solid fa-house"></i>
