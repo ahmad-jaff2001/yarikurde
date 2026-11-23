@@ -214,9 +214,14 @@ class RoyalTeahouseDominoScene extends Phaser.Scene {
     const w = this.scale.width;
     const h = this.scale.height;
 
-    // ١. دروستکردنی مێزی 4K ی چایخانەی شاهانەی کوردستان
-    this.bakeKurdishTeahouseTable(w, h);
-    this.bgImage = this.add.image(w / 2, h / 2, 'yk_dom_master_table').setDisplaySize(w, h);
+   // ١. بەکارهێنانی وێنەی شاهانەی مۆر و زێڕین وەک مێزی دۆمینە
+    this.bgImage = this.add.rectangle(w / 2, h / 2, w, h, 0x090518);
+    this.load.image('custom_dom_bg', 'images.png/domino-bg.png');
+    this.load.once('complete', () => {
+      if (this.bgImage) this.bgImage.destroy();
+      this.bgImage = this.add.image(w / 2, h / 2, 'custom_dom_bg').setDisplaySize(w, h).setDepth(-1);
+    });
+    this.load.start();
 
     // چینەکان بە ڕیزبەندی دروست
     this.ambientLayer = this.add.container(0, 0);
@@ -1439,8 +1444,7 @@ window.addEventListener('resize', () => {
   const h = Math.round(window.innerHeight * DOM_DPR);
   dominoPhaserGame.scale.resize(w, h);
   if (dominoSceneRef) {
-    dominoSceneRef.bakeKurdishTeahouseTable(w, h);
-    dominoSceneRef.bgImage.setTexture('yk_dom_master_table').setPosition(w / 2, h / 2).setDisplaySize(w, h);
+   if (dominoSceneRef.bgImage) dominoSceneRef.bgImage.setPosition(w / 2, h / 2).setDisplaySize(w, h);
     dominoSceneRef.renderBoard();
     dominoSceneRef.renderHand();
   }

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>دۆمینەی شاهانە | یاری کوردی</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: #090518;
+            color: #ffffff;
+            overflow: hidden;
+            width: 100vw;
+            height: 100dvh;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <section id="view-domino"></section>
+
+    <script>
+        function switchView(viewName) {
+            if (viewName === 'hub') {
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+
+    <script src="domino-engine.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof startRoyalTeahouseDomino === 'function') {
+                startRoyalTeahouseDomino();
+            }
+        });
+    </script>
+</body>
+</html>
