@@ -510,14 +510,14 @@
                 </div>
             </div>
 
-            <div class="game-card card-cards" onclick="openGame('cards.html', 'یاری کارت')">
-                <img src="images.png/cards.png" alt="Card Games" class="bg-img">
+          <div class="game-card card-domino" onclick="openGame('okay.html', 'ئۆکەی')">
+                <img src="images.png/okay.png" alt="ئۆکەی" class="bg-img">
                 <div class="card-overlay">
-                    <div class="card-top-icon"><i class="fa-solid fa-diamond"></i></div>
+                    <div class="card-top-icon"><i class="fa-solid fa-crown"></i></div>
                     <div class="card-footer">
                         <div>
-                            <div class="game-name">یاری کارت</div>
-                            <div class="game-desc">خۆشی و جۆش و خرۆش</div>
+                            <div class="game-name">ئۆکەی</div>
+                            <div class="game-desc">کۆنکانی تەختە و پوول</div>
                         </div>
                         <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
                     </div>
@@ -577,7 +577,7 @@
             }, 2500);
         }
 function openGame(fileUrl, gameName) {
-            if (fileUrl === 'ludo.html' || fileUrl === 'chess.html' || fileUrl === 'domino.html' || fileUrl === 'cards.html') {
+            if (fileUrl === 'ludo.html' || fileUrl === 'chess.html' || fileUrl === 'domino.html') {
                 window.location.href = fileUrl;
             } else {
                 showMessage(`ئامادەکردنی یاری ${gameName}...`);
