@@ -335,6 +335,10 @@
         .card-cards .play-arrow { background: #ef4444; box-shadow: 0 0 12px #ef4444; }
         .card-cards .card-top-icon { color: #fca5a5; }
 
+        .card-halo { border-color: rgba(0, 240, 255, 0.5); box-shadow: 0 8px 25px rgba(0, 240, 255, 0.15); }
+        .card-halo .play-arrow { background: #0ea5e9; box-shadow: 0 0 12px #0ea5e9; }
+        .card-halo .card-top-icon { color: #00f0ff; }
+
         .coming-soon-img-box {
             width: 100%;
             border-radius: 22px;
@@ -511,6 +515,20 @@
                 </div>
             </div>
         </main>
+        
+        <div class="game-card card-halo" onclick="openGame('halo-game.html', 'یاری هەڵۆ')">
+                <img src="images.png/halo.png" alt="یاری هەڵۆ" class="bg-img">
+                <div class="card-overlay">
+                    <div class="card-top-icon"><i class="fa-solid fa-feather-pointed"></i></div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="game-name">یاری هەڵۆ</div>
+                            <div class="game-desc">بفڕە بەسەر چیاکاندا</div>
+                        </div>
+                        <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                    </div>
+                </div>
+            </div>
 
         <section class="coming-soon-img-box" onclick="showMessage('بەم زووانە یاری نوێ زیاد دەکرێت!')">
             <img src="images.png/comengson.png" alt="یاری زیاتر بەڕێوەیە">
@@ -550,9 +568,9 @@
             }, 2500);
         }
 
-        function openGame(fileUrl, gameName) {
-            if (fileUrl === 'ludo.html') {
-                window.location.href = 'ludo.html';
+       function openGame(fileUrl, gameName) {
+            if (fileUrl === 'ludo.html' || fileUrl === 'chess.html') {
+                window.location.href = fileUrl;
             } else {
                 showMessage(`ئامادەکردنی یاری ${gameName}...`);
             }
