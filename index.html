@@ -551,7 +551,11 @@
         }
 
         function openGame(fileUrl, gameName) {
-            showMessage(`ئامادەکردنی یاری ${gameName}...`);
+            if (fileUrl === 'ludo.html') {
+                window.location.href = 'ludo.html';
+            } else {
+                showMessage(`ئامادەکردنی یاری ${gameName}...`);
+            }
         }
 
         function setActiveNav(element, tabName) {
