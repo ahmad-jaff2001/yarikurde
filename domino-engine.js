@@ -1822,3 +1822,359 @@ document.addEventListener('click', (e) => {
     }, 60);
   }
 });
+// ============================================================================
+// بەشی یاری ئۆنڵاین بۆ دۆمینەی شاهانە (٢ یاریزان ڕاستەوخۆ)
+// ============================================================================
+let isDominoOnline = false;
+let domMySeat = 0;
+let domIsHost = false;
+let domRoomRef = null;
+let domRoomListener = null;
+let domLastSeq = -1;
+let domServerState = null;
+let domOppInfo = { name: 'هاوڕێ', avatar: '' };
+
+function normDomArr(val) {
+  if (!val) return [];
+  return Array.isArray(val) ? val : Object.values(val);
+}
+
+function injectDominoOnlineButton() {
+  const pill = document.getElementById('ykDomTopPill');
+  if (!pill || document.getElementById('ykDomOnlineBtn')) return;
+  const btn = document.createElement('button');
+  btn.id = 'ykDomOnlineBtn';
+  btn.type = 'button';
+  btn.onclick = openDominoOnlineLobby;
+  btn.textContent = '🌐 ئۆنڵاین';
+  btn.style.cssText = 'pointer-events:auto; padding:6px 14px; border-radius:999px; background:linear-gradient(135deg,#10b981,#059669); color:#ffffff; border:1.5px solid #a7f3d0; font-size:12px; font-weight:900; box-shadow:0 6px 18px rgba(0,0,0,0.5); cursor:pointer;';
+  pill.parentElement.insertBefore(btn, pill.nextSibling);
+}
+
+const _origEnsureDomShell = ensureDominoFullscreenShell;
+ensureDominoFullscreenShell = function () {
+  _origEnsureDomShell();
+  injectDominoOnlineButton();
+};
+
+function openDominoOnlineLobby() {
+  if (!window.YariOnline) {
+    alert('فایلی online-engine.js نەدۆزرایەوە!');
+    return;
+  }
+  YariOnline.openLobby({
+    gameType: 'domino',
+    gameTitle: 'دۆمینەی شاهانە',
+    maxPlayers: 2,
+    initialState: { started: false },
+    onGameStart: ({ roomCode, isHost, mySeat, players }) => {
+      startDominoOnlineSession(roomCode, isHost, mySeat, players);
+    }
+  });
+}
+
+function startDominoOnlineSession(roomCode, isHost, mySeat, players) {
+  isDominoOnline = true;
+  domIsHost = isHost;
+  domMySeat = mySeat;
+  domLastSeq = -1;
+
+  const opp = players.find(p => p.seat !== mySeat) || { name: 'هاوڕێ', avatar: '' };
+  domOppInfo = opp;
+
+  const oppStrip = document.getElementById('ykDomOppStrip');
+  if (oppStrip) {
+    const labelSpan = oppStrip.querySelector('span');
+    if (labelSpan) labelSpan.textContent = `${opp.name} • ئۆنڵاین`;
+  }
+
+  if (domRoomRef && domRoomListener) {
+    domRoomRef.off('value', domRoomListener);
+  }
+  domRoomRef = ykDB.ref(`rooms/domino/${roomCode}/state`);
+
+  if (isHost) {
+    dealOnlineDominoRound(0, 0);
+  }
+
+  domRoomListener = domRoomRef.on('value', snap => {
+    const st = snap.val();
+    if (!st || !st.hands) return;
+    applyOnlineDominoSnapshot(st);
+  });
+}
+
+function dealOnlineDominoRound(score0 = 0, score1 = 0) {
+  if (!domIsHost || !domRoomRef) return;
+  let deck = [];
+  for (let i = 0; i <= 6; i++) {
+    for (let j = i; j <= 6; j++) deck.push({ a: i, b: j });
+  }
+  for (let i = deck.length - 1; i > 0; i--) {
+    const k = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[k]] = [deck[k], deck[i]];
+  }
+
+  const h0 = deck.slice(0, 7);
+  const h1 = deck.slice(7, 14);
+  const boneyard = deck.slice(14);
+
+  let d0 = -1, d1 = -1;
+  h0.forEach(t => { if (t.a === t.b && t.a > d0) d0 = t.a; });
+  h1.forEach(t => { if (t.a === t.b && t.a > d1) d1 = t.a; });
+
+  let turnSeat = 0, firstMoveRule = false, reqDouble = null;
+  if (d0 >= d1 && d0 !== -1) {
+    turnSeat = 0; firstMoveRule = true; reqDouble = d0;
+  } else if (d1 > d0) {
+    turnSeat = 1; firstMoveRule = true; reqDouble = d1;
+  }
+
+  domRoomRef.set({
+    boneyard: boneyard,
+    hands: { 0: h0, 1: h1 },
+    chain: [],
+    rootIndex: 0,
+    leftEnd: null,
+    rightEnd: null,
+    turnSeat: turnSeat,
+    scores: { 0: score0, 1: score1 },
+    firstMoveRule: firstMoveRule,
+    requiredOpeningDouble: reqDouble,
+    roundWinnerSeat: -1,
+    roundPoints: 0,
+    seq: (domServerState ? (domServerState.seq || 0) : 0) + 1,
+    lastAction: { type: 'deal', by: -1 }
+  });
+}
+
+function applyOnlineDominoSnapshot(st) {
+  if (st.seq === domLastSeq) return;
+  domLastSeq = st.seq;
+  domServerState = st;
+
+  const oppSeat = 1 - domMySeat;
+  teahouseDom.boneyard = normDomArr(st.boneyard);
+  teahouseDom.myHand = normDomArr(st.hands?.[domMySeat]);
+  teahouseDom.botHand = normDomArr(st.hands?.[oppSeat]);
+  teahouseDom.chain = normDomArr(st.chain);
+  teahouseDom.rootIndex = st.rootIndex || 0;
+  teahouseDom.leftEnd = (st.leftEnd !== undefined && st.leftEnd !== null) ? st.leftEnd : null;
+  teahouseDom.rightEnd = (st.rightEnd !== undefined && st.rightEnd !== null) ? st.rightEnd : null;
+  teahouseDom.myScore = st.scores?.[domMySeat] || 0;
+  teahouseDom.botScore = st.scores?.[oppSeat] || 0;
+  teahouseDom.firstMoveRule = !!st.firstMoveRule;
+  teahouseDom.requiredOpeningDouble = (st.requiredOpeningDouble !== undefined && st.requiredOpeningDouble !== null) ? st.requiredOpeningDouble : null;
+  teahouseDom.turn = (st.turnSeat === domMySeat) ? 'player' : 'bot';
+  teahouseDom.selectedHandIdx = null;
+
+  const act = st.lastAction || {};
+  if (act.type === 'deal') {
+    teahouseDom.roundOver = false;
+    teahouseDom.isDealing = true;
+    updateDominoHUD();
+    showDominoSplash('دۆمینە', `<span>${teahouseDom.targetScore}</span><span>🚩</span>`, 850);
+    setTimeout(() => {
+      const finishDeal = () => {
+        teahouseDom.isDealing = false;
+        updateDominoHUD();
+        if (dominoSceneRef) {
+          dominoSceneRef.renderBoard();
+          dominoSceneRef.renderHand();
+        }
+      };
+      if (dominoSceneRef) dominoSceneRef.playDealingAnimation(finishDeal);
+      else finishDeal();
+    }, 650);
+    return;
+  }
+
+  teahouseDom.isDealing = false;
+  if (act.type === 'play' && act.by !== domMySeat) {
+    playTeahouseWoodClack(0.95);
+  } else if (act.type === 'pass' && act.by !== domMySeat) {
+    showDominoSplash('پاس', `<span>${domOppInfo.name} پاسی کرد</span>`, 900);
+  }
+
+  updateDominoHUD();
+  if (dominoSceneRef) {
+    dominoSceneRef.renderBoard();
+    dominoSceneRef.renderHand();
+  }
+
+  if (st.roundWinnerSeat !== undefined && st.roundWinnerSeat !== -1 && !teahouseDom.roundOver) {
+    teahouseDom.roundOver = true;
+    const iWon = (st.roundWinnerSeat === domMySeat);
+    const pts = st.roundPoints || 0;
+    showDominoSplash(iWon ? 'دۆمینە! 🏆' : `${domOppInfo.name} بردیەوە`, `<span>+${pts} خاڵ</span>`, 2100);
+
+    if (teahouseDom.myScore >= teahouseDom.targetScore || teahouseDom.botScore >= teahouseDom.targetScore) {
+      const matchWon = teahouseDom.myScore >= teahouseDom.targetScore;
+      setTimeout(() => {
+        const msg = matchWon
+          ? `🏆 پیرۆزە! گەیشتیتە ${teahouseDom.myScore} خاڵ و یارییەکەت بردەوە!\nدەتەوێت یارییەکی نوێ بکەنەوە؟`
+          : `${domOppInfo.name} گەیشتە ${teahouseDom.botScore} خاڵ و یارییەکەی بردەوە.\nدەتەوێت دووبارە یاری بکەنەوە؟`;
+        if (confirm(msg) && domIsHost) dealOnlineDominoRound(0, 0);
+      }, 2200);
+    } else if (domIsHost) {
+      setTimeout(() => dealOnlineDominoRound(st.scores[0], st.scores[1]), 2400);
+    }
+  }
+}
+
+const _origExecDomMove = executePlayerTeahouseMove;
+executePlayerTeahouseMove = function (idx, side) {
+  if (!isDominoOnline) return _origExecDomMove(idx, side);
+  if (teahouseDom.turn !== 'player' || teahouseDom.roundOver || !domServerState) return;
+
+  const tile = teahouseDom.myHand.splice(idx, 1)[0];
+  if (!tile) return;
+
+  teahouseDom.firstMoveRule = false;
+  teahouseDom.selectedHandIdx = null;
+  appendTeahouseChain(tile, side);
+  playTeahouseWoodClack(1);
+
+  if (dominoSceneRef) {
+    dominoSceneRef.renderBoard();
+    dominoSceneRef.renderHand();
+  }
+
+  const oppSeat = 1 - domMySeat;
+  const scores = { 0: domServerState.scores?.[0] || 0, 1: domServerState.scores?.[1] || 0 };
+  let roundWinnerSeat = -1;
+  let roundPoints = 0;
+
+  const mySum = teahouseDom.myHand.reduce((s, t) => s + t.a + t.b, 0);
+  const oppSum = teahouseDom.botHand.reduce((s, t) => s + t.a + t.b, 0);
+
+  if (teahouseDom.myHand.length === 0) {
+    roundWinnerSeat = domMySeat;
+    roundPoints = oppSum;
+    scores[domMySeat] += oppSum;
+  } else if (teahouseDom.boneyard.length === 0) {
+    const pCan = teahouseDom.myHand.some(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
+    const oCan = teahouseDom.botHand.some(t => { const f = checkTeahouseTileFit(t); return f.left || f.right; });
+    if (!pCan && !oCan) {
+      if (mySum <= oppSum) {
+        roundWinnerSeat = domMySeat;
+        roundPoints = oppSum;
+        scores[domMySeat] += oppSum;
+      } else {
+        roundWinnerSeat = oppSeat;
+        roundPoints = mySum;
+        scores[oppSeat] += mySum;
+      }
+    }
+  }
+
+  const nextSeq = (domServerState.seq || 0) + 1;
+  domLastSeq = nextSeq;
+  teahouseDom.turn = 'bot';
+  updateDominoHUD();
+
+  domRoomRef.update({
+    [`hands/${domMySeat}`]: teahouseDom.myHand,
+    chain: teahouseDom.chain,
+    rootIndex: teahouseDom.rootIndex,
+    leftEnd: teahouseDom.leftEnd,
+    rightEnd: teahouseDom.rightEnd,
+    turnSeat: oppSeat,
+    firstMoveRule: false,
+    requiredOpeningDouble: null,
+    scores: scores,
+    roundWinnerSeat: roundWinnerSeat,
+    roundPoints: roundPoints,
+    seq: nextSeq,
+    lastAction: { type: 'play', by: domMySeat, tile, side }
+  });
+};
+
+const _origDrawDomBoneyard = drawTeahouseBoneyard;
+drawTeahouseBoneyard = function () {
+  if (!isDominoOnline) return _origDrawDomBoneyard();
+  if (teahouseDom.turn !== 'player' || teahouseDom.roundOver || teahouseDom.isDealing || !domServerState) return;
+
+  const hasAnyMove = teahouseDom.myHand.some(t => {
+    const f = checkTeahouseTileFit(t);
+    return f.left || f.right;
+  });
+  if (hasAnyMove) return;
+
+  const oppSeat = 1 - domMySeat;
+  const nextSeq = (domServerState.seq || 0) + 1;
+  domLastSeq = nextSeq;
+
+  if (teahouseDom.boneyard.length > 0) {
+    teahouseDom.myHand.push(teahouseDom.boneyard.pop());
+    playTeahouseWoodClack(1.3);
+    updateDominoHUD();
+    if (dominoSceneRef) dominoSceneRef.renderHand();
+
+    domRoomRef.update({
+      boneyard: teahouseDom.boneyard,
+      [`hands/${domMySeat}`]: teahouseDom.myHand,
+      seq: nextSeq,
+      lastAction: { type: 'draw', by: domMySeat }
+    });
+  } else {
+    const oppCan = teahouseDom.botHand.some(t => {
+      const f = checkTeahouseTileFit(t);
+      return f.left || f.right;
+    });
+    const scores = { 0: domServerState.scores?.[0] || 0, 1: domServerState.scores?.[1] || 0 };
+    let roundWinnerSeat = -1;
+    let roundPoints = 0;
+
+    if (!oppCan) {
+      const mySum = teahouseDom.myHand.reduce((s, t) => s + t.a + t.b, 0);
+      const oppSum = teahouseDom.botHand.reduce((s, t) => s + t.a + t.b, 0);
+      if (mySum <= oppSum) {
+        roundWinnerSeat = domMySeat;
+        roundPoints = oppSum;
+        scores[domMySeat] += oppSum;
+      } else {
+        roundWinnerSeat = oppSeat;
+        roundPoints = mySum;
+        scores[oppSeat] += mySum;
+      }
+    } else {
+      showDominoSplash('پاس', '<span>هیچ پوولێک نەماوە</span>', 900);
+    }
+
+    teahouseDom.turn = 'bot';
+    updateDominoHUD();
+
+    domRoomRef.update({
+      turnSeat: oppSeat,
+      scores: scores,
+      roundWinnerSeat: roundWinnerSeat,
+      roundPoints: roundPoints,
+      seq: nextSeq,
+      lastAction: { type: 'pass', by: domMySeat }
+    });
+  }
+};
+
+const _origRunBotDomTurn = runTeahouseBotTurn;
+runTeahouseBotTurn = function () {
+  if (isDominoOnline) return;
+  _origRunBotDomTurn();
+};
+
+const _origStartTeahouseDom = startRoyalTeahouseDomino;
+startRoyalTeahouseDomino = function () {
+  if (isDominoOnline) {
+    if (domIsHost) dealOnlineDominoRound(0, 0);
+    return;
+  }
+  _origStartTeahouseDom();
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(injectDominoOnlineButton, 120);
+});
+
+window.addEventListener('beforeunload', () => {
+  if (isDominoOnline && window.YariOnline) YariOnline.leaveRoom();
+});

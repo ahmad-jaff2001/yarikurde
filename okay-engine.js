@@ -2048,3 +2048,346 @@ window.addEventListener('DOMContentLoaded', () => {
 
   okeyStartNewRound();
 });
+// ============================================================================
+// ١١. بەشی یاری ئۆنڵاین (٢ تا ٤ یاریزان + بۆت بۆ کورسییە بەتاڵەکان)
+// ============================================================================
+let isOkeyOnline = false;
+let okeyOnlineSeat = 0;
+let okeyOnlineIsHost = false;
+let okeyOnlineRoomCode = null;
+let okeyRoomRef = null;
+let okeyRoomListener = null;
+let okeyHumanSeats = {};
+let okeyLastSeq = -1;
+let okeyServerState = null;
+
+function normArr(val) {
+  if (!val) return [];
+  return Array.isArray(val) ? val : Object.values(val);
+}
+
+function openOkeyOnlineLobby() {
+  if (!window.YariOnline) {
+    alert('فایلی online-engine.js نەدۆزرایەوە!');
+    return;
+  }
+  YariOnline.openLobby({
+    gameType: 'okey',
+    gameTitle: 'ئۆکەی شاهانە',
+    maxPlayers: 4,
+    initialState: { started: false },
+    onGameStart: ({ roomCode, isHost, mySeat, players }) => {
+      startOkeyOnlineSession(roomCode, isHost, mySeat, players);
+    }
+  });
+}
+
+function startOkeyOnlineSession(roomCode, isHost, mySeat, players) {
+  isOkeyOnline = true;
+  okeyOnlineRoomCode = roomCode;
+  okeyOnlineIsHost = isHost;
+  okeyOnlineSeat = mySeat;
+  okeyLastSeq = -1;
+  okeyHumanSeats = {};
+  players.forEach(p => { okeyHumanSeats[p.seat] = p; });
+
+  if (okeyRoomRef && okeyRoomListener) {
+    okeyRoomRef.off('value', okeyRoomListener);
+  }
+  okeyRoomRef = ykDB.ref(`rooms/okey/${roomCode}/state`);
+
+  if (isHost) {
+    dealNewOnlineOkeyRound(1);
+  }
+
+  okeyRoomListener = okeyRoomRef.on('value', snap => {
+    const st = snap.val();
+    if (!st || !st.deck) return;
+    applyOnlineOkeySnapshot(st);
+  });
+}
+
+function dealNewOnlineOkeyRound(roundNum = 1) {
+  if (!okeyOnlineIsHost || !okeyRoomRef) return;
+  const fullDeck = buildOkey106Deck();
+  const indIdx = fullDeck.findIndex(t => !t.isFalseJoker);
+  const indicator = fullDeck.splice(indIdx, 1)[0];
+  const jokerNum = indicator.number === 13 ? 1 : indicator.number + 1;
+
+  const hands = {
+    0: fullDeck.splice(0, 15),
+    1: fullDeck.splice(0, 14),
+    2: fullDeck.splice(0, 14),
+    3: fullDeck.splice(0, 14)
+  };
+
+  okeyRoomRef.set({
+    round: roundNum,
+    deck: fullDeck,
+    indicatorTile: indicator,
+    jokerRule: { color: indicator.color, number: jokerNum },
+    hands: hands,
+    discards: { 0: [], 1: [], 2: [], 3: [] },
+    turnSeat: 0,
+    phase: 'play',
+    winnerSeat: -1,
+    winMessage: '',
+    seq: (okeyServerState ? (okeyServerState.seq || 0) : 0) + 1,
+    lastBy: -1
+  });
+}
+
+function applyOnlineOkeySnapshot(st) {
+  okeyServerState = st;
+  const isNewDeal = (st.seq !== okeyLastSeq && st.lastBy === -1);
+  if (st.seq !== okeyLastSeq && st.lastBy !== -1 && st.lastBy !== okeyOnlineSeat) {
+    playOkeyTileSound('clack');
+  }
+  okeyLastSeq = st.seq;
+
+  okeyState.round = st.round || 1;
+  okeyState.deck = normArr(st.deck);
+  okeyState.indicatorTile = st.indicatorTile;
+  okeyState.jokerRule = st.jokerRule;
+  okeyState.turn = (st.turnSeat - okeyOnlineSeat + 4) % 4;
+  okeyState.phase = st.phase || 'draw';
+  okeyState.isAnimating = false;
+
+  const allDiscards = st.discards || {};
+  const allHands = st.hands || {};
+  okeyState.myDiscards = normArr(allDiscards[okeyOnlineSeat]);
+
+  // ڕێکخستنی ٣ یاریزانەکەی تر بەپێی شوێنی دانیشتنیان لەسەر مێزەکە
+  for (let rel = 1; rel <= 3; rel++) {
+    const absSeat = (okeyOnlineSeat + rel) % 4;
+    const human = okeyHumanSeats[absSeat];
+    const handCount = normArr(allHands[absSeat]).length;
+    okeyState.bots[rel - 1] = {
+      id: rel,
+      name: human ? human.name : `بۆتی ${absSeat + 1}`,
+      rank: human ? 'ئۆنڵاین' : 'بۆت',
+      badgeCol: human ? 0x22c55e : 0x94a3b8,
+      score: 1200,
+      tiles: new Array(handCount).fill({}),
+      discards: normArr(allDiscards[absSeat])
+    };
+  }
+
+  // هاوتاکردنی پوولەکانی ناو تەختەکەت بەبێ تێکدانی ڕیزبەندییەکەت
+  const myServerHand = normArr(allHands[okeyOnlineSeat]);
+  if (isNewDeal) {
+    okeyState.rackSlots = new Array(RACK_TOTAL_SLOTS).fill(null);
+    selectedSlotIdx = -1;
+    myServerHand.forEach((t, i) => {
+      const slotIdx = i < 8 ? i + 2 : RACK_COLS + (i - 8) + 2;
+      okeyState.rackSlots[slotIdx] = t;
+    });
+    okeyState.winner = null;
+    startTurnCountdown();
+  } else {
+    const serverUids = new Set(myServerHand.map(t => t.uid));
+    const localUids = new Set();
+    for (let i = 0; i < RACK_TOTAL_SLOTS; i++) {
+      const t = okeyState.rackSlots[i];
+      if (t) {
+        if (!serverUids.has(t.uid)) okeyState.rackSlots[i] = null;
+        else localUids.add(t.uid);
+      }
+    }
+    for (const t of myServerHand) {
+      if (!localUids.has(t.uid)) {
+        okeyState.rackSlots[getFirstEmptySlotIndex()] = t;
+      }
+    }
+  }
+
+  evaluatePlayerRack();
+  updateTopHudStatus();
+  renderFullScene(isNewDeal, false);
+
+  if (st.winnerSeat !== undefined && st.winnerSeat !== -1 && !okeyState.winner) {
+    const iWon = (st.winnerSeat === okeyOnlineSeat);
+    okeyState.winner = iWon ? 'player' : 'opponent';
+    if (iWon) playOkeyTileSound('win');
+    showOkeyWinModal(iWon, iWon ? 'ئۆکەی شاهانە! تۆ یارییەکەت بردەوە!' : (st.winMessage || 'یاریزانێکی تر یارییەکەی بردەوە!'));
+    return;
+  }
+
+  // ئەگەر ژوورەکە لە ٤ یاریزان کەمتر بوو، دروستکەری ژوور نۆرەی بۆتەکان دەجوڵێنێت
+  if (okeyOnlineIsHost && st.winnerSeat === -1 && !okeyHumanSeats[st.turnSeat]) {
+    setTimeout(() => runOnlineEmptySeatBot(st.turnSeat), 650);
+  }
+}
+
+function runOnlineEmptySeatBot(botSeat) {
+  if (!isOkeyOnline || !okeyOnlineIsHost || !okeyServerState) return;
+  if (okeyServerState.turnSeat !== botSeat || okeyServerState.winnerSeat !== -1) return;
+
+  const deck = normArr(okeyServerState.deck);
+  if (deck.length === 0) {
+    dealNewOnlineOkeyRound((okeyServerState.round || 1) + 1);
+    return;
+  }
+
+  const hands = {
+    0: normArr(okeyServerState.hands?.[0]),
+    1: normArr(okeyServerState.hands?.[1]),
+    2: normArr(okeyServerState.hands?.[2]),
+    3: normArr(okeyServerState.hands?.[3])
+  };
+  const discards = {
+    0: normArr(okeyServerState.discards?.[0]),
+    1: normArr(okeyServerState.discards?.[1]),
+    2: normArr(okeyServerState.discards?.[2]),
+    3: normArr(okeyServerState.discards?.[3])
+  };
+
+  if (okeyServerState.phase === 'draw') {
+    hands[botSeat].push(deck.pop());
+  }
+
+  let discIdx = hands[botSeat].findIndex(t => !isRealOkeyJoker(t));
+  if (discIdx === -1) discIdx = 0;
+  const discarded = hands[botSeat].splice(discIdx, 1)[0];
+  if (discarded) discards[botSeat].push(discarded);
+
+  const nextSeat = (botSeat + 1) % 4;
+  okeyRoomRef.update({
+    deck: deck,
+    hands: hands,
+    discards: discards,
+    turnSeat: nextSeat,
+    phase: 'draw',
+    seq: (okeyServerState.seq || 0) + 1,
+    lastBy: botSeat
+  });
+}
+
+// بەستنەوەی فەنکشنە سەرەکییەکانی یاری بە ئۆنڵاینەوە
+const _origOkeyStartNewRound = okeyStartNewRound;
+okeyStartNewRound = function () {
+  if (isOkeyOnline) {
+    if (okeyOnlineIsHost) dealNewOnlineOkeyRound((okeyState.round || 1) + 1);
+    else updateTopHudStatus('چاوەڕێی دەستپێکردنی دەستی نوێ بە...');
+    return;
+  }
+  _origOkeyStartNewRound();
+};
+
+const _origOkeyDrawDeck = okeyPlayerDrawFromDeck;
+okeyPlayerDrawFromDeck = function () {
+  if (!isOkeyOnline) return _origOkeyDrawDeck();
+  if (okeyState.isAnimating || okeyState.turn !== 0 || okeyState.phase !== 'draw' || !okeyServerState) return;
+
+  const deck = normArr(okeyServerState.deck);
+  if (deck.length === 0) return;
+
+  const drawn = deck.pop();
+  const targetSlotIdx = getFirstEmptySlotIndex();
+  const myHand = normArr(okeyServerState.hands?.[okeyOnlineSeat]);
+  myHand.push(drawn);
+
+  okeyState.isAnimating = true;
+  selectedSlotIdx = -1;
+  playOkeyTileSound('whoosh');
+
+  animateFlipAndFlyToRack(drawn, layout.deckPos.x, layout.deckPos.y, targetSlotIdx, () => {
+    okeyState.rackSlots[targetSlotIdx] = drawn;
+    okeyState.phase = 'play';
+    okeyState.isAnimating = false;
+    playOkeyTileSound('clack');
+    evaluatePlayerRack();
+    renderFullScene(false, false);
+
+    okeyRoomRef.update({
+      deck: deck,
+      [`hands/${okeyOnlineSeat}`]: myHand,
+      phase: 'play',
+      seq: (okeyServerState.seq || 0) + 1,
+      lastBy: okeyOnlineSeat
+    });
+  });
+};
+
+const _origOkeyTakeLeft = okeyPlayerTakeLeftDiscard;
+okeyPlayerTakeLeftDiscard = function () {
+  if (!isOkeyOnline) return _origOkeyTakeLeft();
+  if (okeyState.isAnimating || okeyState.turn !== 0 || okeyState.phase !== 'draw' || !okeyServerState) return;
+
+  const leftSeat = (okeyOnlineSeat + 3) % 4;
+  const leftPile = normArr(okeyServerState.discards?.[leftSeat]);
+  if (leftPile.length === 0) return;
+
+  const taken = leftPile.pop();
+  const targetSlotIdx = getFirstEmptySlotIndex();
+  const myHand = normArr(okeyServerState.hands?.[okeyOnlineSeat]);
+  myHand.push(taken);
+
+  okeyState.isAnimating = true;
+  selectedSlotIdx = -1;
+  playOkeyTileSound('whoosh');
+
+  animateFlipAndFlyToRack(taken, layout.leftPickupPos.x, layout.leftPickupPos.y, targetSlotIdx, () => {
+    okeyState.rackSlots[targetSlotIdx] = taken;
+    okeyState.phase = 'play';
+    okeyState.isAnimating = false;
+    playOkeyTileSound('clack');
+    evaluatePlayerRack();
+    renderFullScene(false, false);
+
+    okeyRoomRef.update({
+      [`discards/${leftSeat}`]: leftPile,
+      [`hands/${okeyOnlineSeat}`]: myHand,
+      phase: 'play',
+      seq: (okeyServerState.seq || 0) + 1,
+      lastBy: okeyOnlineSeat
+    });
+  });
+};
+
+const _origOkeyDiscard = okeyPlayerDiscardTile;
+okeyPlayerDiscardTile = function (slotIdx) {
+  if (!isOkeyOnline) return _origOkeyDiscard(slotIdx);
+  if (okeyState.isAnimating || okeyState.turn !== 0 || okeyState.phase !== 'play' || !okeyServerState) return false;
+
+  const tile = okeyState.rackSlots[slotIdx];
+  if (!tile) return false;
+
+  const checkWithoutThis = evaluatePlayerRack(tile.uid);
+  const slotInfo = layout.slotCoords[slotIdx];
+  okeyState.rackSlots[slotIdx] = null;
+  okeyState.isAnimating = true;
+  selectedSlotIdx = -1;
+  syncPlayerRackSprites(false, false);
+  playOkeyTileSound('whoosh');
+
+  const remainingHand = okeyState.rackSlots.filter(Boolean);
+  const myPile = normArr(okeyServerState.discards?.[okeyOnlineSeat]);
+  myPile.push(tile);
+
+  const didWin = (checkWithoutThis.canWin14 || okeyState.isAllValidToWin);
+  const nextSeat = (okeyOnlineSeat + 1) % 4;
+  const me = YariOnline.getPlayer();
+
+  animateSomersaultThrow(tile, slotInfo.cx, slotInfo.cy, layout.discardBoxPos.x, layout.discardBoxPos.y, () => {
+    okeyState.isAnimating = false;
+    playOkeyTileSound('clack');
+    evaluatePlayerRack();
+
+    okeyRoomRef.update({
+      [`hands/${okeyOnlineSeat}`]: remainingHand,
+      [`discards/${okeyOnlineSeat}`]: myPile,
+      turnSeat: nextSeat,
+      phase: 'draw',
+      winnerSeat: didWin ? okeyOnlineSeat : -1,
+      winMessage: didWin ? `${me.name} ئۆکەیی کرد و یارییەکەی بردەوە!` : '',
+      seq: (okeyServerState.seq || 0) + 1,
+      lastBy: okeyOnlineSeat
+    });
+  });
+  return true;
+};
+
+window.addEventListener('beforeunload', () => {
+  if (isOkeyOnline && window.YariOnline) YariOnline.leaveRoom();
+});

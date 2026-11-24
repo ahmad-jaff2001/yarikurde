@@ -112,7 +112,11 @@
                     <span id="hudRoundText" dir="ltr">1/5</span>
                 </div>
             </div>
-            <button onclick="toggleFullScreen()" title="پڕکردنی شاشە" class="w-9 h-9 rounded-full pill-white flex items-center justify-center text-slate-700 hover:scale-105 active:scale-95 transition">
+            <button onclick="openOkeyOnlineLobby()" class="px-3.5 h-9 rounded-full bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs shadow-lg flex items-center gap-1.5 active:scale-95 transition">
+                <i class="fa-solid fa-globe"></i>
+                <span>ئۆنڵاین</span>
+            </button> 
+            <button onclick="toggleFullScreen()"  title="پڕکردنی شاشە" class="w-9 h-9 rounded-full pill-white flex items-center justify-center text-slate-700 hover:scale-105 active:scale-95 transition">
                 <i class="fa-solid fa-expand text-xs"></i>
             </button>
             <button onclick="okeyStartNewRound()" title="دەستێکی نوێ" class="w-9 h-9 rounded-full pill-white flex items-center justify-center text-amber-600 hover:scale-105 active:scale-95 transition">
@@ -177,7 +181,10 @@
             </ul>
         </div>
     </div>
-
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="online-engine.js"></script>
+    
     <script src="okay-engine.js"></script>
 </body>
 </html>

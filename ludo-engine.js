@@ -1016,4 +1016,275 @@ function leaveLudoRoom() {
 document.addEventListener('click', (e) => {
   const card = e.target.closest('[onclick*="switchView(\'ludo\')"]');
   if (card) setTimeout(initLudoGame, 80);
+});// ============================================================================
+// بەشی یاری ئۆنڵاین بۆ لودۆی شاهانە (٢ یاریزان ڕاستەوخۆ)
+// ============================================================================
+let isLudoOnline = false;
+let ludoMySeat = 0;
+let ludoIsHost = false;
+let ludoRoomRef = null;
+let ludoRoomListener = null;
+let ludoLastSeq = -1;
+let ludoServerSeq = 0;
+let ludoPendingMoveMeta = null;
+let ludoWinnerAlerted = false;
+let ludoOppDisplayName = 'هاوڕێ';
+
+function openLudoOnlineLobby() {
+  if (!window.YariOnline) {
+    alert('فایلی online-engine.js نەدۆزرایەوە!');
+    return;
+  }
+  YariOnline.openLobby({
+    gameType: 'ludo',
+    gameTitle: 'لودۆی شاهانە',
+    maxPlayers: 2,
+    initialState: { started: false },
+    onGameStart: ({ roomCode, isHost, mySeat, players }) => {
+      startLudoOnlineSession(roomCode, isHost, mySeat, players);
+    }
+  });
+}
+
+function startLudoOnlineSession(roomCode, isHost, mySeat, players) {
+  isLudoOnline = true;
+  ludoIsHost = isHost;
+  ludoMySeat = mySeat;
+  ludoLastSeq = -1;
+  ludoServerSeq = 0;
+  ludoWinnerAlerted = false;
+
+  const myCol = mySeat === 0 ? 'yellow' : 'red';
+  const me = YariOnline.getPlayer();
+  const opp = players.find(p => p.seat !== mySeat) || { name: 'هاوڕێ' };
+  ludoOppDisplayName = opp.name || 'هاوڕێ';
+
+  ludoState.mode = 'online';
+  ludoState.myColor = myCol;
+  ludoState.turn = 'yellow';
+  ludoState.diceValue = null;
+  ludoState.diceRolled = false;
+  ludoState.isAnimating = false;
+  ludoState.consecutiveSixes = 0;
+  ludoState.tokens = { yellow: [-1, -1, -1, -1], red: [-1, -1, -1, -1] };
+  ludoState.winner = null;
+
+  const myNameEl = document.getElementById('ludoMyName');
+  const oppNameEl = document.getElementById('ludoOppName');
+  if (myNameEl) myNameEl.textContent = `${me.name} (${myCol === 'yellow' ? 'زەرد' : 'سوور'})`;
+  if (oppNameEl) oppNameEl.textContent = `${ludoOppDisplayName} (${myCol === 'yellow' ? 'سوور' : 'زەرد'})`;
+
+  // ڕێکخستنی ڕەنگی ئایکۆنی یاریزانەکان بەپێی کورسییەکەیان
+  const myAv = document.querySelector('.panel-me .avatar-box');
+  const oppAv = document.querySelector('.panel-opp .avatar-box');
+  if (myAv && oppAv) {
+    if (myCol === 'red') {
+      myAv.className = 'avatar-box avatar-red';
+      myAv.textContent = '🔴';
+      oppAv.className = 'avatar-box avatar-yellow';
+      oppAv.textContent = '☀️';
+    } else {
+      myAv.className = 'avatar-box avatar-yellow';
+      myAv.textContent = '☀️';
+      oppAv.className = 'avatar-box avatar-red';
+      oppAv.textContent = '🔴';
+    }
+  }
+
+  initLudoPhaser();
+  updateLudoHUD(myCol === 'yellow' ? 'نۆرەی تۆیە — کلیک لە زارەکە بکە 🎲' : `نۆرەی ${ludoOppDisplayName}ـە...`);
+
+  if (ludoRoomRef && ludoRoomListener) {
+    ludoRoomRef.off('value', ludoRoomListener);
+  }
+  ludoRoomRef = ykDB.ref(`rooms/ludo/${roomCode}/state`);
+
+  if (isHost) {
+    ludoRoomRef.set({
+      turn: 'yellow',
+      diceValue: null,
+      diceRolled: false,
+      tokens: { yellow: [-1, -1, -1, -1], red: [-1, -1, -1, -1] },
+      winner: null,
+      seq: 1,
+      lastAction: { type: 'start', by: -1 }
+    });
+  }
+
+  ludoRoomListener = ludoRoomRef.on('value', snap => {
+    const st = snap.val();
+    if (!st || !st.tokens) return;
+    applyOnlineLudoSnapshot(st);
+  });
+}
+
+function applyOnlineLudoSnapshot(st) {
+  if (st.seq === ludoLastSeq) return;
+  ludoLastSeq = st.seq;
+  ludoServerSeq = st.seq || 0;
+
+  const act = st.lastAction || {};
+  const fromOpp = (act.by !== undefined && act.by !== -1 && act.by !== ludoMySeat);
+
+  if (fromOpp && act.type === 'reaction') {
+    updateLudoHUD(`${ludoOppDisplayName}: ${act.text}`);
+    playLudoSfx('hop');
+    return;
+  }
+
+  if (fromOpp && act.type === 'roll') {
+    playLudoSfx('dice');
+    const oppBox = document.getElementById('ludoOppDiceBox');
+    if (oppBox) {
+      oppBox.classList.add('dice-rolling');
+      setTimeout(() => oppBox.classList.remove('dice-rolling'), 360);
+    }
+    ludoState.turn = st.turn;
+    ludoState.diceValue = st.diceValue;
+    ludoState.diceRolled = !!st.diceRolled;
+    updateLudoHUD(`${ludoOppDisplayName} ژمارە ${st.diceValue}ی هێنا`);
+    if (ludoSceneRef) ludoSceneRef.renderTokens();
+    return;
+  }
+
+  const finishApply = () => {
+    ludoState.turn = st.turn || 'yellow';
+    ludoState.diceValue = st.diceValue || null;
+    ludoState.diceRolled = !!st.diceRolled;
+    ludoState.tokens = {
+      yellow: Array.isArray(st.tokens.yellow) ? st.tokens.yellow : [-1, -1, -1, -1],
+      red: Array.isArray(st.tokens.red) ? st.tokens.red : [-1, -1, -1, -1]
+    };
+    ludoState.winner = st.winner || null;
+
+    updateLudoHUD(
+      ludoState.winner
+        ? (ludoState.winner === ludoState.myColor ? '🏆 پیرۆزە! یارییەکەت بردەوە!' : `${ludoOppDisplayName} یارییەکەی بردەوە!`)
+        : (ludoState.turn === ludoState.myColor ? 'نۆرەی تۆیە — کلیک لە زارەکە بکە 🎲' : `نۆرەی ${ludoOppDisplayName}ـە...`)
+    );
+    if (ludoSceneRef) ludoSceneRef.renderTokens();
+
+    if (ludoState.winner && !ludoWinnerAlerted) {
+      ludoWinnerAlerted = true;
+      const iWon = (ludoState.winner === ludoState.myColor);
+      setTimeout(() => {
+        alert(iWon ? '🏆 پیرۆزە پاڵەوان! هەر ٤ داشەکەت گەیاندە خۆری کوردستان!' : `${ludoOppDisplayName} یارییەکەی بردەوە!`);
+      }, 350);
+    }
+  };
+
+  if (fromOpp && act.type === 'move' && ludoSceneRef) {
+    ludoState.isAnimating = true;
+    ludoSceneRef.animateTokenHopPath(act.color, act.tokenIdx, act.fromStep, act.toStep, () => {
+      ludoState.isAnimating = false;
+      finishApply();
+    });
+  } else {
+    finishApply();
+  }
+}
+
+// ناردنی زار هەر کە یاریزانەکە هەڵیدا
+const _origPerformDiceRoll = performDiceRollAnimation;
+performDiceRollAnimation = function (color) {
+  _origPerformDiceRoll(color);
+  if (isLudoOnline && color === ludoState.myColor) {
+    setTimeout(() => {
+      if (isLudoOnline && ludoState.diceRolled && ludoRoomRef) {
+        ludoServerSeq++;
+        ludoLastSeq = ludoServerSeq;
+        ludoRoomRef.update({
+          turn: ludoState.turn,
+          diceValue: ludoState.diceValue,
+          diceRolled: true,
+          seq: ludoServerSeq,
+          lastAction: { type: 'roll', by: ludoMySeat, val: ludoState.diceValue }
+        });
+      }
+    }, 390);
+  }
+};
+
+// تۆمارکردنی جووڵەی داش پێش ناردنی بۆ سێرڤەر
+const _origExecLudoTokenMove = executeLudoTokenMove;
+executeLudoTokenMove = function (color, tokenIdx) {
+  if (isLudoOnline && color === ludoState.myColor) {
+    const fromStep = ludoState.tokens[color][tokenIdx];
+    const toStep = fromStep === -1 ? 0 : fromStep + ludoState.diceValue;
+    ludoPendingMoveMeta = { type: 'move', by: ludoMySeat, color, tokenIdx, fromStep, toStep };
+  }
+  _origExecLudoTokenMove(color, tokenIdx);
+};
+
+syncLudoRoomIfNeeded = function () {
+  if (!isLudoOnline || !ludoRoomRef) return;
+  ludoServerSeq++;
+  ludoLastSeq = ludoServerSeq;
+  const act = ludoPendingMoveMeta || { type: 'pass', by: ludoMySeat };
+  ludoPendingMoveMeta = null;
+
+  ludoRoomRef.set({
+    turn: ludoState.turn,
+    diceValue: ludoState.diceValue,
+    diceRolled: ludoState.diceRolled,
+    tokens: ludoState.tokens,
+    winner: ludoState.winner || null,
+    seq: ludoServerSeq,
+    lastAction: act
+  });
+};
+
+const _origUpdateLudoHUD = updateLudoHUD;
+updateLudoHUD = function (statusMsg) {
+  _origUpdateLudoHUD(statusMsg);
+  if (isLudoOnline) {
+    const turnBadge = document.getElementById('ludoTurnBadge');
+    if (turnBadge) {
+      const colName = ludoState.turn === 'yellow' ? 'زەردی خۆری' : 'سووری ئاڵا';
+      turnBadge.textContent = ludoState.turn === ludoState.myColor
+        ? `نۆرەی تۆیە (${colName})`
+        : `نۆرەی ${ludoOppDisplayName} (${colName})`;
+    }
+  }
+};
+
+const _origSendLudoReaction = sendLudoQuickReaction;
+sendLudoQuickReaction = function (txt) {
+  _origSendLudoReaction(txt);
+  if (isLudoOnline && ludoRoomRef) {
+    ludoServerSeq++;
+    ludoLastSeq = ludoServerSeq;
+    ludoRoomRef.update({
+      seq: ludoServerSeq,
+      lastAction: { type: 'reaction', by: ludoMySeat, text: txt }
+    });
+  }
+};
+
+const _origInitLudoGame = initLudoGame;
+initLudoGame = function () {
+  if (isLudoOnline) {
+    if (ludoIsHost && ludoRoomRef) {
+      ludoWinnerAlerted = false;
+      ludoServerSeq++;
+      ludoLastSeq = ludoServerSeq;
+      ludoRoomRef.set({
+        turn: 'yellow',
+        diceValue: null,
+        diceRolled: false,
+        tokens: { yellow: [-1, -1, -1, -1], red: [-1, -1, -1, -1] },
+        winner: null,
+        seq: ludoServerSeq,
+        lastAction: { type: 'start', by: ludoMySeat }
+      });
+    } else {
+      updateLudoHUD('تەنها دروستکەری ژوور دەتوانێت یارییەکە نوێ بکاتەوە');
+    }
+    return;
+  }
+  _origInitLudoGame();
+};
+
+window.addEventListener('beforeunload', () => {
+  if (isLudoOnline && window.YariOnline) YariOnline.leaveRoom();
 });
