@@ -1,5 +1,5 @@
 // ============================================================================
-// YARI KURDI - ULTRA CLOSE-UP 120FPS OKEY ENGINE WITH FIDGET PHYSICS
+// YARI KURDI - ULTRA CLOSE-UP 120FPS OKEY ENGINE WITH RELAXING SOMERSAULTS
 // ============================================================================
 
 const OKEY_COLORS = ['red', 'black', 'blue', 'yellow'];
@@ -30,7 +30,7 @@ const tileTextureCache = new Map();
 const activeTweens = [];
 const rackSpritesMap = new Map();
 
-// بارودۆخی فیزیایی ڕاکێشان و یاریپێکردن بە پوول (Fidget Physics & Magnetic Shift)
+// بارودۆخی فیزیایی ڕاکێشان و یاریپێکردن بە پوول
 let dragContext = {
   active: false,
   sprite: null,
@@ -55,7 +55,7 @@ let dragContext = {
 
 let selectedSlotIdx = -1;
 
-// قەبارەی نزیک و گەورە (هاوشێوەی دیزاینی مۆبایلە مۆدێرنەکان)
+// قەبارەی نزیک و گەورە
 let layout = {
   w: 1280,
   h: 640,
@@ -71,11 +71,10 @@ let layout = {
   trayY: 0,
   trayW: 326,
   trayH: 138,
-  finishPos: { x: 0, y: 0 },
+  discardBoxPos: { x: 0, y: 0 },
   indicatorPos: { x: 0, y: 0 },
   deckPos: { x: 0, y: 0 },
-  leftDiscardPos: { x: 0, y: 0 },
-  rightDiscardPos: { x: 0, y: 0 },
+  leftPickupPos: { x: 0, y: 0 },
   botPositions: [],
   botDiscardPositions: [],
   slotCoords: []
@@ -89,10 +88,11 @@ let okeyState = {
   indicatorTile: null,
   jokerRule: null,
   rackSlots: new Array(RACK_TOTAL_SLOTS).fill(null),
+  // ڕیزبەندیی یاریزانەکان بە پێچەوانەی میلی کاتژمێر: تۆ (0) -> کۆمپیوتەر 1 ڕاست (1) -> کۆمپیوتەر 2 سەرەوە (2) -> کۆمپیوتەر 3 چەپ (3)
   bots: [
-    { id: 1, name: 'کۆمپیوتەر 3', rank: 'ئەڵماس', badgeCol: 0x3b82f6, score: 2900, tiles: [], discards: [] },
+    { id: 1, name: 'کۆمپیوتەر 1', rank: 'برۆنز', badgeCol: 0xd97706, score: 600, tiles: [], discards: [] },
     { id: 2, name: 'کۆمپیوتەر 2', rank: 'زێڕ', badgeCol: 0xeab308, score: 1500, tiles: [], discards: [] },
-    { id: 3, name: 'کۆمپیوتەر 1', rank: 'برۆنز', badgeCol: 0xd97706, score: 600, tiles: [], discards: [] }
+    { id: 3, name: 'کۆمپیوتەر 3', rank: 'ئەڵماس', badgeCol: 0x3b82f6, score: 2900, tiles: [], discards: [] }
   ],
   myDiscards: [],
   turn: 0,
@@ -105,7 +105,7 @@ let okeyState = {
 };
 
 // ============================================================================
-// ١. دەنگی یاری (Zero-Latency Web Audio Synthesizer)
+// ١. دەنگی ئارامبەخشی پوولی عاجی (Zero-Latency Web Audio)
 // ============================================================================
 function playOkeyTileSound(type = 'clack') {
   try {
@@ -123,28 +123,28 @@ function playOkeyTileSound(type = 'clack') {
 
     if (type === 'clack') {
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(640, now);
-      osc.frequency.exponentialRampToValueAtTime(145, now + 0.045);
-      gain.gain.setValueAtTime(0.26, now);
+      osc.frequency.setValueAtTime(610, now);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.045);
+      gain.gain.setValueAtTime(0.24, now);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
       osc.start(now);
       osc.stop(now + 0.05);
     } else if (type === 'whoosh') {
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(280, now);
-      osc.frequency.exponentialRampToValueAtTime(740, now + 0.06);
-      gain.gain.setValueAtTime(0.15, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+      osc.frequency.setValueAtTime(260, now);
+      osc.frequency.exponentialRampToValueAtTime(680, now + 0.065);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
       osc.start(now);
-      osc.stop(now + 0.065);
+      osc.stop(now + 0.07);
     } else if (type === 'flip') {
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(420, now);
-      osc.frequency.exponentialRampToValueAtTime(880, now + 0.04);
-      gain.gain.setValueAtTime(0.14, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+      osc.frequency.setValueAtTime(340, now);
+      osc.frequency.exponentialRampToValueAtTime(760, now + 0.055);
+      gain.gain.setValueAtTime(0.13, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
       osc.start(now);
-      osc.stop(now + 0.045);
+      osc.stop(now + 0.06);
     } else if (type === 'win') {
       [523.25, 659.25, 783.99, 1046.5].forEach((freq, i) => {
         const o = okeySoundCtx.createOscillator();
@@ -163,7 +163,7 @@ function playOkeyTileSound(type = 'clack') {
 }
 
 // ============================================================================
-// ٢. سیستمی ئەنیمەیشن و فیزیای ١٢٠ فریم لە چرکەیەکدا
+// ٢. سیستمی ئەنیمەیشن و تەقڵەلێدانی ١٢٠ فریم لە چرکەیەکدا
 // ============================================================================
 function addPixiTween(config) {
   activeTweens.push({
@@ -189,7 +189,7 @@ function updateAllPixiTweensAndPhysics(deltaMS) {
       for (const key in tw.to) {
         tw.target[key] = tw.from[key] + (tw.to[key] - tw.from[key]) * p;
       }
-      if (tw.onUpdate) tw.onUpdate(p);
+      if (tw.onUpdate) tw.onUpdate(rawProgress, p);
     }
 
     if (rawProgress >= 1) {
@@ -204,7 +204,6 @@ function updateAllPixiTweensAndPhysics(deltaMS) {
     dragContext.vx *= 0.84;
     dragContext.vy *= 0.84;
 
-    // لاربوونەوەی سروشتیی پوول بەپێی خێرایی پەنجەت
     const targetTilt = Math.max(-0.52, Math.min(0.52, dragContext.vx * 0.022));
     sp.rotation += (targetTilt - sp.rotation) * 0.32;
 
@@ -219,7 +218,106 @@ function updateAllPixiTweensAndPhysics(deltaMS) {
   }
 }
 
-// تەقڵەلێدانی ٣ ڕەهەندیی پوول لە حەوادا کاتێک لەسەر مێزەکە ڕایدەوەشێنیت
+// ============================================================================
+// تەقڵەلێدانی ٣ ڕەهەندی و ئارامبەخش لە حەوادا کاتێک دەبڵ کلیک لە پوولێک دەکەیت!
+// ============================================================================
+function triggerRackTileSomersault(sprite, startX = null, startY = null) {
+  if (!sprite || sprite.destroyed) return;
+  const slotIdx = sprite.slotIdx;
+  const slot = layout.slotCoords[slotIdx];
+  if (!slot) return;
+
+  // ئەگەر هەر ئێستا لە تەقڵەلێداندا بوو، تەقڵە کۆنەکەی پاک دەکەینەوە تا تەقڵەیەکی نوێی ساف لێبدات
+  if (sprite.tumbleShadow && !sprite.tumbleShadow.destroyed) {
+    sprite.tumbleShadow.destroy();
+    sprite.tumbleShadow = null;
+  }
+
+  const originX = startX !== null ? startX : slot.cx;
+  const originY = startY !== null ? startY : slot.cy;
+  const peakY = Math.min(originY - 122, layout.rackY - 68);
+  const driftX = (Math.random() - 0.5) * 26;
+
+  sprite.isTumbling = true;
+  sprite.tumbleToken = (sprite.tumbleToken || 0) + 1;
+  const myToken = sprite.tumbleToken;
+
+  // سێبەری نەرم لە ژێر پوولەکەدا لە کاتی فڕین
+  const shadow = new PIXI.Graphics();
+  shadow.beginFill(0x000000, 0.34);
+  shadow.drawRoundedRect(-layout.tileW * 0.48, -layout.tileH * 0.48, layout.tileW * 0.96, layout.tileH * 0.96, 12);
+  shadow.endFill();
+  shadow.position.set(originX, originY + 8);
+  fxLayer.addChild(shadow);
+  sprite.tumbleShadow = shadow;
+
+  // دەرهێنانی پوولەکە بۆ سەرووی هەموو چینەکان تا بە ئازادی تەقڵە لێبدات
+  fxLayer.addChild(sprite);
+  playOkeyTileSound('flip');
+
+  const animDriver = { t: 0 };
+  addPixiTween({
+    target: animDriver,
+    from: { t: 0 },
+    to: { t: 1 },
+    duration: 540,
+    ease: (t) => t,
+    onUpdate: (raw) => {
+      if (!sprite || sprite.destroyed || sprite.tumbleToken !== myToken) return;
+
+      const targetSlot = layout.slotCoords[sprite.slotIdx] || slot;
+      // کەوانەی نەرمی بەرزبوونەوە و نیشتنەوە (Parabolic Arc)
+      const arc = Math.sin(raw * Math.PI);
+      const easeInOut = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
+
+      const curX = originX + (targetSlot.cx - originX) * easeInOut + Math.sin(raw * Math.PI) * driftX;
+      const curY = originY + (targetSlot.cy - originY) * easeInOut - arc * (originY - peakY);
+
+      // سووڕانەوەی تەواوی ٣٦٠ پلە + تەقڵەی ٣ ڕەهەندی (3D Pitch & Roll)
+      const spinAngle = easeInOut * Math.PI * 2;
+      const flip3D = Math.cos(raw * Math.PI * 2); // 1 -> -1 -> 1
+      const scalePop = 1 + arc * 0.22;
+
+      sprite.position.set(curX, curY);
+      sprite.rotation = spinAngle;
+      sprite.width = layout.tileW * scalePop;
+      sprite.height = Math.max(8, layout.tileH * scalePop * Math.abs(flip3D));
+
+      // لە نیوەی تەقڵەکەدا کە پشتەوەی پوولەکە دیارە، ڕووی سووری پشتەوەی نیشان دەدات
+      if (flip3D < 0) {
+        sprite.texture = getTileTex(null);
+      } else {
+        sprite.texture = getTileTex(sprite.tileData);
+      }
+
+      if (shadow && !shadow.destroyed) {
+        shadow.position.set(curX + arc * 12, curY + 10 + arc * 26);
+        shadow.rotation = spinAngle;
+        shadow.alpha = 0.34 * (1 - arc * 0.45);
+        shadow.scale.set(1 - arc * 0.15);
+      }
+    },
+    onComplete: () => {
+      if (!sprite || sprite.destroyed || sprite.tumbleToken !== myToken) return;
+      if (shadow && !shadow.destroyed) {
+        shadow.destroy();
+      }
+      sprite.tumbleShadow = null;
+      sprite.isTumbling = false;
+
+      const finalSlot = layout.slotCoords[sprite.slotIdx] || slot;
+      sprite.texture = getTileTex(sprite.tileData);
+      sprite.width = layout.tileW;
+      sprite.height = layout.tileH;
+      sprite.rotation = 0;
+      sprite.position.set(finalSlot.cx, finalSlot.cy);
+      tilesLayer.addChild(sprite);
+      playOkeyTileSound('clack');
+    }
+  });
+}
+
+// تەقڵەلێدانی ٣ ڕەهەندیی پوول لە حەوادا کاتێک بە پەنجە بە چەپ و ڕاستدا ڕایدەوەشێنیت
 function triggerMidAirFidgetFlip() {
   if (!dragContext.active || !dragContext.sprite || dragContext.isFlipping3D) return;
   dragContext.isFlipping3D = true;
@@ -294,12 +392,10 @@ function bakeAllOkeyTextures() {
     canvas.height = H;
     const ctx = canvas.getContext('2d');
 
-    // قووڵایی ٣ ڕەهەندیی خوارەوەی پوول
     drawRoundedRectPath(ctx, 3, 10, W - 6, H - 12, R);
     ctx.fillStyle = isJokerGlow ? '#d97706' : '#c4b59b';
     ctx.fill();
 
-    // ڕووی عاجیی سەرەوەی پوول
     drawRoundedRectPath(ctx, 3, 3, W - 6, H - 15, R);
     const grad = ctx.createLinearGradient(0, 0, 0, H);
     if (isJokerGlow) {
@@ -321,21 +417,17 @@ function bakeAllOkeyTextures() {
   for (const color of OKEY_COLORS) {
     const hex = OKEY_COLOR_HEX[color];
     for (let num = 1; num <= 13; num++) {
-      // ١) پوولی ئاسایی
       const key = `tile_${color}_${num}`;
       const { canvas, ctx } = createTileCanvas();
 
-      // نەخشی تیشکی خۆر لە پشتی خاڵەکە
       drawStarburstEmboss(ctx, W / 2, H * 0.72, 34);
 
-      // ژمارەی گەورە و ڕوون
       ctx.fillStyle = hex;
       ctx.font = '900 92px "Arial Black", Vazirmatn, sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(String(num), W / 2, H * 0.34);
 
-      // چاڵی ڕەنگدار لە خوارەوەی پوولەکە
       ctx.beginPath();
       ctx.arc(W / 2, H * 0.72, 16, 0, Math.PI * 2);
       ctx.fillStyle = hex;
@@ -346,7 +438,6 @@ function bakeAllOkeyTextures() {
 
       tileTextureCache.set(key, PIXI.Texture.from(canvas));
 
-      // ٢) پوولی ئۆکەی ڕاستەقینە
       const jokerKey = `tile_${color}_${num}_joker`;
       const jObj = createTileCanvas('#f59e0b', 5, true);
       const jCtx = jObj.ctx;
@@ -370,18 +461,16 @@ function bakeAllOkeyTextures() {
     }
   }
 
-  // پوولی جۆکەری ساختە (بە وێنەی شاخ و خۆری زێڕینی کوردستان وەک وێنەکە)
+  // پوولی جۆکەری ساختە (شاخ و خۆری زێڕین)
   {
     const { canvas, ctx } = createTileCanvas('#d4c5a9', 3.5);
 
-    // خۆری زێڕین لە سەرەوە
     drawStarburstEmboss(ctx, W / 2, H * 0.27, 30);
     ctx.beginPath();
     ctx.arc(W / 2, H * 0.27, 13, 0, Math.PI * 2);
     ctx.fillStyle = '#eab308';
     ctx.fill();
 
-    // شاخی شین و سپی لە ناوەڕاست
     ctx.beginPath();
     ctx.moveTo(22, H * 0.62);
     ctx.lineTo(W * 0.42, H * 0.42);
@@ -392,7 +481,6 @@ function bakeAllOkeyTextures() {
     ctx.fillStyle = '#1d4ed8';
     ctx.fill();
 
-    // خاڵی خوارەوە
     ctx.beginPath();
     ctx.arc(W / 2, H * 0.75, 14, 0, Math.PI * 2);
     ctx.fillStyle = '#1d4ed8';
@@ -623,7 +711,6 @@ function updateViewportAndLayout() {
   const w = layout.w;
   const h = layout.h;
 
-  // پوولی یەکجار گەورە و ڕوون وەک وێنەکە
   layout.tileW = 62;
   layout.tileH = 90;
   layout.slotW = 64;
@@ -640,30 +727,29 @@ function updateViewportAndLayout() {
   layout.trayX = Math.round(w / 2 - layout.trayW / 2);
   layout.trayY = Math.round(layout.centerY - layout.trayH / 2);
 
-  layout.finishPos = { x: Math.round(w / 2 - 96), y: layout.centerY + 6 };
+  // خانەی فڕێدان لە ناوەڕاستی سینیەکە (وەک ڤیدیۆکە)
+  layout.discardBoxPos = { x: Math.round(w / 2 - 96), y: layout.centerY + 6 };
   layout.indicatorPos = { x: Math.round(w / 2 + 4), y: layout.centerY + 8 };
   layout.deckPos = { x: Math.round(w / 2 + 98), y: layout.centerY + 4 };
 
-  // شوێنی هەر ٣ بۆتەکان (چەپ، سەرەوە، ڕاست)
+  // شوێنی هەر ٣ بۆتەکان (ڕاست، سەرەوە، چەپ)
   const sideMargin = Math.max(96, Math.round(w * 0.08));
   layout.botPositions = [
-    { x: sideMargin, y: layout.centerY + 10 },       // کۆمپیوتەر 3 (چەپ)
+    { x: w - sideMargin, y: layout.centerY + 10 },    // کۆمپیوتەر 1 (ڕاست)
     { x: Math.round(w / 2), y: 52 },                 // کۆمپیوتەر 2 (سەرەوە)
-    { x: w - sideMargin, y: layout.centerY + 10 }    // کۆمپیوتەر 1 (ڕاست)
+    { x: sideMargin, y: layout.centerY + 10 }        // کۆمپیوتەر 3 (چەپ)
   ];
 
-  // خانەکانی فڕێدانی پوول
+  // خانەی پوولی فڕێدراوی کۆمپیوتەر 3 (کە دەتوانیت هەڵیبگریتەوە)
   const discardY = Math.round(layout.rackY - layout.tileH * 0.58);
-  layout.leftDiscardPos = { x: layout.rackX + 58, y: discardY };
-  layout.rightDiscardPos = { x: layout.rackX + layout.rackW - 58, y: discardY };
+  layout.leftPickupPos = { x: layout.rackX + 58, y: discardY };
 
   layout.botDiscardPositions = [
-    { x: sideMargin + 112, y: layout.centerY + 10 },
+    { x: w - sideMargin - 112, y: layout.centerY + 10 },
     { x: Math.round(w / 2 + 170), y: 74 },
-    layout.rightDiscardPos
+    layout.leftPickupPos
   ];
 
-  // ٢٨ خانەکەی تەختە دوو-ڕیزییەکە
   layout.slotCoords = [];
   const startX = layout.rackX + 14 + layout.slotW / 2;
   const rowY0 = layout.rackY + 9 + layout.tileH / 2;
@@ -687,7 +773,7 @@ function getStagePointerPos(globalPos) {
 }
 
 // ============================================================================
-// ٦. کێشانی مێزی مەخمەڵی (سوور و شین)، لێوارە دارینەکان، تەختە و دوگمەکان
+// ٦. کێشانی مێز، سینی ناوەڕاست، تەختە و دوگمەکان
 // ============================================================================
 function renderFullScene(animateDeal = false, animateSlide = false) {
   if (!pixiApp) return;
@@ -699,10 +785,8 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
 
   const { w, h, tileW, tileH } = layout;
 
-  // ١. کێشانی لێوارە تەختە دارینەکانی چەپ و ڕاستی مێزەکە + چوارچێوەی مەخمەڵی
+  // ١. لێوارە دارینەکانی لای چەپ و ڕاستی مێزەکە
   const tableGfx = new PIXI.Graphics();
-
-  // لێواری دارینی لای چەپ (بە گۆشەی ٣ ڕەهەندی وەک وێنەکە)
   tableGfx.beginFill(0x3d1e0c, 0.95);
   tableGfx.moveTo(0, 0);
   tableGfx.lineTo(54, 0);
@@ -711,12 +795,10 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
   tableGfx.closePath();
   tableGfx.endFill();
 
-  // هێڵی زێڕینی تەنیشت لێواری چەپ
   tableGfx.lineStyle(2, 0xf59e0b, 0.35);
   tableGfx.moveTo(54, 0);
   tableGfx.lineTo(14, h);
 
-  // لێواری دارینی لای ڕاست
   tableGfx.lineStyle(0);
   tableGfx.beginFill(0x3d1e0c, 0.95);
   tableGfx.moveTo(w, 0);
@@ -732,43 +814,81 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
 
   bgLayer.addChild(tableGfx);
 
-  // ٢. کێشانی ٣ بۆتەکە (ڕێک بە ستایلی وێنەکە: بازنەی سپی 'ک' + پلە + خاڵ)
-  drawBotProfile(0, 'vertical');   // کۆمپیوتەر 3 (چەپ)
+  // ٢. کێشانی ٣ بۆتەکە
+  drawBotProfile(0, 'vertical');   // کۆمپیوتەر 1 (ڕاست)
   drawBotProfile(1, 'horizontal'); // کۆمپیوتەر 2 (سەرەوە)
-  drawBotProfile(2, 'vertical');   // کۆمپیوتەر 1 (ڕاست)
+  drawBotProfile(2, 'vertical');   // کۆمپیوتەر 3 (چەپ)
 
-  // ٣. سینی تاریکی ناوەڕاستی مێز (فڕێدان/کۆنکان + پیشاندەر + دەستە پوولی سوور)
+  // ٣. سینی تاریکی ناوەڕاستی مێز (فڕێدان + پیشاندەر + دەستە پوولی سوور)
   const trayGfx = new PIXI.Graphics();
-  trayGfx.beginFill(0x090612, 0.82);
+  trayGfx.beginFill(0x090612, 0.84);
   trayGfx.lineStyle(1.8, 0xffffff, 0.14);
   trayGfx.drawRoundedRect(layout.trayX, layout.trayY, layout.trayW, layout.trayH, 22);
   trayGfx.endFill();
 
-  // چوارگۆشەی کۆنکان / فڕێدانی کۆتایی لە لای چەپی سینیەکە
+  // خانەی فڕێدان لە ناوەڕاستی سینیەکە (وەک ڤیدیۆکە)
   const fBoxW = tileW + 18;
   const fBoxH = tileH + 10;
-  trayGfx.beginFill(0x280d22, 0.85);
+  trayGfx.beginFill(0x280d22, 0.88);
   trayGfx.lineStyle(1.8, okeyState.isAllValidToWin ? 0x22c55e : 0x6b2146, 0.9);
-  trayGfx.drawRoundedRect(layout.finishPos.x - fBoxW / 2, layout.finishPos.y - fBoxH / 2, fBoxW, fBoxH, 14);
+  trayGfx.drawRoundedRect(layout.discardBoxPos.x - fBoxW / 2, layout.discardBoxPos.y - fBoxH / 2, fBoxW, fBoxH, 14);
   trayGfx.endFill();
   tableLayer.addChild(trayGfx);
 
-  const finishTitle = new PIXI.Text('فڕێدان', {
+  const discardTitle = new PIXI.Text('فڕێدان', {
     fontFamily: 'Vazirmatn, sans-serif',
     fontSize: 12,
     fontWeight: '800',
     fill: '#e2e8f0'
   });
-  finishTitle.anchor.set(0.5);
-  finishTitle.position.set(layout.finishPos.x, layout.finishPos.y - fBoxH / 2 - 11);
+  discardTitle.anchor.set(0.5);
+  discardTitle.position.set(layout.discardBoxPos.x, layout.discardBoxPos.y - fBoxH / 2 - 11);
 
   const diamondIcon = new PIXI.Text('❖', {
     fontSize: 20,
-    fill: okeyState.isAllValidToWin ? '#4ade80' : '#64748b'
+    fill: '#64748b'
   });
   diamondIcon.anchor.set(0.5);
-  diamondIcon.position.set(layout.finishPos.x, layout.finishPos.y);
-  tableLayer.addChild(finishTitle, diamondIcon);
+  diamondIcon.position.set(layout.discardBoxPos.x, layout.discardBoxPos.y);
+  tableLayer.addChild(discardTitle, diamondIcon);
+
+  // پیشاندانی پوولە فڕێدراوەکانی تۆ لە ناو چوارگۆشەی فڕێداندا
+  if (okeyState.myDiscards.length > 0) {
+    if (okeyState.myDiscards.length > 1) {
+      const prev = okeyState.myDiscards[okeyState.myDiscards.length - 2];
+      const underSp = new PIXI.Sprite(getTileTex(prev));
+      underSp.anchor.set(0.5);
+      underSp.width = tileW * 0.84;
+      underSp.height = tileH * 0.84;
+      underSp.tint = 0xcccccc;
+      underSp.rotation = -0.08;
+      underSp.position.set(layout.discardBoxPos.x - 3, layout.discardBoxPos.y + 2);
+      tableLayer.addChild(underSp);
+    }
+    const topDiscard = okeyState.myDiscards[okeyState.myDiscards.length - 1];
+    const discardSp = new PIXI.Sprite(getTileTex(topDiscard));
+    discardSp.anchor.set(0.5);
+    discardSp.width = tileW * 0.84;
+    discardSp.height = tileH * 0.84;
+    discardSp.position.set(layout.discardBoxPos.x, layout.discardBoxPos.y);
+    tableLayer.addChild(discardSp);
+  }
+
+  // کلیککردن لە خانەی فڕێدان ئەگەر پوولێک هەڵبژێردرابێت
+  const discardHit = new PIXI.Graphics();
+  discardHit.beginFill(0xffffff, 0.001);
+  discardHit.drawRect(layout.discardBoxPos.x - fBoxW / 2 - 6, layout.discardBoxPos.y - fBoxH / 2 - 6, fBoxW + 12, fBoxH + 12);
+  discardHit.endFill();
+  discardHit.eventMode = 'static';
+  discardHit.cursor = 'pointer';
+  discardHit.on('pointertap', () => {
+    if (selectedSlotIdx !== -1) {
+      const from = selectedSlotIdx;
+      selectedSlotIdx = -1;
+      okeyPlayerDiscardTile(from);
+    }
+  });
+  tableLayer.addChild(discardHit);
 
   // پوولی پیشاندەر لە ناوەڕاستی سینیەکە
   if (okeyState.indicatorTile) {
@@ -802,7 +922,6 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
   deckSprite.on('pointertap', () => okeyPlayerDrawFromDeck());
   tableLayer.addChild(deckSprite);
 
-  // باجی سپی ژمارەی پوولەکانی ماوە (وەک 48 لە وێنەکەدا)
   const badgeX = layout.deckPos.x + tileW * 0.38;
   const badgeY = layout.deckPos.y - tileH * 0.48;
   const deckBadge = new PIXI.Graphics();
@@ -821,31 +940,29 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
   deckCountTxt.position.set(badgeX, badgeY);
   tableLayer.addChild(deckBadge, deckCountTxt);
 
-  // ٤. خانەکانی فڕێدانی پوول لە دەوری مێزەکە
-  const dW = Math.round(tileW * 0.82);
-  const dH = Math.round(tileH * 0.82);
-  drawDiscardPile(layout.leftDiscardPos.x, layout.leftDiscardPos.y, dW, dH, okeyState.myDiscards, 'فڕێدانی تۆ', false, true);
-  drawDiscardPile(layout.botDiscardPositions[0].x, layout.botDiscardPositions[0].y, dW * 0.88, dH * 0.88, okeyState.bots[0].discards, '', false, false);
-  drawDiscardPile(layout.botDiscardPositions[1].x, layout.botDiscardPositions[1].y, dW * 0.88, dH * 0.88, okeyState.bots[1].discards, '', false, false);
+  // ٤. خانەکانی پوولی فڕێدراوی بۆتەکان (پوولی کۆمپیوتەر 3 لە لای چەپ دەتوانیت هەڵیبگریتەوە)
+  const dW = Math.round(tileW * 0.8);
+  const dH = Math.round(tileH * 0.8);
+  drawBotDiscardPile(layout.botDiscardPositions[0].x, layout.botDiscardPositions[0].y, dW * 0.88, dH * 0.88, okeyState.bots[0].discards, '', false);
+  drawBotDiscardPile(layout.botDiscardPositions[1].x, layout.botDiscardPositions[1].y, dW * 0.88, dH * 0.88, okeyState.bots[1].discards, '', false);
 
-  const canPickRight = okeyState.turn === 0 && okeyState.phase === 'draw' && okeyState.bots[2].discards.length > 0;
-  drawDiscardPile(layout.rightDiscardPos.x, layout.rightDiscardPos.y, dW, dH, okeyState.bots[2].discards, 'هەڵگرتنەوە', canPickRight, false);
+  const canPickLeft = okeyState.turn === 0 && okeyState.phase === 'draw' && okeyState.bots[2].discards.length > 0;
+  if (okeyState.bots[2].discards.length > 0 || canPickLeft) {
+    drawBotDiscardPile(layout.leftPickupPos.x, layout.leftPickupPos.y, dW, dH, okeyState.bots[2].discards, canPickLeft ? 'هەڵگرتنەوە' : '', canPickLeft);
+  }
 
-  // ٥. تەختە دوو-ڕیزییە گەورە و نزیکەکە
+  // ٥. تەختە دوو-ڕیزییە گەورەکە
   const rackGfx = new PIXI.Graphics();
 
-  // سێبەری تەختە
   rackGfx.beginFill(0x000000, 0.72);
   rackGfx.drawRoundedRect(layout.rackX + 4, layout.rackY + 8, layout.rackW, layout.rackH, 12);
   rackGfx.endFill();
 
-  // چوارچێوەی دەرەوەی تەختەی دارینی تۆخ
   rackGfx.beginFill(0x281009, 1);
   rackGfx.lineStyle(2, 0x4c2114, 1);
   rackGfx.drawRoundedRect(layout.rackX, layout.rackY, layout.rackW, layout.rackH, 12);
   rackGfx.endFill();
 
-  // ٢٨ خانە ڕەشە قووڵەکەی ناو تەختەکە (ڕێک وەک خانە تاریکەکانی ناو وێنەکەت)
   for (const s of layout.slotCoords) {
     const isHover = s.idx === dragContext.hoverSlotIdx;
     const isSel = s.idx === selectedSlotIdx;
@@ -855,7 +972,6 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
     rackGfx.endFill();
   }
 
-  // هێڵی جیاکەرەوەی نێوان ڕیزی سەرەوە و خوارەوە
   rackGfx.lineStyle(0);
   rackGfx.beginFill(0x3a180e, 1);
   rackGfx.drawRect(layout.rackX + 6, layout.rackY + layout.rackH / 2 - 2.5, layout.rackW - 12, 5);
@@ -863,7 +979,7 @@ function renderFullScene(animateDeal = false, animateSlide = false) {
 
   rackBgLayer.addChild(rackGfx);
 
-  // ٦. چوار دوگمە سپییە گەورەکەی تەنیشت چەپ و ڕاستی تەختەکە (ڕێک وەک وێنەکە)
+  // ٦. چوار دوگمە سپییە گەورەکەی تەنیشت چەپ و ڕاستی تەختەکە
   drawRackSideButtons();
 
   // ٧. هاوتاکردنی پوولەکان
@@ -879,8 +995,6 @@ function drawBotProfile(botIdx, mode) {
   container.position.set(pos.x, pos.y);
 
   const g = new PIXI.Graphics();
-
-  // بازنەی سپی ئاڤاتاری بۆت ('ک')
   const avX = mode === 'horizontal' ? 56 : 0;
   const avY = mode === 'horizontal' ? 0 : -28;
 
@@ -889,7 +1003,6 @@ function drawBotProfile(botIdx, mode) {
   g.drawCircle(avX, avY, 22);
   g.endFill();
 
-  // باجی ڕەشی ژمارەی پوولەکان (14)
   g.beginFill(0x1e293b, 1);
   g.lineStyle(1.5, 0xffffff, 0.9);
   g.drawCircle(avX + 16, avY - 15, 10);
@@ -915,7 +1028,6 @@ function drawBotProfile(botIdx, mode) {
   cntTxt.position.set(avX + 16, avY - 15);
   container.addChild(kTxt, cntTxt);
 
-  // ناوی بۆت + پلە + خاڵ
   const nameTxt = new PIXI.Text(bot.name, {
     fontFamily: 'Vazirmatn, sans-serif',
     fontSize: 12.5,
@@ -1039,35 +1151,25 @@ function drawRackSideButtons() {
     rackBgLayer.addChild(c);
   };
 
-  // دوو دوگمەکەی لای چەپی تەختەکە (جووتەکان + کۆنکان 👑)
   createPillButton(leftX, topBtnY, 'جووتەکان', '#334155', () => okeyAutoSortRack('pairs'));
   createPillButton(leftX, botBtnY, '👑 کۆنکان', '#0f172a', () => okeyTryInstantKonkanBtn(), okeyState.isAllValidToWin);
 
-  // دوو دوگمەکەی لای ڕاستی تەختەکە (ژمێرەری سێت + ڕیزکردن)
   const validCount = okeyState.validTileIds ? okeyState.validTileIds.size : 0;
   createPillButton(rightX, topBtnY, `${validCount} / 14`, validCount === 14 ? '#16a34a' : '#dc2626', () => okeyAutoSortRack('runs'));
   createPillButton(rightX, botBtnY, 'ڕیزکردن', '#0f172a', () => okeyAutoSortRack('runs'));
 }
 
-function drawDiscardPile(x, y, w, h, pile, label, clickablePickup, isMyLeftDiscard) {
+function drawBotDiscardPile(x, y, w, h, pile, label, clickablePickup) {
   const g = new PIXI.Graphics();
   g.beginFill(0x090612, 0.55);
   g.lineStyle(1.8, clickablePickup ? 0x22c55e : 0xffffff, clickablePickup ? 0.95 : 0.22);
   g.drawRoundedRect(x - w / 2 - 4, y - h / 2 - 4, w + 8, h + 8, 12);
   g.endFill();
 
-  if (isMyLeftDiscard || clickablePickup) {
+  if (clickablePickup) {
     g.eventMode = 'static';
     g.cursor = 'pointer';
-    g.on('pointertap', () => {
-      if (isMyLeftDiscard && selectedSlotIdx !== -1) {
-        const from = selectedSlotIdx;
-        selectedSlotIdx = -1;
-        okeyPlayerDiscardTile(from, false);
-      } else if (clickablePickup) {
-        okeyPlayerTakeRightDiscard();
-      }
-    });
+    g.on('pointertap', () => okeyPlayerTakeLeftDiscard());
   }
   tableLayer.addChild(g);
 
@@ -1076,7 +1178,7 @@ function drawDiscardPile(x, y, w, h, pile, label, clickablePickup, isMyLeftDisca
       fontFamily: 'Vazirmatn, sans-serif',
       fontSize: 10.5,
       fontWeight: '800',
-      fill: clickablePickup ? '#4ade80' : '#cbd5e1'
+      fill: '#4ade80'
     });
     lbl.anchor.set(0.5);
     lbl.position.set(x, y - h / 2 - 12);
@@ -1084,18 +1186,6 @@ function drawDiscardPile(x, y, w, h, pile, label, clickablePickup, isMyLeftDisca
   }
 
   if (pile && pile.length > 0) {
-    if (pile.length > 1) {
-      const prevTile = pile[pile.length - 2];
-      const underSp = new PIXI.Sprite(getTileTex(prevTile));
-      underSp.anchor.set(0.5);
-      underSp.width = w;
-      underSp.height = h;
-      underSp.tint = 0xcccccc;
-      underSp.rotation = -0.07;
-      underSp.position.set(x - 3, y + 2);
-      tableLayer.addChild(underSp);
-    }
-
     const topTile = pile[pile.length - 1];
     const sp = new PIXI.Sprite(getTileTex(topTile));
     sp.anchor.set(0.5);
@@ -1103,25 +1193,17 @@ function drawDiscardPile(x, y, w, h, pile, label, clickablePickup, isMyLeftDisca
     sp.height = h;
     sp.position.set(x, y);
 
-    if (clickablePickup || isMyLeftDiscard) {
+    if (clickablePickup) {
       sp.eventMode = 'static';
       sp.cursor = 'pointer';
-      sp.on('pointertap', () => {
-        if (isMyLeftDiscard && selectedSlotIdx !== -1) {
-          const from = selectedSlotIdx;
-          selectedSlotIdx = -1;
-          okeyPlayerDiscardTile(from, false);
-        } else if (clickablePickup) {
-          okeyPlayerTakeRightDiscard();
-        }
-      });
+      sp.on('pointertap', () => okeyPlayerTakeLeftDiscard());
     }
     tableLayer.addChild(sp);
   }
 }
 
 // ============================================================================
-// ٧. ڕاکێشانی فیزیایی، ڕاوەشاندنی پوول لەسەر مێز، و خلیسکانی ئۆتۆماتیکی (Auto-Shift)
+// ٧. ڕاکێشان، دەبڵ کلیک بۆ تەقڵەلێدان، و خلیسکانی ئۆتۆماتیکی
 // ============================================================================
 function syncPlayerRackSprites(animateDeal = false, animateSlide = false) {
   const { tileW, tileH } = layout;
@@ -1143,21 +1225,23 @@ function syncPlayerRackSprites(animateDeal = false, animateSlide = false) {
       sprite.position.set(animateDeal ? layout.deckPos.x : slot.cx, animateDeal ? layout.deckPos.y : slot.cy);
       sprite.eventMode = 'static';
       sprite.cursor = 'grab';
+      sprite.isTumbling = false;
 
       bindTileInteraction(sprite);
       tilesLayer.addChild(sprite);
       rackSpritesMap.set(tile.uid, sprite);
-    } else if (!dragContext.active || dragContext.sprite !== sprite) {
-      sprite.texture = getTileTex(tile);
-      sprite.width = tileW;
-      sprite.height = tileH;
-      sprite.rotation = 0;
     }
 
     sprite.slotIdx = idx;
     sprite.tileData = tile;
 
-    if (dragContext.active && dragContext.sprite === sprite) continue;
+    // ئەگەر پوولەکە بە دەست ڕادەکێشرێت یان خەریکی تەقڵەلێدانی دەبڵ کلیکە، دەستکاری شوێنەکەی مەکە
+    if ((dragContext.active && dragContext.sprite === sprite) || sprite.isTumbling) continue;
+
+    sprite.texture = getTileTex(tile);
+    sprite.width = tileW;
+    sprite.height = tileH;
+    sprite.rotation = 0;
 
     const isSelected = (idx === selectedSlotIdx);
     const targetY = isSelected ? slot.cy - 14 : slot.cy;
@@ -1183,12 +1267,13 @@ function syncPlayerRackSprites(animateDeal = false, animateSlide = false) {
 
   for (const [uid, sp] of rackSpritesMap.entries()) {
     if (!activeUids.has(uid)) {
+      if (sp.tumbleShadow && !sp.tumbleShadow.destroyed) sp.tumbleShadow.destroy();
       sp.destroy();
       rackSpritesMap.delete(uid);
     }
   }
 
-  // چوارچێوەی سووری گەش لە دەوری سێتە دروستەکان (ڕێک وەک چوارچێوەی [12 12 12 12] لە وێنەکەدا)
+  // چوارچێوەی سووری گەش لە دەوری سێتە دروستەکان
   bracketsLayer.removeChildren();
   const frame = new PIXI.Graphics();
   for (const b of okeyState.validGroupsBounds) {
@@ -1212,13 +1297,30 @@ function bindTileInteraction(sprite) {
     e.stopPropagation();
 
     const now = performance.now();
-    // دووجار پەنجەپێدانان بۆ فڕێدانی خێرا
-    if (now - lastTapTime < 290 && okeyState.turn === 0 && okeyState.phase === 'play') {
+    // دەبڵ کلیک / دووجار پەنجەپێدانان: پوولەکە تەقڵەیەکی جوان لێدەدات و دەگەڕێتەوە شوێنی خۆی!
+    if (now - lastTapTime < 320) {
+      lastTapTime = 0;
       selectedSlotIdx = -1;
-      okeyPlayerDiscardTile(sprite.slotIdx, false);
+      if (dragContext.active && dragContext.sprite === sprite) {
+        if (dragContext.shadow) dragContext.shadow.destroy();
+        dragContext.active = false;
+        dragContext.sprite = null;
+      }
+      triggerRackTileSomersault(sprite);
       return;
     }
     lastTapTime = now;
+
+    // ئەگەر هەر ئێستا لە تەقڵەدا بوو، تەقڵەکەی ڕادەگرین تا بە پەنجە ڕایبکێشیت
+    if (sprite.isTumbling) {
+      sprite.tumbleToken = (sprite.tumbleToken || 0) + 1;
+      sprite.isTumbling = false;
+      if (sprite.tumbleShadow && !sprite.tumbleShadow.destroyed) {
+        sprite.tumbleShadow.destroy();
+        sprite.tumbleShadow = null;
+      }
+      sprite.rotation = 0;
+    }
 
     const stagePos = getStagePointerPos(e.global);
     dragContext.active = true;
@@ -1239,7 +1341,6 @@ function bindTileInteraction(sprite) {
     dragContext.lastSignX = 0;
     dragContext.shakeReversals = 0;
 
-    // سێبەری جووڵاوی ژێر پوولەکە کاتێک بەرزی دەکەیتەوە
     const sh = new PIXI.Graphics();
     sh.beginFill(0x000000, 0.42);
     sh.drawRoundedRect(-layout.tileW * 0.56, -layout.tileH * 0.56, layout.tileW * 1.12, layout.tileH * 1.12, 12);
@@ -1283,7 +1384,6 @@ function setupGlobalStagePointerEvents() {
       const curY = pos.y + touchLift;
       dragContext.sprite.position.set(curX, curY);
 
-      // ئەگەر یاریزان لە ناوەڕاستی مێزەکە بە خێرایی پوولەکەی بە چەپ و ڕاستدا ڕاوەشاند، تەقڵە لێدەدات!
       if (curY < layout.rackY - 15 && Math.abs(stepDx) > 13) {
         const sign = Math.sign(stepDx);
         if (dragContext.lastSignX !== 0 && sign !== dragContext.lastSignX) {
@@ -1296,7 +1396,6 @@ function setupGlobalStagePointerEvents() {
         dragContext.lastSignX = sign;
       }
 
-      // دیاریکردنی خانەی ژێر پەنجە لەناو تەختەکە
       let nearestIdx = -1;
       let minDist = Infinity;
       for (const s of layout.slotCoords) {
@@ -1306,9 +1405,7 @@ function setupGlobalStagePointerEvents() {
           nearestIdx = s.idx;
         }
       }
-      if (nearestIdx !== dragContext.hoverSlotIdx) {
-        dragContext.hoverSlotIdx = nearestIdx;
-      }
+      dragContext.hoverSlotIdx = nearestIdx;
     }
   });
 
@@ -1337,7 +1434,6 @@ function setupGlobalStagePointerEvents() {
     if (!moved) {
       if (selectedSlotIdx === -1) {
         selectedSlotIdx = fromIdx;
-        playOkeyTileSound('flip');
       } else if (selectedSlotIdx === fromIdx) {
         selectedSlotIdx = -1;
       } else {
@@ -1348,7 +1444,7 @@ function setupGlobalStagePointerEvents() {
       return;
     }
 
-    handleTileDrop(fromIdx, sp.x, sp.y);
+    handleTileDrop(sp, fromIdx, sp.x, sp.y);
   };
 
   pixiApp.stage.on('pointerup', finishPointerDrag);
@@ -1377,7 +1473,7 @@ function setupGlobalStagePointerEvents() {
   });
 }
 
-// خلیسکانی ئۆتۆماتیکیی پوولەکانی ناو تەختە کاتێک پوولێک دەخەیتە نێوانیانەوە
+// خلیسکانی ئۆتۆماتیکیی پوولەکانی ناو تەختە
 function insertTileWithMagneticShift(fromIdx, targetIdx) {
   if (fromIdx === targetIdx) return;
   const movingTile = okeyState.rackSlots[fromIdx];
@@ -1385,7 +1481,6 @@ function insertTileWithMagneticShift(fromIdx, targetIdx) {
 
   okeyState.rackSlots[fromIdx] = null;
 
-  // ئەگەر خانەی ئامانج بەتاڵ بوو، ڕاستەوخۆ تێیدا دابنێ
   if (!okeyState.rackSlots[targetIdx]) {
     okeyState.rackSlots[targetIdx] = movingTile;
     playOkeyTileSound('clack');
@@ -1393,7 +1488,6 @@ function insertTileWithMagneticShift(fromIdx, targetIdx) {
     return;
   }
 
-  // ئەگەر پڕ بوو، لە هەمان ڕیزدا نزیکترین خانەی بەتاڵ بدۆزەرەوە و پوولەکانی تر بخلیسکێنە
   const row = Math.floor(targetIdx / RACK_COLS);
   const rowStart = row * RACK_COLS;
   const rowEnd = rowStart + RACK_COLS - 1;
@@ -1425,7 +1519,6 @@ function insertTileWithMagneticShift(fromIdx, targetIdx) {
     }
     okeyState.rackSlots[targetIdx] = movingTile;
   } else {
-    // ئەگەر تەواوی ڕیزەکە پڕ بوو، جێگۆڕکێ بکە
     okeyState.rackSlots[fromIdx] = okeyState.rackSlots[targetIdx];
     okeyState.rackSlots[targetIdx] = movingTile;
   }
@@ -1434,20 +1527,14 @@ function insertTileWithMagneticShift(fromIdx, targetIdx) {
   evaluatePlayerRack();
 }
 
-function handleTileDrop(fromSlotIdx, dropX, dropY) {
-  // ١. پشکنینی فڕێدان بۆ خانەی کۆنکان لە ناوەڕاستی سینیەکە
-  const distFinish = Math.hypot(dropX - layout.finishPos.x, dropY - layout.finishPos.y);
-  if (distFinish < layout.tileH * 0.95) {
-    if (okeyPlayerDiscardTile(fromSlotIdx, true)) return;
+function handleTileDrop(sprite, fromSlotIdx, dropX, dropY) {
+  // ١. پشکنینی فڕێدان بۆ خانەی 'فڕێدان' لە ناوەڕاستی سینیەکە
+  const distDiscard = Math.hypot(dropX - layout.discardBoxPos.x, dropY - layout.discardBoxPos.y);
+  if (distDiscard < layout.tileH * 1.15) {
+    if (okeyPlayerDiscardTile(fromSlotIdx)) return;
   }
 
-  // ٢. پشکنینی فڕێدان بۆ خانەی فڕێدانی لای چەپ
-  const distLeftDiscard = Math.hypot(dropX - layout.leftDiscardPos.x, dropY - layout.leftDiscardPos.y);
-  if (distLeftDiscard < layout.tileH * 1.15) {
-    if (okeyPlayerDiscardTile(fromSlotIdx, false)) return;
-  }
-
-  // ٣. پشکنینی دانان لەناو ٢٨ خانەکەی تەختەکەدا (بە خلیسکانی ئۆتۆماتیکی)
+  // ٢. پشکنینی دانان لەناو ٢٨ خانەکەی تەختەکەدا
   let bestSlot = null;
   let minDist = Infinity;
   for (const s of layout.slotCoords) {
@@ -1460,15 +1547,22 @@ function handleTileDrop(fromSlotIdx, dropX, dropY) {
 
   if (bestSlot && bestSlot.idx !== fromSlotIdx) {
     insertTileWithMagneticShift(fromSlotIdx, bestSlot.idx);
-  } else {
-    playOkeyTileSound('clack');
+    renderFullScene(false, true);
+    return;
   }
 
+  // ٣. ئەگەر پوولەکەت لە ناوەڕاستی مێزەکە بەرەڵا کرد (بۆ یاریپێکردن)، بە سووڕانەوەیەکی نەرم دەگەڕێتەوە شوێنەکەی!
+  if (dropY < layout.rackY - 25) {
+    triggerRackTileSomersault(sprite, dropX, dropY);
+    return;
+  }
+
+  playOkeyTileSound('clack');
   renderFullScene(false, true);
 }
 
 // ============================================================================
-// ٨. ئەنیمەیشنەکانی تەقڵەلێدانی فڕێدان و ڕاکێشان بە 120FPS
+// ٨. ئەنیمەیشنەکانی فڕێدان و ڕاکێشان بە 120FPS
 // ============================================================================
 function animateSomersaultThrow(tile, fromX, fromY, toX, toY, onComplete) {
   const sp = new PIXI.Sprite(getTileTex(tile));
@@ -1490,7 +1584,7 @@ function animateSomersaultThrow(tile, fromX, fromY, toX, toY, onComplete) {
       addPixiTween({
         target: sp,
         from: { x: midX, y: midY, width: layout.tileW * 0.14, height: layout.tileH * 1.18, rotation: Math.PI },
-        to: { x: toX, y: toY, width: layout.tileW * 0.82, height: layout.tileH * 0.82, rotation: Math.PI * 2 },
+        to: { x: toX, y: toY, width: layout.tileW * 0.84, height: layout.tileH * 0.84, rotation: Math.PI * 2 },
         duration: 115,
         onComplete: () => {
           sp.destroy();
@@ -1678,12 +1772,12 @@ function okeyPlayerDrawFromDeck() {
   });
 }
 
-function okeyPlayerTakeRightDiscard() {
+function okeyPlayerTakeLeftDiscard() {
   if (okeyState.isAnimating || okeyState.turn !== 0 || okeyState.phase !== 'draw') return;
-  const rightBot = okeyState.bots[2];
-  if (rightBot.discards.length === 0) return;
+  const leftBot = okeyState.bots[2];
+  if (leftBot.discards.length === 0) return;
 
-  const taken = rightBot.discards.pop();
+  const taken = leftBot.discards.pop();
   const targetSlotIdx = getFirstEmptySlotIndex();
 
   okeyState.isAnimating = true;
@@ -1691,7 +1785,7 @@ function okeyPlayerTakeRightDiscard() {
   renderFullScene(false, false);
   playOkeyTileSound('whoosh');
 
-  animateFlipAndFlyToRack(taken, layout.rightDiscardPos.x, layout.rightDiscardPos.y, targetSlotIdx, () => {
+  animateFlipAndFlyToRack(taken, layout.leftPickupPos.x, layout.leftPickupPos.y, targetSlotIdx, () => {
     okeyState.rackSlots[targetSlotIdx] = taken;
     okeyState.phase = 'play';
     okeyState.isAnimating = false;
@@ -1710,32 +1804,19 @@ function okeyTryInstantKonkanBtn() {
   for (let i = 0; i < RACK_TOTAL_SLOTS; i++) {
     const t = okeyState.rackSlots[i];
     if (t && evaluatePlayerRack(t.uid).canWin14) {
-      okeyPlayerDiscardTile(i, true);
+      okeyPlayerDiscardTile(i);
       return;
     }
   }
   updateTopHudStatus('هێشتا ١٤ پوولەکەت نەبوونەتە سێت!');
 }
 
-function okeyPlayerDiscardTile(slotIdx, isFinishingDrop = false) {
+function okeyPlayerDiscardTile(slotIdx) {
   if (okeyState.isAnimating || okeyState.turn !== 0 || okeyState.phase !== 'play') return false;
   const tile = okeyState.rackSlots[slotIdx];
   if (!tile) return false;
 
   const checkWithoutThis = evaluatePlayerRack(tile.uid);
-  if (isFinishingDrop) {
-    if (!checkWithoutThis.canWin14) {
-      updateTopHudStatus('هێشتا ١٤ پوول نەبوونەتە سێت!');
-      return false;
-    }
-    okeyState.rackSlots[slotIdx] = null;
-    okeyState.winner = 'player';
-    playOkeyTileSound('win');
-    renderFullScene(false, false);
-    showOkeyWinModal(true, 'پیرۆزە! هەموو ١٤ پوولەکەت کردە سێتی تەواو و بە کۆنکان بردتەوە!');
-    return true;
-  }
-
   const slotInfo = layout.slotCoords[slotIdx];
   okeyState.rackSlots[slotIdx] = null;
   okeyState.isAnimating = true;
@@ -1747,19 +1828,19 @@ function okeyPlayerDiscardTile(slotIdx, isFinishingDrop = false) {
     tile,
     slotInfo.cx,
     slotInfo.cy,
-    layout.leftDiscardPos.x,
-    layout.leftDiscardPos.y,
+    layout.discardBoxPos.x,
+    layout.discardBoxPos.y,
     () => {
       okeyState.myDiscards.push(tile);
       okeyState.isAnimating = false;
       playOkeyTileSound('clack');
 
       evaluatePlayerRack();
-      if (okeyState.isAllValidToWin) {
+      if (checkWithoutThis.canWin14 || okeyState.isAllValidToWin) {
         okeyState.winner = 'player';
         playOkeyTileSound('win');
         renderFullScene(false, false);
-        showOkeyWinModal(true, 'ئۆکەی شاهانە! هەموو پوولەکانت کردە سێتی تەواو!');
+        showOkeyWinModal(true, 'ئۆکەی شاهانە! هەموو ١٤ پوولەکەت کردە سێتی تەواو و یارییەکەت بردەوە!');
         return;
       }
 
