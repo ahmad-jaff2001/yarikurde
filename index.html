@@ -577,12 +577,12 @@
             }, 2500);
         }
 function openGame(fileUrl, gameName) {
-            if (fileUrl === 'ludo.html' || fileUrl === 'chess.html' || fileUrl === 'domino.html' || fileUrl === 'okay.html') {
-                window.location.href = fileUrl;
-            } else {
-                showMessage(`ئامادەکردنی یاری ${gameName}...`);
-            }
-        }
+    if (fileUrl === 'ludo.html' || fileUrl === 'chess.html' || fileUrl === 'domino.html' || fileUrl === 'okay.html' || fileUrl === 'halo-game.html') {
+        window.location.href = fileUrl;
+    } else {
+        showMessage(`ئامادەکردنی یاری ${gameName}...`);
+    }
+}
 
         function setActiveNav(element, tabName) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
