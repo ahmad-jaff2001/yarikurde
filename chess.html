@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شەترەنجی شاهانە | یاری کوردی</title>
     
-    <!-- فۆنت، ئایکۆن، Tailwind و Phaser 3 -->
+    <!-- فۆنت، ئایکۆن، Tailwind و PixiJS v7 (120FPS) -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.4.0/pixi.min.js"></script>
 
     <style>
         :root {
@@ -31,7 +31,7 @@
 
         body {
             background: linear-gradient(to bottom, rgba(5, 3, 15, 0.72), rgba(5, 3, 15, 0.96)), 
-                        url('images.png/background.png') no-repeat center top / cover fixed;
+                        url('images.png/background.png') no-repeat center top / cover;
             background-color: var(--bg-dark);
             color: var(--text-main);
             min-height: 100vh;
@@ -48,7 +48,6 @@
             min-height: 100vh;
         }
 
-        /* بەشی سەرەوە */
         .top-bar {
             display: flex;
             justify-content: space-between;
@@ -70,6 +69,7 @@
             align-items: center;
             gap: 8px;
             transition: 0.2s;
+            cursor: pointer;
         }
 
         .back-btn:active { transform: scale(0.95); }
@@ -84,7 +84,6 @@
             font-weight: 800;
         }
 
-        /* پانێڵی ئامادەکاری پێش یاری */
         .setup-card {
             background: var(--card-bg);
             backdrop-filter: blur(16px);
@@ -115,7 +114,27 @@
 
         .gold-btn:active { transform: scale(0.97); }
 
-        /* پانێڵی یاریزانەکان */
+        .online-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            font-weight: 900;
+            border-radius: 18px;
+            padding: 14px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .online-btn:active { transform: scale(0.97); }
+
         .player-bar {
             background: var(--card-bg);
             backdrop-filter: blur(12px);
@@ -139,7 +158,6 @@
             letter-spacing: 1px;
         }
 
-        /* چوارچێوەی تەختەی شەترەنج */
         .board-frame {
             width: 100%;
             aspect-ratio: 1 / 1;
@@ -157,6 +175,13 @@
             border-radius: 16px;
             overflow: hidden;
             background: #120d29;
+            position: relative;
+        }
+
+        #chessBoard {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
         }
 
         #chessBoard canvas {
@@ -165,7 +190,6 @@
             height: 100% !important;
         }
 
-        /* مۆداڵی کۆتایی یاری */
         .modal-backdrop {
             position: fixed;
             inset: 0;
@@ -199,19 +223,19 @@
                 <i class="fa-solid fa-arrow-right"></i>
                 <span>سەرەکی</span>
             </a>
-            <div class="game-badge">شەترەنجی شاهانە ♔</div>
+            <div class="game-badge">شەترەنج 120FPS ♔</div>
             <button onclick="clearArrows()" class="back-btn" style="padding: 8px 12px;" title="سڕینەوەی سەهمەکان">
                 <i class="fa-solid fa-eraser text-yellow-400"></i>
             </button>
         </header>
 
-        <!-- ١. پانێڵی هەڵبژاردنی کات و ئاست پێش دەستپێکردن -->
+        <!-- ١. پانێڵی ئامادەکاری پێش یاری -->
         <div id="chessSetupPanel" class="setup-card">
             <div class="text-center mb-5">
                 <div class="w-16 h-16 mx-auto mb-3 rounded-2xl flex items-center justify-center text-3xl" style="background: var(--gold-gradient); color: #1a0f00;">
                     <i class="fa-solid fa-chess-king"></i>
                 </div>
-                <h2 class="text-xl font-black text-white">ئامادەکاری یاری شەترەنج</h2>
+                <h2 class="text-xl font-black text-white">شەترەنجی شاهانە (PixiJS 120FPS)</h2>
                 <p class="text-xs text-slate-300 mt-1">کاتی یاری و ئاستی زیرەکی هەڵبژێرە</p>
             </div>
 
@@ -229,18 +253,24 @@
                 </button>
             </div>
 
-            <!-- ئاستی بۆت -->
-            <label class="block text-xs font-bold text-purple-300 mb-2">🤖 ئاستی زیرەکی بەرامبەر:</label>
-            <select id="botLevelSelect" class="w-full bg-[#0d1933] text-white text-sm font-bold p-3 rounded-xl border border-purple-500/40 mb-6 outline-none">
-                <option value="1">ئاستی سەرەتایی (ئاسان)</option>
-                <option value="2" selected>ئاستی مامناوەند (پڕۆفیشناڵ)</option>
-                <option value="3">ئاستی مامۆستا (زۆر بەهێز)</option>
+            <!-- دوگمەی یاری ئۆنڵاین -->
+            <button onclick="openChessOnlineLobby()" class="online-btn">
+                <i class="fa-solid fa-globe"></i>
+                <span>یاری ئۆنڵاین (لەگەڵ هاوڕێ)</span>
+            </button>
+
+            <!-- ٣ ئاستی بۆت -->
+            <label class="block text-xs font-bold text-purple-300 mb-2 mt-3">🤖 ئاستی زیرەکی بۆت (٣ ئاست):</label>
+            <select id="botLevelSelect" class="w-full bg-[#0d1933] text-white text-sm font-bold p-3 rounded-xl border border-purple-500/40 mb-4 outline-none">
+                <option value="1">🟢 ئاستی لاواز (سەرەتایی - 800 Elo)</option>
+                <option value="2" selected>🟡 ئاستی ناوەند (پڕۆفیشناڵ - 1500 Elo)</option>
+                <option value="3">🔥 ئاستی زۆر بەهێز (Stockfish - 2500+ Elo)</option>
             </select>
 
-            <!-- دوگمەی دەستپێکردن -->
+            <!-- دوگمەی دەستپێکردن لەگەڵ بۆت -->
             <button onclick="startBotGame()" class="gold-btn">
                 <i class="fa-solid fa-play"></i>
-                <span>دەستپێکردنی یاری</span>
+                <span>یاری لەگەڵ بۆت</span>
             </button>
         </div>
 
@@ -249,11 +279,11 @@
             <!-- یاریزانی بەرامبەر -->
             <div class="player-bar">
                 <div class="flex items-center gap-2.5">
-                    <div id="oppAvatar" class="w-10 h-10 rounded-xl bg-purple-900/60 border border-purple-400/50 flex items-center justify-center text-lg">🤖</div>
+                    <div id="oppAvatar" class="w-10 h-10 rounded-xl bg-purple-900/60 border border-purple-400/50 flex items-center justify-center text-lg overflow-hidden">🤖</div>
                     <div>
                         <div class="flex items-center gap-1.5">
-                            <span id="oppName" class="text-sm font-extrabold">بۆتی YariKurdi</span>
-                            <span id="oppEloBadge" class="text-[11px] text-yellow-400 font-bold">(1300)</span>
+                            <span id="oppName" class="text-sm font-extrabold">Stockfish AI</span>
+                            <span id="oppEloBadge" class="text-[11px] text-yellow-400 font-bold">(2500)</span>
                         </div>
                         <span id="turnIndicator" class="text-xs font-bold text-yellow-300">نۆرەی سپییە</span>
                     </div>
@@ -261,7 +291,7 @@
                 <div id="oppClock" class="clock-box">03:00</div>
             </div>
 
-            <!-- تەختەی شەترەنج -->
+            <!-- تەختەی شەترەنج (PixiJS 120FPS) -->
             <div class="board-frame">
                 <div id="boardWrapper">
                     <div id="chessBoard"></div>
@@ -271,10 +301,10 @@
             <!-- یاریزانی خۆت -->
             <div class="player-bar">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black" style="background: var(--gold-gradient); color: #1a0f00;">♔</div>
+                    <div id="selfAvatar" class="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-black overflow-hidden" style="background: var(--gold-gradient); color: #1a0f00;">♔</div>
                     <div>
-                        <div class="text-sm font-extrabold">تۆ (یاری کوردی)</div>
-                        <div class="text-[11px] text-slate-400">داشە سپییەکان</div>
+                        <div id="selfName" class="text-sm font-extrabold">تۆ (یاری کوردی)</div>
+                        <div id="selfColorLabel" class="text-[11px] text-slate-400">داشە سپییەکان</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -306,7 +336,12 @@
         </div>
     </div>
 
-    <!-- دەنگە کاریگەرەکانی شەترەنج + مەکینەی یارییەکە -->
+    <!-- Firebase SDK + سێرڤەری ئۆنڵاین -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="online-engine.js"></script>
+
+    <!-- دەنگە کاریگەرەکانی شەترەنج + مەکینەی PixiJS 120FPS -->
     <script>
         function playChessSound(type) {
             try {
@@ -314,16 +349,16 @@
                 const now = ctx.currentTime;
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.type = type === 'check' ? 'sawtooth' : 'sine';
-                osc.frequency.setValueAtTime(type === 'capture' ? 280 : (type === 'check' ? 540 : 420), now);
-                osc.frequency.exponentialRampToValueAtTime(type === 'capture' ? 120 : 210, now + 0.08);
+                osc.type = type === 'check' ? 'sawtooth' : 'triangle';
+                osc.frequency.setValueAtTime(type === 'capture' ? 280 : (type === 'check' ? 560 : 440), now);
+                osc.frequency.exponentialRampToValueAtTime(type === 'capture' ? 110 : 190, now + 0.075);
                 gain.gain.setValueAtTime(0.22, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.085);
                 osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(now); osc.stop(now + 0.1);
+                osc.start(now); osc.stop(now + 0.09);
             } catch (e) {}
         }
-       function escapeHtml(str) {
+        function escapeHtml(str) {
             const div = document.createElement('div');
             div.textContent = str;
             return div.innerHTML;
