@@ -780,7 +780,11 @@ function syncPlayerRackSprites(animateDeal = false, animateSlide = false) {
   bracketsLayer.addChild(frame);
 }
 
-sprite.on('pointerdown', (e) => {
+function setupTileDragAndDoubleTap(sprite) {
+  let dragging = false;
+  let lastTapTime = 0;
+
+  sprite.on('pointerdown', (e) => {
     if (okeyState.isAnimating) return;
 
     const now = performance.now();
@@ -795,18 +799,17 @@ sprite.on('pointerdown', (e) => {
     fxLayer.addChild(sprite);
     sprite.width = layout.tileW * 1.12;
     sprite.height = layout.tileH * 1.12;
-    
-    // چارەسەری شوێنی پەنجە لەسەر مۆبایل
     const pos = e.data.getLocalPosition(sprite.parent);
     sprite.position.set(pos.x, pos.y);
   });
 
- sprite.on('globalpointermove', (e) => {
+  sprite.on('globalpointermove', (e) => {
     if (!dragging || okeyState.isAnimating) return;
     const pos = e.data.getLocalPosition(sprite.parent);
     sprite.position.set(pos.x, pos.y);
-});
-  const endDrag = (e) => {
+  });
+
+  const endDrag = () => {
     if (!dragging) return;
     dragging = false;
     sprite.width = layout.tileW;
@@ -818,7 +821,6 @@ sprite.on('pointerdown', (e) => {
   sprite.on('pointerup', endDrag);
   sprite.on('pointerupoutside', endDrag);
 }
-
 function handleTileDrop(fromSlotIdx, dropX, dropY) {
   // ١. پشکنینی فڕێدان بۆ خانەی کۆنکان لە ناوەڕاست
   const distFinish = Math.hypot(dropX - layout.finishPos.x, dropY - layout.finishPos.y);
