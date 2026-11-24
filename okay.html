@@ -16,15 +16,18 @@
             font-family: 'Vazirmatn', sans-serif;
             user-select: none;
             -webkit-user-select: none;
+            -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
         }
         html, body {
-            width: 100vw;
-            height: 100vh;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
-            background-color: #0b041c;
+            background-color: #090316;
             background-image:
-                radial-gradient(circle at 50% 45%, rgba(46, 16, 101, 0.35) 0%, rgba(7, 3, 19, 0.72) 100%),
+                radial-gradient(circle at 50% 42%, rgba(59, 7, 100, 0.28) 0%, rgba(5, 2, 14, 0.78) 100%),
                 url('images.png/okay-bg.png');
             background-size: cover;
             background-position: center center;
@@ -35,30 +38,56 @@
         #okeyPixiStage {
             position: fixed;
             inset: 0;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             z-index: 10;
+            touch-action: none;
         }
         #okeyPixiStage canvas {
             display: block;
             width: 100% !important;
             height: 100% !important;
+            touch-action: none !important;
         }
         .royal-glass {
-            background: rgba(15, 7, 35, 0.86);
+            background: rgba(14, 6, 32, 0.88);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(250, 204, 21, 0.45);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75);
+            border: 1.5px solid rgba(250, 204, 21, 0.48);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
         }
         .gold-btn {
-            background: linear-gradient(135deg, #ffd000 0%, #ff8800 100%);
-            color: #1a0f00;
-            box-shadow: 0 4px 14px rgba(255, 184, 0, 0.4);
+            background: linear-gradient(135deg, #ffe033 0%, #f59e0b 55%, #d97706 100%);
+            color: #1a0c00;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.45);
         }
         .purple-btn {
             background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
             border: 1px solid rgba(250, 204, 21, 0.45);
+            box-shadow: 0 4px 14px rgba(76, 29, 149, 0.5);
+        }
+        /* بچووککردنەوەی خۆکارانەی دوگمەکان لەسەر شاشەی مۆبایل تا شوێنی تەختەکە نەگرن */
+        @media screen and (max-height: 480px) {
+            .hud-top {
+                top: 4px !important;
+                left: 8px !important;
+                right: 8px !important;
+                transform: scale(0.88);
+                transform-origin: top center;
+            }
+            .hud-bottom-right {
+                bottom: 6px !important;
+                right: 6px !important;
+                transform: scale(0.84);
+                transform-origin: bottom right;
+            }
+            .hud-bottom-left {
+                bottom: 6px !important;
+                left: 6px !important;
+                transform: scale(0.84);
+                transform-origin: bottom left;
+            }
         }
         #portraitWarning {
             display: none;
@@ -79,16 +108,16 @@
         </div>
         <h2 class="text-xl font-black text-amber-400 mb-2">مۆبایلەکەت بخەرە سەر باری لار</h2>
         <p class="text-xs text-purple-200 max-w-xs leading-relaxed mb-5">
-            یاری ئۆکەی شاهانە بۆ شاشەی پانی (Landscape) دیزاین کراوە تا تەختە دوو-ڕیزییەکە و پوولەکان بە تەواوی شاشەکە پڕ بکەنەوە.
+            بۆ ئەوەی تەختە دوو-ڕیزییەکە و هەموو پوولەکان بە گەورەیی و ڕوونی ببینیت، تکایە مۆبایلەکەت بسووڕێنە.
         </p>
         <button onclick="document.getElementById('portraitWarning').classList.remove('active-warn')"
-            class="px-5 py-2.5 rounded-xl purple-btn text-xs font-bold text-amber-200">
-            بەردەوامبوون
+            class="px-6 py-2.5 rounded-xl gold-btn text-xs font-black">
+            چوونە ناو یاری
         </button>
     </div>
 
     <!-- شریتی سەرەوەی کۆنترۆڵەکان -->
-    <div dir="rtl" class="fixed top-2 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
+    <div dir="rtl" class="hud-top fixed top-2.5 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
         <!-- لای ڕاست: دەرچوون + پڕۆفایلی تۆ -->
         <div class="flex items-center gap-2 pointer-events-auto">
             <a href="index.html" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-amber-400 hover:scale-105 active:scale-95 transition">
@@ -109,8 +138,8 @@
             </div>
         </div>
 
-        <!-- ناوەڕاست: نۆرە و ڕێنمایی خێرا -->
-        <div id="turnBanner" class="royal-glass px-3.5 py-1 rounded-full text-[11px] font-extrabold text-amber-300 shadow-lg pointer-events-auto truncate max-w-[46vw]">
+        <!-- ناوەڕاست: نۆرە و ڕێنمایی زیندوو -->
+        <div id="turnBanner" class="royal-glass px-4 py-1.5 rounded-full text-[11px] font-extrabold text-amber-300 shadow-lg pointer-events-auto truncate max-w-[48vw]">
             🟡 نۆرەی تۆیە: پوولێک فڕێ بدە بۆ لای چەپ
         </div>
 
@@ -119,7 +148,7 @@
             <button onclick="toggleFullScreen()" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-purple-200 hover:text-amber-400 transition">
                 <i class="fa-solid fa-expand"></i>
             </button>
-            <button onclick="okeyStartNewRound()" class="px-3 py-1.5 rounded-xl royal-glass text-[11px] font-black text-amber-300 hover:bg-purple-900/60 transition flex items-center gap-1.5">
+            <button onclick="okeyStartNewRound()" class="px-3 py-1.5 rounded-xl royal-glass text-[11px] font-black text-amber-300 hover:bg-purple-900/60 active:scale-95 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span>دەستێکی نوێ</span>
             </button>
@@ -127,7 +156,7 @@
     </div>
 
     <!-- دوگمەکانی لای ڕاستی تەختەکە -->
-    <div dir="rtl" class="fixed bottom-3 right-2.5 z-30 flex flex-col gap-1.5 pointer-events-auto">
+    <div dir="rtl" class="hud-bottom-right fixed bottom-3 right-2.5 z-30 flex flex-col gap-1.5 pointer-events-auto">
         <div class="royal-glass rounded-xl px-2.5 py-1 text-center">
             <div class="text-[9px] text-purple-200 font-bold">پوولی ناو سێت</div>
             <div id="validTilesCounter" dir="ltr" class="text-xs font-black text-emerald-400">0 / 14</div>
@@ -143,7 +172,7 @@
     </div>
 
     <!-- دوگمەی یاسای ئۆکەی لە خوارەوەی چەپ -->
-    <div dir="rtl" class="fixed bottom-3 left-2.5 z-30 pointer-events-auto">
+    <div dir="rtl" class="hud-bottom-left fixed bottom-3 left-2.5 z-30 pointer-events-auto">
         <button onclick="document.getElementById('rulesModal').classList.remove('hidden')" class="px-3 py-2 rounded-xl royal-glass text-amber-300 text-[11px] font-bold active:scale-95 transition flex items-center gap-1.5">
             <i class="fa-solid fa-circle-question"></i>
             <span>یاسا</span>
@@ -175,16 +204,16 @@
     <div id="rulesModal" dir="rtl" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="royal-glass rounded-3xl p-5 max-w-md w-full text-right flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-amber-400/30 pb-2">
-                <h3 class="text-sm font-black text-amber-400">یاسا و چۆنیەتی یاریکردنی ئۆکەی</h3>
+                <h3 class="text-sm font-black text-amber-400">یاسا و کۆنترۆڵی خێرای مۆبایل و کۆمپیوتەر</h3>
                 <button onclick="document.getElementById('rulesModal').classList.add('hidden')" class="text-rose-400 text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <ul class="text-xs text-purple-100 space-y-2 leading-relaxed list-disc pr-4">
-                <li><strong>ڕاکێشانی پوول:</strong> لە نۆرەی خۆتدا کلیک لە کۆمەڵە پوولی ناوەڕاست یان پوولی فڕێدراوی لای ڕاست بکە.</li>
-                <li><strong>پوولی ئۆکەی (جۆکەر):</strong> ژمارەی سەروتر لە پوولە پیشاندەرەکەی ناوەڕاست لە هەمان ڕەنگ دەبێتە <strong>ئۆکەی (جۆکەر)</strong> و لە شوێنی هەموو پوولێک دادەنرێت.</li>
-                <li><strong>سێت و زنجیرە:</strong> هەر ٣ پوول یان زیاتر لە هەمان ژمارە بە ڕەنگی جیاواز (7-7-7) یان بەدوای یەکدا لە هەمان ڕەنگ (9-10-11) کە پێکەوە بن، چوارچێوەی سەوزیان بۆ دروست دەبێت.</li>
-                <li><strong>فڕێدان و کۆنکان:</strong> لە کاتی یاریکردندا پوولی زیادە ڕابکێشە بۆ خانەی <strong>فڕێدان</strong> لە لای چەپ (یان دووجار کلیکی لێ بکە). کاتێک هەر ١٤ پوولەکەت دەبنە سێت، ١٥ـەمین پوولەکەت بخەرە ناو خانەی <strong>کۆنکان</strong> لە ناوەڕاست بۆ بردنەوە!</li>
+                <li><strong>ڕاکێشانی پوول:</strong> لە نۆرەی خۆتدا پەنجە بنێ بە کۆمەڵە پوولەکەی ناوەڕاست یان پوولی فڕێدراوی لای ڕاست.</li>
+                <li><strong>گواستنەوە لەسەر مۆبایل و کۆمپیوتەر:</strong> دەتوانیت پوول بە پەنجە ڕابکێشیت، یان <strong>یەک جار پەنجە بنێیت بە پوولێکدا</strong> بۆ هەڵبژاردنی و پاشان پەنجە بنێیت بە هەر خانەیەکی تەختەکە یان خانەی فڕێدان بۆ گواستنەوەی!</li>
+                <li><strong>فڕێدانی خێرا:</strong> پوولەکە ڕابکێشە بۆ خانەی <strong>فڕێدان</strong> لە لای چەپ، یان <strong>دوو جار لەسەریەک</strong> پەنجەی پێدا بنێ.</li>
+                <li><strong>پوولی ئۆکەی (👑):</strong> ژمارەی سەروتر لە پوولە پیشاندەرەکەی ناوەڕاست لە هەمان ڕەنگ دەبێتە <strong>ئۆکەی</strong> و نیشانەی تاجی زێڕینی لەسەر دەردەکەوێت.</li>
             </ul>
         </div>
     </div>
