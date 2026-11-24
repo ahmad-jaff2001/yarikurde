@@ -180,9 +180,8 @@ window.YariOnline = (function () {
         }
     }
 
-    async function startMatch(initialState = null) {
+   async function startMatch(initialState = null) {
         if (!currentRoomRef || !isHost) return;
-        matchStarted = true;
         currentRoomRef.onDisconnect().cancel();
         const me = getPlayer();
         currentRoomRef.child(`players/${me.uid}/online`).onDisconnect().set(false);
@@ -191,7 +190,6 @@ window.YariOnline = (function () {
         if (initialState) updates.state = initialState;
         await currentRoomRef.update(updates);
     }
-
     async function updateState(newState) {
         if (!currentRoomRef) return;
         await currentRoomRef.child('state').update(newState);
