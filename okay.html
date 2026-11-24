@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="ku">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>ئۆکەی شاهانە | یاری کوردی</title>
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@500;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -19,28 +19,47 @@
             -webkit-tap-highlight-color: transparent;
         }
         html, body {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            background-color: #060312;
+            background-color: #0b041c;
+            background-image:
+                radial-gradient(circle at 50% 45%, rgba(46, 16, 101, 0.35) 0%, rgba(7, 3, 19, 0.72) 100%),
+                url('images.png/okay-bg.png');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
             color: #ffffff;
+            touch-action: none;
+        }
+        #okeyPixiStage {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+        }
+        #okeyPixiStage canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
         .royal-glass {
-            background: rgba(16, 9, 38, 0.82);
+            background: rgba(15, 7, 35, 0.86);
             backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(255, 184, 0, 0.45);
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.75);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(250, 204, 21, 0.45);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75);
         }
         .gold-btn {
             background: linear-gradient(135deg, #ffd000 0%, #ff8800 100%);
             color: #1a0f00;
-            box-shadow: 0 4px 16px rgba(255, 184, 0, 0.4);
+            box-shadow: 0 4px 14px rgba(255, 184, 0, 0.4);
         }
         .purple-btn {
             background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
-            border: 1px solid rgba(250, 204, 21, 0.4);
+            border: 1px solid rgba(250, 204, 21, 0.45);
         }
-        /* ئاگادارکردنەوەی سووڕاندنی مۆبایل بۆ باری لار */
         #portraitWarning {
             display: none;
         }
@@ -51,121 +70,121 @@
         }
     </style>
 </head>
-<body class="relative w-screen h-screen overflow-hidden">
+<body>
 
-    <!-- ئاگادارکردنەوەی باری لار لەسەر مۆبایل -->
-    <div id="portraitWarning" class="active-warn fixed inset-0 z-[100] bg-[#070414]/95 backdrop-blur-xl flex-col items-center justify-center p-6 text-center">
+    <!-- ئاگادارکردنەوەی سووڕاندنی مۆبایل بۆ باری لار -->
+    <div id="portraitWarning" dir="rtl" class="active-warn fixed inset-0 z-[100] bg-[#070312]/95 backdrop-blur-xl flex-col items-center justify-center p-6 text-center">
         <div class="w-20 h-20 rounded-3xl royal-glass flex items-center justify-center text-4xl text-amber-400 mb-4 animate-bounce">
             <i class="fa-solid fa-mobile-screen-button rotate-90"></i>
         </div>
-        <h2 class="text-xl font-black text-amber-400 mb-2">تکایە مۆبایلەکەت بخەرە سەر باری لار</h2>
+        <h2 class="text-xl font-black text-amber-400 mb-2">مۆبایلەکەت بخەرە سەر باری لار</h2>
         <p class="text-xs text-purple-200 max-w-xs leading-relaxed mb-5">
-            یاری ئۆکەی شاهانە بە تەختەی دوو-ڕیزی و ٤ یاریزانەوە بۆ شاشەی پانی (Landscape) دیزاین کراوە تا بە ئاسانی یاری بە پوولەکان بکەیت.
+            یاری ئۆکەی شاهانە بۆ شاشەی پانی (Landscape) دیزاین کراوە تا تەختە دوو-ڕیزییەکە و پوولەکان بە تەواوی شاشەکە پڕ بکەنەوە.
         </p>
         <button onclick="document.getElementById('portraitWarning').classList.remove('active-warn')"
             class="px-5 py-2.5 rounded-xl purple-btn text-xs font-bold text-amber-200">
-            بەردەوامبوون بەم شێوەیە
+            بەردەوامبوون
         </button>
     </div>
 
-    <!-- شریتی سەرەوەی یاریزان و دوگمەکانی کۆنترۆڵ (HUD) -->
-    <div class="fixed top-2 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
-        <!-- لای ڕاست: گەڕانەوە + پڕۆفایلی یاریزان -->
+    <!-- شریتی سەرەوەی کۆنترۆڵەکان -->
+    <div dir="rtl" class="fixed top-2 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
+        <!-- لای ڕاست: دەرچوون + پڕۆفایلی تۆ -->
         <div class="flex items-center gap-2 pointer-events-auto">
-            <a href="index.html" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-amber-400 hover:scale-105 active:scale-95 transition" title="گەڕانەوە">
+            <a href="index.html" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-amber-400 hover:scale-105 active:scale-95 transition">
                 <i class="fa-solid fa-right-from-bracket"></i>
             </a>
-            <div class="royal-glass rounded-2xl px-3 py-1 flex items-center gap-2.5">
-                <img src="images.png/gamer-hero.png" onerror="this.src='images.png/controller.png'" class="w-8 h-8 rounded-full object-cover border border-amber-400" alt="Me">
+            <div class="royal-glass rounded-2xl px-3 py-1 flex items-center gap-2">
+                <img src="images.png/gamer-hero.png" onerror="this.src='images.png/controller.png'" class="w-7 h-7 rounded-full object-cover border border-amber-400" alt="Player">
                 <div>
-                    <div class="flex items-center gap-1 text-xs font-black text-white">
+                    <div class="flex items-center gap-1 text-[11px] font-black text-white leading-tight">
                         <span>تۆ (شاهانە)</span>
-                        <i class="fa-solid fa-crown text-amber-400 text-[10px]"></i>
+                        <i class="fa-solid fa-crown text-amber-400 text-[9px]"></i>
                     </div>
-                    <div class="text-[10px] text-amber-300 font-bold flex items-center gap-1">
+                    <div class="text-[10px] text-amber-300 font-bold flex items-center gap-1 leading-tight">
                         <i class="fa-solid fa-coins"></i>
-                        <span id="myScoreBadge">12,450</span>
+                        <span dir="ltr">12,450</span>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ناوەڕاست: پەیامی نۆرە و دۆخی یاری -->
-        <div id="turnBanner" class="royal-glass px-4 py-1.5 rounded-full text-xs font-black text-amber-300 shadow-lg pointer-events-auto">
-            🟢 نۆرەی تۆیە: پوولێک لە ناوەڕاست یان فڕێدراوی لای ڕاست هەڵبگرە
+        <!-- ناوەڕاست: نۆرە و ڕێنمایی خێرا -->
+        <div id="turnBanner" class="royal-glass px-3.5 py-1 rounded-full text-[11px] font-extrabold text-amber-300 shadow-lg pointer-events-auto truncate max-w-[46vw]">
+            🟡 نۆرەی تۆیە: پوولێک فڕێ بدە بۆ لای چەپ
         </div>
 
-        <!-- لای چەپ: دەنگ + فول سکرین + یاری نوێ -->
-        <div class="flex items-center gap-2 pointer-events-auto">
-            <button onclick="toggleFullScreen()" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-purple-200 hover:text-amber-400 transition" title="پڕکردنی شاشە">
+        <!-- لای چەپ: فول سکرین + دەستێکی نوێ -->
+        <div class="flex items-center gap-1.5 pointer-events-auto">
+            <button onclick="toggleFullScreen()" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-purple-200 hover:text-amber-400 transition">
                 <i class="fa-solid fa-expand"></i>
             </button>
-            <button onclick="okeyStartNewRound()" class="px-3 py-2 rounded-xl royal-glass text-xs font-black text-amber-300 hover:bg-purple-900/60 transition flex items-center gap-1.5">
+            <button onclick="okeyStartNewRound()" class="px-3 py-1.5 rounded-xl royal-glass text-[11px] font-black text-amber-300 hover:bg-purple-900/60 transition flex items-center gap-1.5">
                 <i class="fa-solid fa-rotate-right"></i>
                 <span>دەستێکی نوێ</span>
             </button>
         </div>
     </div>
 
-    <!-- دوگمەکانی لای ڕاستی تەختەکە (ڕیزکردن + ژمێرەری سێت + کۆنکان) -->
-    <div class="fixed bottom-3 right-3 z-30 flex flex-col gap-2 pointer-events-auto">
-        <div class="royal-glass rounded-2xl px-3 py-1.5 text-center">
-            <div class="text-[10px] text-purple-200 font-bold">پوولی ناو سێت</div>
-            <div id="validTilesCounter" class="text-sm font-black text-amber-400">0 / 14</div>
+    <!-- دوگمەکانی لای ڕاستی تەختەکە -->
+    <div dir="rtl" class="fixed bottom-3 right-2.5 z-30 flex flex-col gap-1.5 pointer-events-auto">
+        <div class="royal-glass rounded-xl px-2.5 py-1 text-center">
+            <div class="text-[9px] text-purple-200 font-bold">پوولی ناو سێت</div>
+            <div id="validTilesCounter" dir="ltr" class="text-xs font-black text-emerald-400">0 / 14</div>
         </div>
-        <button onclick="okeyAutoSortRack('runs')" class="px-3.5 py-2 rounded-xl gold-btn text-xs font-black active:scale-95 transition flex items-center justify-center gap-1.5">
+        <button onclick="okeyAutoSortRack('runs')" class="px-3 py-2 rounded-xl gold-btn text-[11px] font-black active:scale-95 transition flex items-center justify-center gap-1">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
             <span>ڕیزکردن</span>
         </button>
-        <button onclick="okeyAutoSortRack('pairs')" class="px-3.5 py-2 rounded-xl purple-btn text-white text-xs font-bold active:scale-95 transition flex items-center justify-center gap-1.5">
+        <button onclick="okeyAutoSortRack('pairs')" class="px-3 py-1.5 rounded-xl purple-btn text-white text-[11px] font-bold active:scale-95 transition flex items-center justify-center gap-1">
             <i class="fa-solid fa-clone"></i>
             <span>جووتەکان</span>
         </button>
     </div>
 
-    <!-- دوگمەی یارمەتی/یاساکان لە لای چەپ -->
-    <div class="fixed bottom-3 left-3 z-30 flex flex-col gap-2 pointer-events-auto">
-        <button onclick="document.getElementById('rulesModal').classList.remove('hidden')" class="px-3.5 py-2 rounded-xl royal-glass text-amber-300 text-xs font-bold active:scale-95 transition flex items-center gap-1.5">
+    <!-- دوگمەی یاسای ئۆکەی لە خوارەوەی چەپ -->
+    <div dir="rtl" class="fixed bottom-3 left-2.5 z-30 pointer-events-auto">
+        <button onclick="document.getElementById('rulesModal').classList.remove('hidden')" class="px-3 py-2 rounded-xl royal-glass text-amber-300 text-[11px] font-bold active:scale-95 transition flex items-center gap-1.5">
             <i class="fa-solid fa-circle-question"></i>
-            <span>یاسای ئۆکەی</span>
+            <span>یاسا</span>
         </button>
     </div>
 
-    <!-- گۆڕەپانی سەرەکی Phaser 3 -->
-    <div id="okeyPhaserStage" class="w-screen h-screen"></div>
+    <!-- گۆڕەپانی PixiJS 120FPS -->
+    <div id="okeyPixiStage"></div>
 
-    <!-- پەنجەرەی کۆتایی یاری (بردنەوە / دۆڕان) -->
-    <div id="okeyWinModal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+    <!-- پەنجەرەی کۆتایی یاری -->
+    <div id="okeyWinModal" dir="rtl" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
         <div class="royal-glass rounded-3xl p-6 max-w-md w-full text-center flex flex-col items-center gap-3 border-2 border-amber-400">
             <div id="winModalIcon" class="text-5xl">🏆</div>
             <h2 id="winModalTitle" class="text-2xl font-black text-amber-400">ئۆکەی شاهانە!</h2>
             <p id="winModalDesc" class="text-xs text-purple-100 leading-relaxed">هەموو پوولەکانت کردە سێتی تەواو و یارییەکەت بردەوە!</p>
             <div class="flex gap-3 w-full mt-3">
                 <button onclick="document.getElementById('okeyWinModal').classList.add('hidden'); okeyStartNewRound();"
-                    class="flex-1 py-3 rounded-2xl gold-btn font-black text-sm">
+                    class="flex-1 py-2.5 rounded-2xl gold-btn font-black text-sm">
                     یارییەکی نوێ
                 </button>
-                <a href="index.html" class="px-5 py-3 rounded-2xl purple-btn text-white font-bold text-sm flex items-center justify-center">
+                <a href="index.html" class="px-5 py-2.5 rounded-2xl purple-btn text-white font-bold text-sm flex items-center justify-center">
                     سەرەکی
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- پەنجەرەی یاساکان -->
-    <div id="rulesModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <!-- پەنجەرەی یاسای یاری -->
+    <div id="rulesModal" dir="rtl" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
         <div class="royal-glass rounded-3xl p-5 max-w-md w-full text-right flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-amber-400/30 pb-2">
-                <h3 class="text-base font-black text-amber-400">یاسا و چۆنیەتی یاریکردنی ئۆکەی</h3>
+                <h3 class="text-sm font-black text-amber-400">یاسا و چۆنیەتی یاریکردنی ئۆکەی</h3>
                 <button onclick="document.getElementById('rulesModal').classList.add('hidden')" class="text-rose-400 text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <ul class="text-xs text-purple-100 space-y-2 leading-relaxed list-disc pr-4">
-                <li><strong>ڕاکێشانی پوول:</strong> لە نۆرەی خۆتدا کلیک لە کۆمەڵە پوولی ناوەڕاست یان دوایین پوولی فڕێدراوی یاریزانی لای ڕاست بکە.</li>
-                <li><strong>پوولی ئۆکەی (جۆکەر):</strong> ژمارەی سەروتر لە پوولە هەڵگەڕاوەکەی ناوەڕاست لە هەمان ڕەنگ دەبێتە <strong>ئۆکەی (جۆکەر)</strong> و لە شوێنی هەموو پوولێک کار دەکات.</li>
-                <li><strong>سێت و زنجیرە:</strong> هەر ٣ پوول یان زیاتر لە هەمان ژمارە بە ڕەنگی جیاواز (وەک 7-7-7) یان بەدوای یەکدا لە هەمان ڕەنگ (وەک 9-10-11) کە پێکەوە بن و خانەی بەتاڵ لە نێوانیاندا نەبێت، چوارچێوەی سەوز/زێڕینیان بۆ دروست دەبێت.</li>
-                <li><strong>تەواوکردن (کۆنکان):</strong> کاتێک ١٤ پوولەکەت هەمووی دەبێتە سێتی دروست (یان ٧ جووت)، ١٥ـەمین پوولەکەت ڕابکێشە بۆ ناو خانەی <strong>فڕێدان / کۆنکان</strong> لە ناوەڕاستی مێز بۆ بردنەوە!</li>
+                <li><strong>ڕاکێشانی پوول:</strong> لە نۆرەی خۆتدا کلیک لە کۆمەڵە پوولی ناوەڕاست یان پوولی فڕێدراوی لای ڕاست بکە.</li>
+                <li><strong>پوولی ئۆکەی (جۆکەر):</strong> ژمارەی سەروتر لە پوولە پیشاندەرەکەی ناوەڕاست لە هەمان ڕەنگ دەبێتە <strong>ئۆکەی (جۆکەر)</strong> و لە شوێنی هەموو پوولێک دادەنرێت.</li>
+                <li><strong>سێت و زنجیرە:</strong> هەر ٣ پوول یان زیاتر لە هەمان ژمارە بە ڕەنگی جیاواز (7-7-7) یان بەدوای یەکدا لە هەمان ڕەنگ (9-10-11) کە پێکەوە بن، چوارچێوەی سەوزیان بۆ دروست دەبێت.</li>
+                <li><strong>فڕێدان و کۆنکان:</strong> لە کاتی یاریکردندا پوولی زیادە ڕابکێشە بۆ خانەی <strong>فڕێدان</strong> لە لای چەپ (یان دووجار کلیکی لێ بکە). کاتێک هەر ١٤ پوولەکەت دەبنە سێت، ١٥ـەمین پوولەکەت بخەرە ناو خانەی <strong>کۆنکان</strong> لە ناوەڕاست بۆ بردنەوە!</li>
             </ul>
         </div>
     </div>
