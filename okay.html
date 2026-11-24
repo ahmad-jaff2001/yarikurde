@@ -25,13 +25,10 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background-color: #090316;
-            background-image:
-                radial-gradient(circle at 50% 42%, rgba(59, 7, 100, 0.28) 0%, rgba(5, 2, 14, 0.78) 100%),
-                url('images.png/okay-bg.png');
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
+            /* مێزی مەخمەڵی تێکەڵ لە سووری تۆخ و شینی نیلی شاهانە */
+            background:
+                radial-gradient(ellipse at 50% 44%, rgba(153, 27, 75, 0.48) 0%, rgba(30, 27, 75, 0.72) 52%, rgba(9, 13, 34, 0.98) 100%),
+                linear-gradient(135deg, #2a091d 0%, #0d1b3a 50%, #240a22 100%);
             color: #ffffff;
             touch-action: none;
         }
@@ -49,44 +46,25 @@
             height: 100% !important;
             touch-action: none !important;
         }
-        .royal-glass {
-            background: rgba(14, 6, 32, 0.88);
+        .pill-white {
+            background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+            color: #0f172a;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45), inset 0 2px 0 #ffffff;
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(250, 204, 21, 0.48);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
+            border: 1.5px solid rgba(250, 204, 21, 0.45);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
         }
-        .gold-btn {
-            background: linear-gradient(135deg, #ffe033 0%, #f59e0b 55%, #d97706 100%);
-            color: #1a0c00;
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.45);
-        }
-        .purple-btn {
-            background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
-            border: 1px solid rgba(250, 204, 21, 0.45);
-            box-shadow: 0 4px 14px rgba(76, 29, 149, 0.5);
-        }
-        /* بچووککردنەوەی خۆکارانەی دوگمەکان لەسەر شاشەی مۆبایل تا شوێنی تەختەکە نەگرن */
-        @media screen and (max-height: 480px) {
-            .hud-top {
+        @media screen and (max-height: 460px) {
+            .top-hud-bar {
                 top: 4px !important;
                 left: 8px !important;
                 right: 8px !important;
-                transform: scale(0.88);
+                transform: scale(0.86);
                 transform-origin: top center;
-            }
-            .hud-bottom-right {
-                bottom: 6px !important;
-                right: 6px !important;
-                transform: scale(0.84);
-                transform-origin: bottom right;
-            }
-            .hud-bottom-left {
-                bottom: 6px !important;
-                left: 6px !important;
-                transform: scale(0.84);
-                transform-origin: bottom left;
             }
         }
         #portraitWarning {
@@ -102,98 +80,81 @@
 <body>
 
     <!-- ئاگادارکردنەوەی سووڕاندنی مۆبایل بۆ باری لار -->
-    <div id="portraitWarning" dir="rtl" class="active-warn fixed inset-0 z-[100] bg-[#070312]/95 backdrop-blur-xl flex-col items-center justify-center p-6 text-center">
-        <div class="w-20 h-20 rounded-3xl royal-glass flex items-center justify-center text-4xl text-amber-400 mb-4 animate-bounce">
+    <div id="portraitWarning" dir="rtl" class="active-warn fixed inset-0 z-[100] bg-[#080d1e]/95 backdrop-blur-xl flex-col items-center justify-center p-6 text-center">
+        <div class="w-20 h-20 rounded-3xl glass-dark flex items-center justify-center text-4xl text-amber-400 mb-4 animate-bounce">
             <i class="fa-solid fa-mobile-screen-button rotate-90"></i>
         </div>
         <h2 class="text-xl font-black text-amber-400 mb-2">مۆبایلەکەت بخەرە سەر باری لار</h2>
-        <p class="text-xs text-purple-200 max-w-xs leading-relaxed mb-5">
-            بۆ ئەوەی تەختە دوو-ڕیزییەکە و هەموو پوولەکان بە گەورەیی و ڕوونی ببینیت، تکایە مۆبایلەکەت بسووڕێنە.
+        <p class="text-xs text-slate-200 max-w-xs leading-relaxed mb-5">
+            بۆ ئەوەی تەختە و پوولەکان بە گەورەیی و ڕوونی ببینیت، تکایە مۆبایلەکەت بخەرە سەر باری لار (Landscape).
         </p>
         <button onclick="document.getElementById('portraitWarning').classList.remove('active-warn')"
-            class="px-6 py-2.5 rounded-xl gold-btn text-xs font-black">
-            چوونە ناو یاری
+            class="px-6 py-2.5 rounded-full pill-white text-xs font-black">
+            بەردەوامبوون
         </button>
     </div>
 
-    <!-- شریتی سەرەوەی کۆنترۆڵەکان -->
-    <div dir="rtl" class="hud-top fixed top-2.5 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
-        <!-- لای ڕاست: دەرچوون + پڕۆفایلی تۆ -->
+    <!-- شریتی سەرەوەی یاری (هاوشێوەی دیزاینی مۆدێرن) -->
+    <div class="top-hud-bar fixed top-2.5 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
+        <!-- لای چەپ: کاتژمێری نۆرە + پیشاندەری جۆکەر + فول سکرین -->
         <div class="flex items-center gap-2 pointer-events-auto">
-            <a href="index.html" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-amber-400 hover:scale-105 active:scale-95 transition">
-                <i class="fa-solid fa-right-from-bracket"></i>
+            <div id="turnTimerBadge" class="w-10 h-10 rounded-full bg-sky-600 border-2 border-white shadow-lg flex items-center justify-center text-sm font-black text-white">
+                28
+            </div>
+            <div class="pill-white rounded-full px-3.5 py-1.5 flex items-center gap-2.5">
+                <div class="flex items-center gap-1 font-black text-xs">
+                    <span id="hudJokerNumber">7</span>
+                    <span id="hudJokerDot" class="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block"></span>
+                </div>
+                <span class="text-slate-300">|</span>
+                <div class="text-[11px] font-extrabold text-rose-600 flex items-center gap-1" dir="rtl">
+                    <span>دەست</span>
+                    <span id="hudRoundText" dir="ltr">1/5</span>
+                </div>
+            </div>
+            <button onclick="toggleFullScreen()" title="پڕکردنی شاشە" class="w-9 h-9 rounded-full pill-white flex items-center justify-center text-slate-700 hover:scale-105 active:scale-95 transition">
+                <i class="fa-solid fa-expand text-xs"></i>
+            </button>
+            <button onclick="okeyStartNewRound()" title="دەستێکی نوێ" class="w-9 h-9 rounded-full pill-white flex items-center justify-center text-amber-600 hover:scale-105 active:scale-95 transition">
+                <i class="fa-solid fa-rotate-right text-xs"></i>
+            </button>
+            <button onclick="document.getElementById('rulesModal').classList.remove('hidden')" title="یاسا و یارمەتی" class="w-9 h-9 rounded-full pill-white flex items-center justify-center text-indigo-700 hover:scale-105 active:scale-95 transition">
+                <i class="fa-solid fa-question text-xs"></i>
+            </button>
+        </div>
+
+        <!-- لای ڕاست: کارتی نۆرە + دوگمەی دەرچوون -->
+        <div class="flex items-center gap-2 pointer-events-auto" dir="rtl">
+            <a href="index.html" title="گەڕانەوە" class="w-10 h-10 rounded-full pill-white flex items-center justify-center text-rose-600 hover:scale-105 active:scale-95 transition">
+                <i class="fa-solid fa-flag text-sm"></i>
             </a>
-            <div class="royal-glass rounded-2xl px-3 py-1 flex items-center gap-2">
-                <img src="images.png/gamer-hero.png" onerror="this.src='images.png/controller.png'" class="w-7 h-7 rounded-full object-cover border border-amber-400" alt="Player">
-                <div>
-                    <div class="flex items-center gap-1 text-[11px] font-black text-white leading-tight">
-                        <span>تۆ (شاهانە)</span>
-                        <i class="fa-solid fa-crown text-amber-400 text-[9px]"></i>
-                    </div>
-                    <div class="text-[10px] text-amber-300 font-bold flex items-center gap-1 leading-tight">
-                        <i class="fa-solid fa-coins"></i>
-                        <span dir="ltr">12,450</span>
-                    </div>
+            <div class="pill-white rounded-full pl-4 pr-2 py-1 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-full bg-emerald-100 border border-emerald-500 flex items-center justify-center text-emerald-700 text-xs font-black">
+                    تۆ
+                </div>
+                <div class="text-right leading-tight">
+                    <div id="turnTitleText" class="text-[11px] font-black text-emerald-600">نۆرەی تۆیە!</div>
+                    <div id="turnSubText" class="text-[10px] font-bold text-slate-500">پوولێک فڕێ بدە</div>
                 </div>
             </div>
         </div>
-
-        <!-- ناوەڕاست: نۆرە و ڕێنمایی زیندوو -->
-        <div id="turnBanner" class="royal-glass px-4 py-1.5 rounded-full text-[11px] font-extrabold text-amber-300 shadow-lg pointer-events-auto truncate max-w-[48vw]">
-            🟡 نۆرەی تۆیە: پوولێک فڕێ بدە بۆ لای چەپ
-        </div>
-
-        <!-- لای چەپ: فول سکرین + دەستێکی نوێ -->
-        <div class="flex items-center gap-1.5 pointer-events-auto">
-            <button onclick="toggleFullScreen()" class="w-9 h-9 rounded-xl royal-glass flex items-center justify-center text-purple-200 hover:text-amber-400 transition">
-                <i class="fa-solid fa-expand"></i>
-            </button>
-            <button onclick="okeyStartNewRound()" class="px-3 py-1.5 rounded-xl royal-glass text-[11px] font-black text-amber-300 hover:bg-purple-900/60 active:scale-95 transition flex items-center gap-1.5">
-                <i class="fa-solid fa-rotate-right"></i>
-                <span>دەستێکی نوێ</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- دوگمەکانی لای ڕاستی تەختەکە -->
-    <div dir="rtl" class="hud-bottom-right fixed bottom-3 right-2.5 z-30 flex flex-col gap-1.5 pointer-events-auto">
-        <div class="royal-glass rounded-xl px-2.5 py-1 text-center">
-            <div class="text-[9px] text-purple-200 font-bold">پوولی ناو سێت</div>
-            <div id="validTilesCounter" dir="ltr" class="text-xs font-black text-emerald-400">0 / 14</div>
-        </div>
-        <button onclick="okeyAutoSortRack('runs')" class="px-3 py-2 rounded-xl gold-btn text-[11px] font-black active:scale-95 transition flex items-center justify-center gap-1">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            <span>ڕیزکردن</span>
-        </button>
-        <button onclick="okeyAutoSortRack('pairs')" class="px-3 py-1.5 rounded-xl purple-btn text-white text-[11px] font-bold active:scale-95 transition flex items-center justify-center gap-1">
-            <i class="fa-solid fa-clone"></i>
-            <span>جووتەکان</span>
-        </button>
-    </div>
-
-    <!-- دوگمەی یاسای ئۆکەی لە خوارەوەی چەپ -->
-    <div dir="rtl" class="hud-bottom-left fixed bottom-3 left-2.5 z-30 pointer-events-auto">
-        <button onclick="document.getElementById('rulesModal').classList.remove('hidden')" class="px-3 py-2 rounded-xl royal-glass text-amber-300 text-[11px] font-bold active:scale-95 transition flex items-center gap-1.5">
-            <i class="fa-solid fa-circle-question"></i>
-            <span>یاسا</span>
-        </button>
     </div>
 
     <!-- گۆڕەپانی PixiJS 120FPS -->
     <div id="okeyPixiStage"></div>
 
     <!-- پەنجەرەی کۆتایی یاری -->
-    <div id="okeyWinModal" dir="rtl" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="royal-glass rounded-3xl p-6 max-w-md w-full text-center flex flex-col items-center gap-3 border-2 border-amber-400">
+    <div id="okeyWinModal" dir="rtl" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-dark rounded-3xl p-6 max-w-md w-full text-center flex flex-col items-center gap-3 border-2 border-amber-400">
             <div id="winModalIcon" class="text-5xl">🏆</div>
             <h2 id="winModalTitle" class="text-2xl font-black text-amber-400">ئۆکەی شاهانە!</h2>
-            <p id="winModalDesc" class="text-xs text-purple-100 leading-relaxed">هەموو پوولەکانت کردە سێتی تەواو و یارییەکەت بردەوە!</p>
+            <p id="winModalDesc" class="text-xs text-slate-200 leading-relaxed">هەموو پوولەکانت کردە سێتی تەواو و یارییەکەت بردەوە!</p>
             <div class="flex gap-3 w-full mt-3">
                 <button onclick="document.getElementById('okeyWinModal').classList.add('hidden'); okeyStartNewRound();"
-                    class="flex-1 py-2.5 rounded-2xl gold-btn font-black text-sm">
-                    یارییەکی نوێ
+                    class="flex-1 py-2.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-sm shadow-lg">
+                    دەستێکی نوێ
                 </button>
-                <a href="index.html" class="px-5 py-2.5 rounded-2xl purple-btn text-white font-bold text-sm flex items-center justify-center">
+                <a href="index.html" class="px-5 py-2.5 rounded-full pill-white font-bold text-sm flex items-center justify-center">
                     سەرەکی
                 </a>
             </div>
@@ -202,18 +163,17 @@
 
     <!-- پەنجەرەی یاسای یاری -->
     <div id="rulesModal" dir="rtl" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="royal-glass rounded-3xl p-5 max-w-md w-full text-right flex flex-col gap-3">
+        <div class="glass-dark rounded-3xl p-5 max-w-md w-full text-right flex flex-col gap-3">
             <div class="flex items-center justify-between border-b border-amber-400/30 pb-2">
-                <h3 class="text-sm font-black text-amber-400">یاسا و کۆنترۆڵی خێرای مۆبایل و کۆمپیوتەر</h3>
+                <h3 class="text-sm font-black text-amber-400">تایبەتمەندییەکان و یاسای ئۆکەی</h3>
                 <button onclick="document.getElementById('rulesModal').classList.add('hidden')" class="text-rose-400 text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <ul class="text-xs text-purple-100 space-y-2 leading-relaxed list-disc pr-4">
-                <li><strong>ڕاکێشانی پوول:</strong> لە نۆرەی خۆتدا پەنجە بنێ بە کۆمەڵە پوولەکەی ناوەڕاست یان پوولی فڕێدراوی لای ڕاست.</li>
-                <li><strong>گواستنەوە لەسەر مۆبایل و کۆمپیوتەر:</strong> دەتوانیت پوول بە پەنجە ڕابکێشیت، یان <strong>یەک جار پەنجە بنێیت بە پوولێکدا</strong> بۆ هەڵبژاردنی و پاشان پەنجە بنێیت بە هەر خانەیەکی تەختەکە یان خانەی فڕێدان بۆ گواستنەوەی!</li>
-                <li><strong>فڕێدانی خێرا:</strong> پوولەکە ڕابکێشە بۆ خانەی <strong>فڕێدان</strong> لە لای چەپ، یان <strong>دوو جار لەسەریەک</strong> پەنجەی پێدا بنێ.</li>
-                <li><strong>پوولی ئۆکەی (👑):</strong> ژمارەی سەروتر لە پوولە پیشاندەرەکەی ناوەڕاست لە هەمان ڕەنگ دەبێتە <strong>ئۆکەی</strong> و نیشانەی تاجی زێڕینی لەسەر دەردەکەوێت.</li>
+            <ul class="text-xs text-slate-100 space-y-2 leading-relaxed list-disc pr-4">
+                <li><strong>یاریپێکردنی ئازاد بە پوولەکان:</strong> لە هەر کاتێکدا دەتوانیت پوولەکانت ڕابکێشیتە ناوەڕاستی مێزەکە و بە خێرایی بە چەپ و ڕاستدا ڕایانبوەشێنیت تا لە حەوادا تەقڵە لێبدەن و بسووڕێنەوە! کە پەنجەت لابرد خۆکارانە دەگەڕێنەوە ناو تەختەکە.</li>
+                <li><strong>خلیسکانی ئۆتۆماتیکی (Auto-Shift):</strong> کاتێک پوولێک دەخەیتە نێوان دوو پوولی ناو تەختەکە، پوولەکانی تەنیشتی خۆکارانە دەخلیسکێن و جێگەی بۆ دەکەنەوە.</li>
+                <li><strong>فڕێدان و هەڵگرتنەوە:</strong> لە نۆرەی خۆتدا پەنجە بنێ بە دەستە پوولی سووری ناوەڕاست (یان پوولی فڕێدراوی لای ڕاست). بۆ فڕێدانیش پوولەکە بخەرە خانەی فڕێدانی لای چەپ یان دووجار پەنجەی پێدا بنێ.</li>
             </ul>
         </div>
     </div>
