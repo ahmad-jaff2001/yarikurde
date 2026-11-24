@@ -702,6 +702,11 @@
                     <div class="av-opt" data-src="images.png/okay.png" onclick="selectAvatarOption(this)">
                         <img src="images.png/okay.png" alt="Avatar 4">
                     </div>
+                    <label for="galleryInput" class="av-opt" id="galleryBtn" style="display:flex;align-items:center;justify-content:center;background:rgba(255,184,0,0.18);color:#ffd000;font-size:20px;overflow:hidden;">
+    <i class="fa-solid fa-image" id="galleryIcon"></i>
+    <img id="galleryPreview" src="" alt="Gallery" style="display:none;">
+</label>
+<input type="file" id="galleryInput" accept="image/*" style="display:none;" onchange="handleGalleryUpload(event)">
                 </div>
             </div>
 
@@ -782,6 +787,8 @@
             document.querySelectorAll('.av-opt').forEach(opt => opt.classList.remove('selected'));
             el.classList.add('selected');
             chosenAvatar = el.dataset.src;
+            document.getElementById('galleryIcon').style.display = 'block';
+document.getElementById('galleryPreview').style.display = 'none';
         }
 
         function saveProfileChanges() {
@@ -803,7 +810,32 @@
             }
             showToast('کۆدی یاریزان (#YK-2026) کۆپی کرا!');
         }
+function handleGalleryUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 240;
+            canvas.height = 240;
+            const ctx = canvas.getContext('2d');
+            const minSide = Math.min(img.width, img.height);
+            ctx.drawImage(img, (img.width - minSide) / 2, (img.height - minSide) / 2, minSide, minSide, 0, 0, 240, 240);
+            chosenAvatar = canvas.toDataURL('image/jpeg', 0.82);
 
+            document.querySelectorAll('.av-opt').forEach(opt => opt.classList.remove('selected'));
+            document.getElementById('galleryBtn').classList.add('selected');
+            document.getElementById('galleryIcon').style.display = 'none';
+            const preview = document.getElementById('galleryPreview');
+            preview.src = chosenAvatar;
+            preview.style.display = 'block';
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
         loadProfileData();
     </script>
 </body>
