@@ -801,19 +801,11 @@ sprite.on('pointerdown', (e) => {
     sprite.position.set(pos.x, pos.y);
   });
 
-  sprite.on('globalpointermove', (e) => {
+ sprite.on('globalpointermove', (e) => {
     if (!dragging || okeyState.isAnimating) return;
-    
-    // بەدواداچوونی دروستی پەنجە
     const pos = e.data.getLocalPosition(sprite.parent);
     sprite.position.set(pos.x, pos.y);
-  });
-
-  sprite.on('globalpointermove', (e) => {
-    if (!dragging || okeyState.isAnimating) return;
-    sprite.position.set(e.global.x, e.global.y);
-  });
-
+});
   const endDrag = (e) => {
     if (!dragging) return;
     dragging = false;
