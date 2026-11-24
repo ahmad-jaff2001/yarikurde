@@ -446,7 +446,7 @@
                     <span class="notif-badge">3</span>
                 </div>
                 <div class="profile-pic" onclick="window.location.href='profile.html'">
-                    <img src="images.png/controller.png" alt="Profile">
+                    <img id="homeProfileAvatar" src="images.png/controller.png" alt="Profile">
                     <span class="online-dot"></span>
                 </div>
             </div>
@@ -591,6 +591,16 @@ function openGame(fileUrl, gameName) {
                 showMessage(`بەشی ${tabName}`);
             }
         }
+        function syncHomeProfileAvatar() {
+    const savedAvatar = localStorage.getItem('yk_player_avatar');
+    const avatarImg = document.getElementById('homeProfileAvatar');
+    if (savedAvatar && avatarImg) {
+        avatarImg.src = savedAvatar;
+    }
+}
+syncHomeProfileAvatar();
+window.addEventListener('pageshow', syncHomeProfileAvatar);
     </script>
+    
 </body>
 </html>
