@@ -2,21 +2,20 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>یاری لودۆ | یاری کوردی</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>لودۆی شاهانە 120FPS | یاری کوردی</title>
     
-    <!-- فۆنت و ئایکۆنەکان -->
+    <!-- فۆنت، ئایکۆن و مەکینەی PixiJS v7 (120FPS) -->
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- کتێبخانەی Phaser 3 بۆ کارپێکردنی تەختەی یارییەکە -->
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
 
     <style>
         :root {
             --bg-dark: #05030f;
             --gold: #ffb800;
             --gold-gradient: linear-gradient(135deg, #ffd000 0%, #ff8800 100%);
-            --card-bg: rgba(18, 12, 42, 0.85);
+            --card-bg: rgba(18, 12, 42, 0.88);
             --text-main: #ffffff;
             --text-muted: #a49ec8;
         }
@@ -26,6 +25,8 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Vazirmatn', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -34,27 +35,28 @@
                         url('images.png/background.png') no-repeat center top / cover fixed;
             background-color: var(--bg-dark);
             color: var(--text-main);
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             justify-content: center;
+            overflow-x: hidden;
         }
 
         .game-wrapper {
             width: 100%;
             max-width: 480px;
-            padding: 14px;
+            padding: 12px 14px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 100vh;
+            min-height: 100dvh;
         }
 
-        /* بەشی سەرەوە و دوگمەی گەڕانەوە */
         .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-bottom: 10px;
+            gap: 8px;
+            padding-bottom: 8px;
         }
 
         .back-btn {
@@ -62,32 +64,40 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.18);
             color: white;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 14px;
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            transition: 0.2s;
+            gap: 7px;
+            transition: transform 0.15s;
         }
 
         .back-btn:active { transform: scale(0.95); }
 
-        .game-title-badge {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid rgba(16, 185, 129, 0.5);
-            color: #6ee7b7;
-            padding: 6px 14px;
+        .online-top-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: 1.5px solid #a7f3d0;
+            padding: 7px 16px;
             border-radius: 20px;
             font-size: 13px;
-            font-weight: 800;
+            font-weight: 900;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+            transition: transform 0.15s;
         }
+
+        .online-top-btn:active { transform: scale(0.95); }
 
         .restart-btn {
             background: rgba(255, 184, 0, 0.15);
-            border: 1px solid rgba(255, 184, 0, 0.4);
+            border: 1px solid rgba(255, 184, 0, 0.45);
             color: var(--gold);
             width: 38px;
             height: 38px;
@@ -97,133 +107,202 @@
             justify-content: center;
             cursor: pointer;
             font-size: 15px;
+            transition: transform 0.15s;
         }
 
-        /* پانێڵی یاریزانی بەرامبەر (بۆت / سوور) */
+        .restart-btn:active { transform: scale(0.92); }
+
+        /* پانێڵی یاریزانەکان */
         .player-panel {
+            position: relative;
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px;
-            padding: 10px 14px;
+            backdrop-filter: blur(14px);
+            border: 1.8px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+            padding: 9px 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+            transition: border-color 0.25s, box-shadow 0.25s;
         }
 
-        .panel-opp { border-color: rgba(239, 68, 68, 0.45); }
-        .panel-me { border-color: rgba(255, 184, 0, 0.55); box-shadow: 0 0 20px rgba(255, 184, 0, 0.15); }
+        .panel-active-turn {
+            border-color: #fde047 !important;
+            box-shadow: 0 0 24px rgba(250, 204, 21, 0.35) !important;
+        }
 
         .player-info {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 11px;
         }
 
         .avatar-box {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
+            position: relative;
+            width: 46px;
+            height: 46px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 21px;
             font-weight: 900;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .avatar-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .avatar-red {
             background: linear-gradient(135deg, #ef4444, #991b1b);
-            border: 1.5px solid #fca5a5;
+            border: 2px solid #fca5a5;
+            color: #fff;
         }
 
         .avatar-yellow {
             background: var(--gold-gradient);
             color: #1a0f00;
-            border: 1.5px solid #fef08a;
+            border: 2px solid #fef08a;
         }
 
         .p-name {
             font-size: 14px;
-            font-weight: 800;
+            font-weight: 900;
+            color: #ffffff;
         }
 
         .p-crowns {
             font-size: 12px;
-            color: var(--text-muted);
+            font-weight: 700;
+            color: #fde047;
             margin-top: 2px;
         }
 
-        /* بۆکسی زارەکە */
-        .dice-container {
-            width: 52px;
-            height: 52px;
-            background: linear-gradient(145deg, #ffffff, #e2e8f0);
+        /* بڵقی پەیام و ئیمۆجی */
+        .speech-bubble {
+            position: absolute;
+            left: 78px;
+            top: -14px;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 12px;
+            font-weight: 900;
+            padding: 5px 12px;
             border-radius: 14px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.55);
+            border: 2px solid var(--gold);
+            opacity: 0;
+            transform: translateY(8px) scale(0.85);
+            transition: all 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            z-index: 40;
+            white-space: nowrap;
+        }
+
+        .speech-bubble.show {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* بۆکسی ٣ ڕەهەندی زار */
+        .dice-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .timer-pill {
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 900;
+            color: #fde047;
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(250, 204, 21, 0.4);
+            padding: 4px 8px;
+            border-radius: 10px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .dice-container {
+            position: relative;
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(145deg, #ffffff, #e2e8f0);
+            border-radius: 16px;
             border: 2.5px solid var(--gold);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255,255,255,0.9);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55), inset 0 2px 4px rgba(255,255,255,0.95);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-size: 24px;
             color: #0f172a;
-            transition: transform 0.15s;
-            user-select: none;
+            transition: transform 0.15s, box-shadow 0.2s;
         }
 
         .dice-container:active { transform: scale(0.9); }
 
-        @keyframes diceSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.18); }
+        .dice-ready-glow {
+            box-shadow: 0 0 22px rgba(250, 204, 21, 0.9), 0 6px 16px rgba(0, 0, 0, 0.55) !important;
+        }
+
+        @keyframes diceSpin3D {
+            0%   { transform: rotate(0deg) scale(1); }
+            35%  { transform: rotate(140deg) scale(1.22); }
+            70%  { transform: rotate(260deg) scale(1.12); }
             100% { transform: rotate(360deg) scale(1); }
         }
 
         .dice-rolling {
-            animation: diceSpin 0.35s ease-in-out;
+            animation: diceSpin3D 0.34s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        @keyframes bounce {
+        @keyframes bounceArrow {
             0%, 100% { transform: translate(-50%, 0); }
-            50% { transform: translate(-50%, -6px); }
+            50% { transform: translate(-50%, -7px); }
         }
-        .animate-bounce { animation: bounce 0.8s infinite; }
+        .animate-bounce { animation: bounceArrow 0.75s infinite; }
 
-        /* نیشاندەری دۆخی یاری */
+        /* شریتی نۆرە */
         .status-bar {
             text-align: center;
-            margin: 8px 0;
+            margin: 5px 0;
         }
 
         .turn-badge {
             display: inline-block;
             background: rgba(139, 92, 246, 0.25);
-            border: 1px solid rgba(168, 85, 247, 0.5);
-            color: #e9d5ff;
+            border: 1px solid rgba(168, 85, 247, 0.55);
+            color: #f3e8ff;
             font-size: 12px;
             font-weight: 800;
-            padding: 3px 12px;
+            padding: 3px 14px;
             border-radius: 20px;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .status-text {
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--gold);
         }
 
-        /* چوارچێوەی تەختەی لودۆ */
+        /* چوارچێوەی تەختەی لودۆ 120FPS */
         .board-frame {
             width: 100%;
             aspect-ratio: 1 / 1;
-            max-width: 440px;
+            max-width: 444px;
             margin: 0 auto;
             border-radius: 22px;
             padding: 6px;
             background: linear-gradient(135deg, #ffd000, #a855f7, #00f0ff);
-            box-shadow: 0 12px 35px rgba(138, 43, 226, 0.35);
+            box-shadow: 0 14px 38px rgba(138, 43, 226, 0.38);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -234,57 +313,113 @@
             height: 100%;
             border-radius: 17px;
             overflow: hidden;
-            background: #120d29;
+            background: #fffdf7;
+            touch-action: none;
+            position: relative;
         }
 
-        /* ئیمۆجی و کاردانەوەی خێرا */
+        #ludoBoard canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* کاردانەوە و ئیمۆجی */
         .reactions-bar {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin-top: 8px;
+            gap: 8px;
+            margin-top: 6px;
         }
 
         .react-btn {
             background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #fff;
             border-radius: 14px;
-            padding: 6px 12px;
-            font-size: 16px;
+            padding: 5px 12px;
+            font-size: 15px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: transform 0.15s, background 0.15s;
         }
 
-        .react-btn:active { transform: scale(0.9); background: rgba(255, 184, 0, 0.25); }
+        .react-btn:active {
+            transform: scale(0.88);
+            background: rgba(255, 184, 0, 0.28);
+        }
+
+        /* پەنجەرەی کۆتایی یاری */
+        .win-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 3, 15, 0.86);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .win-modal-card {
+            width: 100%;
+            max-width: 360px;
+            background: #160f36;
+            border: 2px solid var(--gold);
+            border-radius: 26px;
+            padding: 26px 22px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.85);
+        }
+
+        .win-btn {
+            background: var(--gold-gradient);
+            color: #1a0f00;
+            font-weight: 900;
+            font-size: 15px;
+            border: none;
+            border-radius: 16px;
+            padding: 13px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 14px;
+        }
+
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div class="game-wrapper">
-        <!-- سەرەوە -->
+        <!-- بەشی سەرەوە -->
         <header class="top-bar">
             <a href="index.html" class="back-btn">
                 <i class="fa-solid fa-arrow-right"></i>
                 <span>سەرەکی</span>
             </a>
-            <div class="game-title-badge">لودۆی شاهانە 👑</div>
-            <button onclick="openLudoOnlineLobby()" style="background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:1px solid #a7f3d0; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:800; cursor:pointer;">🌐 ئۆنڵاین</button>
+            <button onclick="openLudoOnlineLobby()" class="online-top-btn">
+                <i class="fa-solid fa-globe"></i>
+                <span>یاری ئۆنڵاین</span>
+            </button>
             <button class="restart-btn" onclick="initLudoGame()" title="یاری نوێ">
                 <i class="fa-solid fa-rotate-right"></i>
             </button>
         </header>
 
-        <!-- یاریزانی بەرامبەر (سووری ئاڵا) -->
-        <div class="player-panel panel-opp">
+        <!-- پانێڵی بەرامبەر (هەمیشە لە سەرەوە پیشان دەدرێت) -->
+        <div id="ludoPanelOpp" class="player-panel">
+            <div id="ludoOppBubble" class="speech-bubble"></div>
             <div class="player-info">
-                <div class="avatar-box avatar-red">🤖</div>
+                <div id="ludoOppAvatar" class="avatar-box avatar-red">🤖</div>
                 <div>
                     <div id="ludoOppName" class="p-name">بۆتی YariKurdi</div>
-                    <div id="ludoRedHome" class="p-crowns">تاج: 0/4 👑</div>
+                    <div id="ludoOppCrowns" class="p-crowns">تاج: 0/4 👑</div>
                 </div>
             </div>
-            <div id="ludoOppDiceBox" class="dice-container" style="border-color: #ef4444;">🎲</div>
+            <div class="dice-wrap">
+                <div id="ludoOppTimer" class="timer-pill">15s</div>
+                <div id="ludoOppDiceBox" class="dice-container" style="border-color: #ef4444;">🎲</div>
+            </div>
         </div>
 
         <!-- دۆخی نۆرە -->
@@ -293,22 +428,25 @@
             <div id="ludoStatusText" class="status-text">کلیک لە زارەکە بکە 🎲</div>
         </div>
 
-        <!-- تەختەی یارییەکە -->
+        <!-- تەختەی لودۆ (PixiJS 120FPS) -->
         <div class="board-frame">
             <div id="ludoBoard"></div>
         </div>
 
-        <!-- یاریزانی خۆت (زەردی خۆری کوردستان) -->
-        <div class="player-panel panel-me" style="margin-top: 10px;">
+        <!-- پانێڵی خۆت (هەمیشە لە خوارەوەی شاشەکەتە) -->
+        <div id="ludoPanelMe" class="player-panel panel-active-turn" style="margin-top: 8px;">
+            <div id="ludoMyBubble" class="speech-bubble"></div>
             <div class="player-info">
-                <div class="avatar-box avatar-yellow">☀️</div>
+                <div id="ludoMyAvatar" class="avatar-box avatar-yellow">☀️</div>
                 <div>
                     <div id="ludoMyName" class="p-name">تۆ (خۆری کوردستان)</div>
-                    <div id="ludoYellowHome" class="p-crowns">تاج: 0/4 👑</div>
+                    <div id="ludoMyCrowns" class="p-crowns">تاج: 0/4 👑</div>
                 </div>
             </div>
-            <!-- زاری تۆ (کلیکی لێ بکە بۆ هەڵدان) -->
-            <div id="ludoDiceBox" class="dice-container" onclick="rollLudoDice()">🎲</div>
+            <div class="dice-wrap">
+                <div id="ludoMyTimer" class="timer-pill">15s</div>
+                <div id="ludoDiceBox" class="dice-container dice-ready-glow" onclick="rollLudoDice()">🎲</div>
+            </div>
         </div>
 
         <!-- کاردانەوەی خێرا -->
@@ -316,17 +454,27 @@
             <button class="react-btn" onclick="sendLudoQuickReaction('سڵاو هاوڕێ! 👋')">👋</button>
             <button class="react-btn" onclick="sendLudoQuickReaction('ئافەرین! 👏')">👏</button>
             <button class="react-btn" onclick="sendLudoQuickReaction('بەختێکی باش! 🍀')">🍀</button>
+            <button class="react-btn" onclick="sendLudoQuickReaction('ششش وەرە! 🔥')">🔥</button>
             <button class="react-btn" onclick="sendLudoQuickReaction('ئای هاوار! 😱')">😱</button>
         </div>
     </div>
 
-    <!-- بەستنەوەی مەکینەی لودۆکەت -->
-     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- مۆداڵی کۆتایی یاری -->
+    <div id="ludoWinModal" class="win-modal-backdrop hidden">
+        <div class="win-modal-card">
+            <div id="ludoWinIcon" style="font-size: 54px; margin-bottom: 8px;">🏆</div>
+            <h2 id="ludoWinTitle" style="font-size: 24px; font-weight: 900; color: #ffd000; margin-bottom: 6px;">پیرۆزە پاڵەوان!</h2>
+            <p id="ludoWinDesc" style="font-size: 13px; color: #cbd5e1; line-height: 1.6;">هەر ٤ داشەکەت گەیاندە تاجی خۆری کوردستان و یارییەکەت بردەوە!</p>
+            <button class="win-btn" onclick="closeLudoWinModal()">🔄 یارییەکی نوێ</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK + سێرڤەری ئۆنڵاین + مەکینەی لودۆ 120FPS -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="online-engine.js"></script>
     <script src="ludo-engine.js"></script>
     <script>
-        // دەستپێکردنی خۆکاری یارییەکە کاتێک پەڕەکە دەکرێتەوە
         window.addEventListener('DOMContentLoaded', () => {
             if (typeof initLudoGame === 'function') {
                 initLudoGame();
