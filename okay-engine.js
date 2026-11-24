@@ -432,61 +432,45 @@ function evaluatePlayerRack(ignoreUid = null) {
   };
 }
 
-// ============================================================================
-// ٥. حیسابکردنی زیرەکانەی قەبارەی شاشە (Full Viewport Responsive Layout)
-// ============================================================================
 function computeResponsiveLayout() {
-  const w = window.innerWidth;
-  const h = window.innerHeight;
+  // جێگیرکردنی شاشە بۆ 1280x720 تا لەسەر هیچ مۆبایلێک تێک نەچێت
+  const w = 1280;
+  const h = 720;
   layout.w = w;
   layout.h = h;
 
-  // تەختە دارینەکە بەپێی پانی و بەرزیی مۆبایل و کۆمپیوتەر خۆی دەگونجێنێت
-  const availW = Math.min(w - 175, 960);
-  const maxRackH = Math.floor(h * 0.36);
-  const slotWByWidth = Math.floor((availW - 24) / RACK_COLS);
-  const tileHByHeight = Math.floor((maxRackH - 22) / 2);
-  const tileWByHeight = Math.floor(tileHByHeight / 1.38);
-
-  layout.tileW = Math.max(28, Math.min(slotWByWidth - 3, tileWByHeight, 56));
-  layout.tileH = Math.round(layout.tileW * 1.38);
-  layout.slotW = layout.tileW + 4;
+  layout.tileW = 46;
+  layout.tileH = 64;
+  layout.slotW = 50;
 
   layout.rackW = RACK_COLS * layout.slotW + 24;
   layout.rackH = layout.tileH * 2 + 24;
   layout.rackX = Math.round((w - layout.rackW) / 2);
   layout.rackY = h - layout.rackH - 10;
 
-  // ناوەندی مێز لە نێوان شریتی سەرەوە و تەختەی خوارەوە
-  const topSafeY = 60;
-  layout.centerY = Math.round(topSafeY + (layout.rackY - topSafeY) * 0.54);
+  layout.centerY = 260;
 
-  const cSpread = Math.round(layout.tileW * 1.55);
+  const cSpread = 85;
   layout.finishPos = { x: Math.round(w / 2 - cSpread), y: layout.centerY };
   layout.indicatorPos = { x: Math.round(w / 2), y: layout.centerY };
   layout.deckPos = { x: Math.round(w / 2 + cSpread), y: layout.centerY };
 
-  // شوێنی ٣ بۆتەکان (دوور لە شریتی سەرەوە تا هیچ شتێک نەکەوێتە ژێری)
-  const sideMargin = Math.max(76, Math.round(w * 0.085));
-  const topBotY = Math.max(76, Math.round(topSafeY + 22));
   layout.botPositions = [
-    { x: sideMargin, y: Math.round(layout.centerY - 12) },      // بۆتی ١ (چەپ)
-    { x: Math.round(w / 2 - 45), y: topBotY },                  // بۆتی ٢ (سەرەوە)
-    { x: w - sideMargin, y: Math.round(layout.centerY - 12) }   // بۆتی ٣ (ڕاست)
+    { x: 100, y: layout.centerY },
+    { x: w / 2 - 45, y: 90 },
+    { x: w - 100, y: layout.centerY }
   ];
 
-  // چوار خانەی فڕێدانی پوول لە چوار گۆشەی مێزەکە
-  const discardY = Math.round(layout.rackY - layout.tileH * 0.68);
-  layout.leftDiscardPos = { x: Math.max(sideMargin + 20, layout.rackX + 44), y: discardY };
-  layout.rightDiscardPos = { x: Math.min(w - sideMargin - 20, layout.rackX + layout.rackW - 44), y: discardY };
+  const discardY = layout.rackY - layout.tileH * 0.75;
+  layout.leftDiscardPos = { x: layout.rackX + 44, y: discardY };
+  layout.rightDiscardPos = { x: layout.rackX + layout.rackW - 44, y: discardY };
 
   layout.botDiscardPositions = [
-    { x: sideMargin + 108, y: Math.round(layout.centerY - 12) },
-    { x: Math.round(w / 2 + 78), y: topBotY },
+    { x: 240, y: layout.centerY },
+    { x: w / 2 + 78, y: 90 },
     layout.rightDiscardPos
   ];
 
-  // ٢٨ خانەکەی ناو تەختە دوو-ڕیزییەکە
   layout.slotCoords = [];
   const startX = layout.rackX + 12 + layout.slotW / 2;
   const rowY0 = layout.rackY + 9 + layout.tileH / 2;
@@ -494,9 +478,8 @@ function computeResponsiveLayout() {
 
   for (let r = 0; r < RACK_ROWS; r++) {
     for (let c = 0; c < RACK_COLS; c++) {
-      const idx = r * RACK_COLS + c;
       layout.slotCoords.push({
-        idx,
+        idx: r * RACK_COLS + c,
         cx: Math.round(startX + c * layout.slotW),
         cy: Math.round(r === 0 ? rowY0 : rowY1)
       });
@@ -797,12 +780,7 @@ function syncPlayerRackSprites(animateDeal = false, animateSlide = false) {
   bracketsLayer.addChild(frame);
 }
 
-// ڕاکێشان و دانانی پوول بە پەنجە یان ماوس + دووجار کلیک بۆ فڕێدانی خێرا
-function setupTileDragAndDoubleTap(sprite) {
-  let dragging = false;
-  let lastTapTime = 0;
-
-  sprite.on('pointerdown', (e) => {
+sprite.on('pointerdown', (e) => {
     if (okeyState.isAnimating) return;
 
     const now = performance.now();
@@ -817,7 +795,17 @@ function setupTileDragAndDoubleTap(sprite) {
     fxLayer.addChild(sprite);
     sprite.width = layout.tileW * 1.12;
     sprite.height = layout.tileH * 1.12;
-    const pos = e.global;
+    
+    // چارەسەری شوێنی پەنجە لەسەر مۆبایل
+    const pos = e.data.getLocalPosition(sprite.parent);
+    sprite.position.set(pos.x, pos.y);
+  });
+
+  sprite.on('globalpointermove', (e) => {
+    if (!dragging || okeyState.isAnimating) return;
+    
+    // بەدواداچوونی دروستی پەنجە
+    const pos = e.data.getLocalPosition(sprite.parent);
     sprite.position.set(pos.x, pos.y);
   });
 
@@ -1313,23 +1301,19 @@ function toggleFullScreen() {
   }
 }
 
-// ============================================================================
-// ٩. دەستپێکردنی PixiJS v7 Application بە پڕکردنەوەی تەواوی شاشە
-// ============================================================================
 window.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('okeyPixiStage');
 
   pixiApp = new PIXI.Application({
-    resizeTo: window,
+    width: window.innerWidth,
+    height: window.innerHeight,
     backgroundAlpha: 0,
     antialias: true,
     autoDensity: true,
-    resolution: Math.min(window.devicePixelRatio || 1, 2),
-    powerPreference: 'high-performance'
+    resolution: Math.min(window.devicePixelRatio || 1, 2)
   });
 
   container.appendChild(pixiApp.view);
-
   bakeAllOkeyTextures();
 
   tableLayer = new PIXI.Container();
@@ -1340,13 +1324,25 @@ window.addEventListener('DOMContentLoaded', () => {
 
   pixiApp.stage.addChild(tableLayer, rackBgLayer, bracketsLayer, tilesLayer, fxLayer);
 
+  // سیستمی زیرەکی زوومکردن بۆ مۆبایل
+  const resizeStage = () => {
+    const screenW = window.innerWidth;
+    const screenH = window.innerHeight;
+    pixiApp.renderer.resize(screenW, screenH);
+
+    // یارییەکە بە تەواوی پڕ بە شاشەکە دەکات
+    const scale = Math.min(screenW / 1280, screenH / 720);
+    pixiApp.stage.scale.set(scale);
+    pixiApp.stage.x = (screenW - 1280 * scale) / 2;
+    pixiApp.stage.y = (screenH - 720 * scale) / 2;
+  };
+
+  window.addEventListener('resize', resizeStage);
+  resizeStage();
+
   pixiApp.ticker.maxFPS = 120;
   pixiApp.ticker.add(() => {
     updateAllPixiTweens(pixiApp.ticker.deltaMS);
-  });
-
-  window.addEventListener('resize', () => {
-    setTimeout(() => renderFullScene(false, false), 60);
   });
 
   okeyStartNewRound();
