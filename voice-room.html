@@ -296,31 +296,38 @@
             border: none;
             object-fit: contain;
         }
-
-        /* ٢. گۆڕەپانی PK و تۆڕی ١٨ مایکەکە (ڕاست = تیمی سوور، چەپ = تیمی شین) */
-        .pk-arena-container {
+.pk-arena-container {
             position: relative;
             z-index: 10;
             margin: 0 6px;
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            /* لە RTL لای ڕاست تیمی سوورە و لای چەپ تیمی شینە */
+            border: 1px solid rgba(255, 184, 0, 0.25);
+            background: rgba(16, 9, 38, 0.72);
+            backdrop-filter: blur(8px);
+            transition: all 0.35s ease;
+        }
+
+        .pk-arena-container.pk-active {
+            border-color: rgba(255, 255, 255, 0.25);
             background: linear-gradient(270deg,
-                rgba(190, 18, 60, 0.44) 0%,
-                rgba(136, 19, 55, 0.32) 49.5%,
-                rgba(29, 78, 216, 0.32) 50.5%,
-                rgba(30, 58, 138, 0.46) 100%);
-            backdrop-filter: blur(6px);
+                rgba(190, 18, 60, 0.46) 0%,
+                rgba(136, 19, 55, 0.34) 49.5%,
+                rgba(29, 78, 216, 0.34) 50.5%,
+                rgba(30, 58, 138, 0.48) 100%);
         }
 
         .pk-score-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 3px 10px;
+            padding: 4px 10px;
             font-size: 11px;
             font-weight: 900;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .pk-arena-container.pk-active .pk-score-header {
             background: linear-gradient(270deg, #be123c 0%, #881337 45%, #1e3a8a 55%, #1d4ed8 100%);
         }
 
@@ -1116,37 +1123,31 @@
         : me.avatar;
 
     // =========================================================================
-    // ١. سیستمی ئاستەکانی ژوور (Lv.1 تا Lv.99) + کردنەوەی مایکەکان (5 -> 18 مایک)
+    // ١. سیستمی ئاستەکانی ژوور (Lv.1 تا Lv.99 — زیاتر لە ٣ ساڵ بۆ Lv.99)
     // =========================================================================
     const LEVEL_MILESTONES = [
         { level: 1,  mics: 5,  cols: 5, title: 'دیوەخانی سەرەتا',      perk: '٥ مایکی HD + چاتی زیندوو' },
-        { level: 4,  mics: 6,  cols: 6, title: 'کۆڕی هاوڕێیان',        perk: 'کردنەوەی مایکی ٦ + یاریی PK' },
-        { level: 7,  mics: 8,  cols: 4, title: 'کۆشکی گەرم',           perk: 'کردنەوەی ٨ مایک + بۆنسی +5% PK' },
+        { level: 3,  mics: 6,  cols: 6, title: 'کۆڕی هاوڕێیان',        perk: 'کردنەوەی مایکی ٦ + یاریی PK' },
+        { level: 6,  mics: 8,  cols: 4, title: 'کۆشکی گەرم',           perk: 'کردنەوەی ٨ مایک' },
         { level: 10, mics: 8,  cols: 4, title: 'وێستگەی سینەما',       perk: '🔓 کردنەوەی پەخشی ڕاستەوخۆی YouTube!' },
         { level: 15, mics: 10, cols: 5, title: 'دیوەخانی ڕەسەن',       perk: 'کردنەوەی ١٠ مایک + سندوقی بەخت' },
-        { level: 18, mics: 10, cols: 5, title: 'قەڵای زێڕین',          perk: '🔓 کردنەوەی گواستنەوەی شاشە (Screen Share)!' },
-        { level: 25, mics: 12, cols: 6, title: 'دیوەخانی شاهانە',     perk: 'کردنەوەی ١٢ مایک + بۆنسی +15% PK' },
-        { level: 45, mics: 15, cols: 5, title: 'کۆشکی ئەڵماس',         perk: 'کردنەوەی ١٥ مایک + بۆنسی +25% PK' },
-        { level: 60, mics: 18, cols: 6, title: 'میرنشینی یاری کوردی', perk: 'کردنەوەی تەواوی ١٨ مایکەکە + +30% PK' },
-        { level: 99, mics: 18, cols: 6, title: 'ئیمپراتۆری ئەفسانەیی', perk: '👑 تاجی ئەفسانەیی + پلەی یەکەمی لۆبی + +50% PK' }
+        { level: 22, mics: 10, cols: 5, title: 'قەڵای زێڕین',          perk: '🔓 کردنەوەی گواستنەوەی شاشە (Screen Share)!' },
+        { level: 35, mics: 12, cols: 6, title: 'دیوەخانی شاهانە',     perk: 'کردنەوەی ١٢ مایک' },
+        { level: 55, mics: 15, cols: 5, title: 'کۆشکی ئەڵماس',         perk: 'کردنەوەی ١٥ مایک' },
+        { level: 75, mics: 18, cols: 6, title: 'میرنشینی یاری کوردی', perk: 'کردنەوەی تەواوی ١٨ مایکەکە' },
+        { level: 99, mics: 18, cols: 6, title: 'ئیمپراتۆری ئەفسانەیی', perk: '👑 تاجی ئەفسانەیی ٣ ساڵەی دیوەخان' }
     ];
 
-    // هاوکێشەی XP: تا Lv.10 ئاسان و خێرا، لە دوای Lv.10 هەنگاو بە هەنگاو قورس دەبێت تا Lv.99
+    // هاوکێشەی XP: تا Lv.15 گونجاوە (٢٦,٠٠٠ XP)، لە Lv.15 بۆ Lv.99 دەگاتە ٩,٤٠٠,٠٠٠ XP (زیاتر لە ٣ ساڵ)
     function getXPForLevel(lvl) {
         if (lvl <= 1) return 0;
         const earlyCurve = {
-            2: 400,
-            3: 1000,
-            4: 2000,
-            5: 3500,
-            6: 5500,
-            7: 8000,
-            8: 11000,
-            9: 15000,
-            10: 20000
+            2: 250, 3: 600, 4: 1100, 5: 1800, 6: 2700, 7: 3800,
+            8: 5200, 9: 6800, 10: 8800, 11: 11200, 12: 14000,
+            13: 17500, 14: 21500, 15: 26000
         };
         if (earlyCurve[lvl] !== undefined) return earlyCurve[lvl];
-        return Math.floor(20000 + Math.pow(lvl - 10, 2.15) * 4200);
+        return Math.floor(26000 + Math.pow(lvl - 15, 2.35) * 280);
     }
 
     function computeLevelFromXP(xp) {
@@ -1194,6 +1195,18 @@
         document.getElementById('redTeamScore').innerText = roomStats.redScore.toLocaleString();
         document.getElementById('blueTeamScore').innerText = roomStats.blueScore.toLocaleString();
 
+        // کۆنترۆڵکردنی دەرکەوتنی PK تەنها کاتێک چالاک کرابێت
+        const pkActive = roomStats.pkEndTime && roomStats.pkEndTime > Date.now();
+        const arena = document.querySelector('.pk-arena-container');
+        const subBar = document.querySelector('.pk-sub-bar');
+        const redLbl = document.getElementById('redTeamScore')?.parentElement;
+        const blueLbl = document.getElementById('blueTeamScore')?.parentElement;
+
+        if (arena) arena.classList.toggle('pk-active', !!pkActive);
+        if (subBar) subBar.style.display = pkActive ? 'flex' : 'none';
+        if (redLbl) redLbl.style.visibility = pkActive ? 'visible' : 'hidden';
+        if (blueLbl) blueLbl.style.visibility = pkActive ? 'visible' : 'hidden';
+
         const curLvlXP = getXPForLevel(newLvl);
         const nextLvlXP = newLvl < 99 ? getXPForLevel(newLvl + 1) : curLvlXP;
         const pct = newLvl >= 99 ? 100 : Math.min(100, Math.max(0, Math.floor(((roomStats.xp - curLvlXP) / Math.max(1, nextLvlXP - curLvlXP)) * 100)));
@@ -1207,55 +1220,23 @@
         render18Seats();
     }
 
-    // ئاهەنگی تەقینەوەی بەرزبوونەوەی ئاست (ڤیدیۆی level-up.mp4 یان یاریی ئاگرین)
     function triggerLevelUpCelebration(lvl) {
         const tier = getActiveTier(lvl);
         appendChatLine(`🎊 <b>پیرۆزە! ئاستی ژوورەکە بەرزبووەوە بۆ Lv.${lvl} (${tier.title})!</b>`, true);
         spawnParticles(0xffd000, 75);
-
-        const stage = document.getElementById('frameless-gift-stage');
-        stage.innerHTML = `
-            <video class="frameless-video" src="images.png/level-up.mp4" autoplay muted playsinline onerror="this.remove()"></video>
-            <div style="position:absolute; top:28%; background:linear-gradient(135deg,#ffd000,#ff6b00); color:#1a0f00; border:2px solid #fff; border-radius:22px; padding:10px 20px; text-align:center; box-shadow:0 0 35px rgba(255,184,0,0.9);">
-                <div style="font-size:17px; font-weight:900;">🎉 ئاستی ژوور بوو بە Lv.${lvl}!</div>
-                <div style="font-size:11.5px; font-weight:800;">${tier.perk}</div>
-            </div>
-        `;
-        stage.style.display = 'flex';
-        setTimeout(() => {
-            stage.style.display = 'none';
-            stage.innerHTML = '';
-        }, 4200);
     }
 
-    // ئەرکە ڕۆژانەکانی ژوور (Daily Room Quests)
-    const todayKey = new Date().toISOString().slice(0, 10);
-    let dailyProgress = JSON.parse(localStorage.getItem(`yk_room_quests_${activeRoomId}_${todayKey}`) || '{"chats":0,"pk":0,"gifts":0,"claimed":{}}');
-
-    function saveDailyProgress() {
-        localStorage.setItem(`yk_room_quests_${activeRoomId}_${todayKey}`, JSON.stringify(dailyProgress));
-    }
-
-    function claimDailyQuest(qId, xpReward) {
-        if (dailyProgress.claimed[qId]) return;
-        dailyProgress.claimed[qId] = true;
-        saveDailyProgress();
-        roomStats.xp += xpReward;
-        syncRoomStatsToServer();
-        updateRoomStatsUI();
-        openRoomLevelModal();
-        appendChatLine(`🏅 <b>${me.name}</b> ئەرکی ڕۆژانەی ژووری تەواوکرد و <b>+${xpReward} XP</b>ـی وەرگرت!`, true);
-    }
+    // زیادکردنی XP تەنها بە دانیشتن و مانەوە لە ژوورەکە (هەر خولەکێک جارێک)
+    setInterval(() => {
+        if (!roomDbRef || !me.uid || document.hidden) return;
+        const xpEarned = (mySeatIndex !== null) ? 2 : 1; // ٢ XP لەسەر مایک، ١ XP وەک بینەر
+        roomDbRef.child('stats/xp').transaction(cur => (cur || 0) + xpEarned);
+    }, 60000);
 
     function openRoomLevelModal() {
         const box = document.getElementById('roomLevelDetailsBox');
         const tier = getActiveTier(roomStats.level);
-
-        const quests = [
-            { id: 'q_chat', title: 'نووسینی ٥ نامە لە چاتی ژوور', cur: Math.min(5, dailyProgress.chats || 0), req: 5, xp: 350 },
-            { id: 'q_pk',   title: 'دەستپێکردنی ١ ڕکابەریی PK', cur: Math.min(1, dailyProgress.pk || 0), req: 1, xp: 500 },
-            { id: 'q_gift', title: 'ناردنی ٣ دیاری لە ژوورەکەدا', cur: Math.min(3, dailyProgress.gifts || 0), req: 3, xp: 750 }
-        ];
+        const memberTargets = [10, 20, 50, 100, 250, 500];
 
         let html = `
             <div style="background:rgba(255,184,0,0.12); border:1px solid var(--gold); border-radius:16px; padding:12px; margin-bottom:12px;">
@@ -1263,82 +1244,52 @@
                     <div style="font-size:15px; font-weight:900; color:var(--gold-bright);">🏆 ئاستی ژوور: Lv.${roomStats.level} / 99</div>
                     <span style="background:var(--gold-grad); color:#1a0f00; font-size:10.5px; font-weight:900; padding:2px 9px; border-radius:10px;">${tier.mics} مایک کراوەیە</span>
                 </div>
-                <div style="font-size:11.5px; color:#e9d5ff; margin-top:5px;">
-                    نازناو: <b>${tier.title}</b> • کۆی XP: <b>${roomStats.xp.toLocaleString()}</b><br>
-                    💎 ئەڵماسی پشتگیری: <b>${roomStats.totalDiamonds.toLocaleString()}</b> • 👥 سەردانیکەر: <b>${roomStats.totalVisitors}</b>
+                <div style="font-size:11.5px; color:#e9d5ff; margin-top:6px; line-height:1.7;">
+                    • کۆی XP: <b>${roomStats.xp.toLocaleString()}</b> | ئەندامانی ژوور: <b>${roomStats.totalVisitors}</b><br>
+                    • چۆن بەرز دەبێتەوە؟ تەنها بە <b>دانیشتن لە ژوور (+٢ XP/خولەک)</b> و <b>جۆینکردنی ئەندامانی نوێ</b>!
                 </div>
             </div>
-
-            <div style="font-size:12px; font-weight:900; color:#38bdf8; margin-bottom:6px;">⚡ ئەرکە ڕۆژانەکانی ژوور (بۆ زیادکردنی XP بێ بەرامبەر):</div>
+            <div style="font-size:12px; font-weight:900; color:#38bdf8; margin-bottom:6px;">👥 پاداشتی جۆینکردنی ئەندامان (Members):</div>
         `;
 
-        quests.forEach(q => {
-            const done = q.cur >= q.req;
-            const claimed = !!dailyProgress.claimed[q.id];
+        memberTargets.forEach(mCount => {
+            const reached = roomStats.totalVisitors >= mCount;
             html += `
-                <div class="quest-row" style="border-color:${claimed ? '#22c55e' : 'rgba(56,189,248,0.35)'};">
-                    <div>
-                        <div style="font-size:12px; font-weight:800;">${q.title} (${q.cur}/${q.req})</div>
-                        <div style="font-size:10px; color:#fde047;">پاداشت: +${q.xp} XP</div>
-                    </div>
-                    ${claimed
-                        ? `<span style="color:#4ade80; font-size:11px; font-weight:900;">وەرگیرا ✅</span>`
-                        : `<button onclick="claimDailyQuest('${q.id}', ${q.xp})" ${done ? '' : 'disabled'} style="background:${done ? 'var(--gold-grad)' : 'rgba(255,255,255,0.1)'}; color:${done ? '#1a0f00' : '#94a3b8'}; border:none; border-radius:10px; padding:5px 10px; font-size:11px; font-weight:900; cursor:${done ? 'pointer' : 'not-allowed'};">وەرگرتن</button>`
-                    }
+                <div class="quest-row" style="border-color:${reached ? '#22c55e' : 'rgba(56,189,248,0.35)'};">
+                    <div style="font-size:12px; font-weight:800;">${reached ? '✅' : '⏳'} گەیشتن بە ${mCount} ئەندامی ژوور (${Math.min(roomStats.totalVisitors, mCount)}/${mCount})</div>
+                    <span style="font-size:10.5px; color:#fde047; font-weight:900;">+${mCount * 30} XP</span>
                 </div>
             `;
         });
 
-        html += `<div style="font-size:12px; font-weight:900; color:#fde047; margin:10px 0 6px;">🗺️ نەخشەی کردنەوەی مایک و تایبەتمەندییەکان (Lv.1 – Lv.99):</div>`;
-
+        html += `<div style="font-size:12px; font-weight:900; color:#fde047; margin:10px 0 6px;">🗺️ نەخشەی ئاستەکان (Lv.1 – Lv.99):</div>`;
         LEVEL_MILESTONES.forEach(m => {
             const unlocked = roomStats.level >= m.level;
-            const reqXP = getXPForLevel(m.level);
             html += `
                 <div class="quest-row" style="border-color:${unlocked ? '#22c55e' : 'rgba(255,184,0,0.22)'};">
                     <div>
-                        <div style="font-size:12px; font-weight:900; color:${unlocked ? '#4ade80' : '#fff'};">
-                            ${unlocked ? '✅' : '🔒'} Lv.${m.level} — ${m.title}
-                        </div>
+                        <div style="font-size:12px; font-weight:900; color:${unlocked ? '#4ade80' : '#fff'};">${unlocked ? '✅' : '🔒'} Lv.${m.level} — ${m.title}</div>
                         <div style="font-size:10.5px; color:#cbd5e1; margin-top:2px;">${m.perk}</div>
                     </div>
-                    <span style="font-size:10px; color:#fde047; font-weight:900;">${reqXP.toLocaleString()} XP</span>
+                    <span style="font-size:10px; color:#fde047; font-weight:900;">${getXPForLevel(m.level).toLocaleString()} XP</span>
                 </div>
             `;
         });
-
-        if (window.YariAdmin && YariAdmin.isAdmin()) {
-            html += `
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
-                    <button onclick="adminAddRoomXP(20000)" style="background:linear-gradient(135deg,#38bdf8,#0284c7); color:#fff; border:none; border-radius:12px; padding:9px; font-weight:900; font-size:11.5px; cursor:pointer;">👑 کردنەوەی Lv.10 (یوتیوب)</button>
-                    <button onclick="adminAddRoomXP(350000)" style="background:var(--gold-grad); color:#1a0f00; border:none; border-radius:12px; padding:9px; font-weight:900; font-size:11.5px; cursor:pointer;">👑 کردنەوەی Lv.18 (شاشە)</button>
-                </div>
-            `;
-        }
 
         box.innerHTML = html;
         document.getElementById('roomLevelModal').classList.add('open');
     }
 
-    function adminAddRoomXP(amount) {
-        roomStats.xp += amount;
-        syncRoomStatsToServer();
-        updateRoomStatsUI();
-        openRoomLevelModal();
-    }
-
     // =========================================================================
-    // ٢. پەخشی ڕاستەوخۆی یوتیوب (Lv.10) و گواستنەوەی شاشە (Lv.18)
+    // ٢. سینەمای یوتیوب (Lv.10) و گواستنەوەی شاشە (Lv.22)
     // =========================================================================
     function openCinemaControlModal() {
         const isAdmin = window.YariAdmin && YariAdmin.isAdmin();
         const ytOk = roomStats.level >= 10 || isAdmin;
-        const ssOk = roomStats.level >= 18 || isAdmin;
-        const statusEl = document.getElementById('cinemaLockStatus');
-
-        statusEl.innerHTML = `
+        const ssOk = roomStats.level >= 22 || isAdmin;
+        document.getElementById('cinemaLockStatus').innerHTML = `
             📺 پەخشی یوتیوب: <b style="color:${ytOk ? '#4ade80' : '#fb7185'};">${ytOk ? 'کراوەیە ✅' : 'لە Lv.10 دەکرێتەوە 🔒'}</b><br>
-            💻 پەخشی شاشەی وێبگەڕ: <b style="color:${ssOk ? '#4ade80' : '#fb7185'};">${ssOk ? 'کراوەیە ✅' : 'لە Lv.18 دەکرێتەوە 🔒'}</b>
+            💻 پەخشی شاشە: <b style="color:${ssOk ? '#4ade80' : '#fb7185'};">${ssOk ? 'کراوەیە ✅' : 'لە Lv.22 دەکرێتەوە 🔒'}</b>
         `;
         document.getElementById('cinemaControlModal').classList.add('open');
     }
@@ -1349,31 +1300,18 @@
     }
 
     function startYouTubeBroadcast() {
-        const isAdmin = window.YariAdmin && YariAdmin.isAdmin();
-        if (roomStats.level < 10 && !isAdmin) {
-            alert('پەخشی یوتیوب لە ئاستی Lv.10 دەکرێتەوە!');
-            return;
-        }
-        const url = document.getElementById('youtubeUrlInput').value.trim();
-        const ytId = extractYouTubeId(url);
-        if (!ytId) {
-            alert('تکایە لینکێکی دروستی YouTube دابنێ!');
-            return;
-        }
+        if (roomStats.level < 10 && !(window.YariAdmin && YariAdmin.isAdmin())) { alert('پەخشی یوتیوب لە ئاستی Lv.10 دەکرێتەوە!'); return; }
+        const ytId = extractYouTubeId(document.getElementById('youtubeUrlInput').value.trim());
+        if (!ytId) { alert('تکایە لینکێکی دروستی YouTube دابنێ!'); return; }
         document.getElementById('cinemaControlModal').classList.remove('open');
-        const payload = { active: true, type: 'youtube', ytId: ytId, hostName: me.name, updatedAt: Date.now() };
+        const payload = { active: true, type: 'youtube', ytId, hostName: me.name, updatedAt: Date.now() };
         renderCinemaStage(payload);
         if (roomDbRef) roomDbRef.child('cinema').set(payload);
     }
 
     let localScreenStream = null;
-
     async function startBrowserScreenShare() {
-        const isAdmin = window.YariAdmin && YariAdmin.isAdmin();
-        if (roomStats.level < 18 && !isAdmin) {
-            alert('گواستنەوەی شاشەی وێبگەڕ لە ئاستی Lv.18 دەکرێتەوە!');
-            return;
-        }
+        if (roomStats.level < 22 && !(window.YariAdmin && YariAdmin.isAdmin())) { alert('پەخشی شاشە لە ئاستی Lv.22 دەکرێتەوە!'); return; }
         try {
             localScreenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
             document.getElementById('cinemaControlModal').classList.remove('open');
@@ -1382,58 +1320,36 @@
             document.getElementById('cinemaStageTitle').innerText = `💻 پەخشی ڕاستەوخۆی شاشەی ${me.name}`;
             wrap.innerHTML = '';
             const vid = document.createElement('video');
-            vid.srcObject = localScreenStream;
-            vid.autoplay = true;
-            vid.playsInline = true;
-            vid.controls = true;
+            vid.srcObject = localScreenStream; vid.autoplay = true; vid.playsInline = true; vid.controls = true;
             wrap.appendChild(vid);
             stage.classList.add('active');
-            sendLiveText(`💻 دەستی کرد بە پەخشکردنی شاشەی وێبگەڕەکەی!`);
             localScreenStream.getVideoTracks()[0].onended = () => stopRoomCinema();
-        } catch (err) {
-            alert('پەخشکردنی شاشە هەڵوەشایەوە یان مۆبایلەکەت پشتگیری ناکات.');
-        }
+        } catch (err) {}
     }
 
     function renderCinemaStage(data) {
         const stage = document.getElementById('cinemaStageBox');
         const wrap = document.getElementById('cinemaFrameWrap');
-        if (!data || !data.active) {
-            stage.classList.remove('active');
-            wrap.innerHTML = '';
-            return;
-        }
+        if (!data || !data.active) { stage.classList.remove('active'); wrap.innerHTML = ''; return; }
         if (data.type === 'youtube' && data.ytId) {
-            document.getElementById('cinemaStageTitle').innerText = `📺 سینەمای یوتیوب (لەلایەن ${data.hostName || 'سەرۆک'})`;
+            document.getElementById('cinemaStageTitle').innerText = `📺 سینەمای یوتیوب (${data.hostName || 'سەرۆک'})`;
             wrap.innerHTML = `<iframe src="https://www.youtube.com/embed/${data.ytId}?autoplay=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
             stage.classList.add('active');
         }
     }
 
     function stopRoomCinema() {
-        if (localScreenStream) {
-            localScreenStream.getTracks().forEach(t => t.stop());
-            localScreenStream = null;
-        }
+        if (localScreenStream) { localScreenStream.getTracks().forEach(t => t.stop()); localScreenStream = null; }
         renderCinemaStage({ active: false });
         if (roomDbRef) roomDbRef.child('cinema').set({ active: false });
     }
 
     // =========================================================================
-    // ٣. تۆڕی مایکەکان (١٠٠٪ زیندوو + دەرچوونی خۆکار لەسەر مایک)
+    // ٣. تۆڕی مایکەکان + بینینی پڕۆفایل و ناردنی هاوڕێیەتی (Add Friend)
     // =========================================================================
     const seats18 = Array.from({ length: 18 }, (_, idx) => ({
-        index: idx,
-        number: idx + 1,
-        team: 'red',
-        occupied: false,
-        uid: null,
-        name: `${idx + 1}`,
-        avatar: null,
-        level: 1,
-        muted: true,
-        speaking: false,
-        support: 0
+        index: idx, number: idx + 1, team: 'red', occupied: false, uid: null,
+        name: `${idx + 1}`, avatar: null, level: 1, muted: true, speaking: false, support: 0
     }));
 
     let mySeatIndex = null;
@@ -1445,17 +1361,12 @@
         const grid = document.getElementById('mics18Grid');
         const banner = document.getElementById('entranceBanner');
         const tier = getActiveTier(roomStats.level);
-        const unlockedMics = tier.mics;
-        const cols = tier.cols;
-
-        grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        grid.style.gridTemplateColumns = `repeat(${tier.cols}, 1fr)`;
         grid.innerHTML = '';
         if (banner) grid.appendChild(banner);
 
-        seats18.slice(0, unlockedMics).forEach((s, idx) => {
-            const isBlue = (idx % cols) >= Math.ceil(cols / 2);
-            s.team = isBlue ? 'blue' : 'red';
-
+        seats18.slice(0, tier.mics).forEach((s, idx) => {
+            s.team = (idx % tier.cols) >= Math.ceil(tier.cols / 2) ? 'blue' : 'red';
             const cell = document.createElement('div');
             cell.className = `seat-cell ${s.index === 0 ? 'host-seat' : ''} ${s.team}-team ${s.speaking ? 'speaking' : ''}`;
             cell.id = `seat-cell-${s.index}`;
@@ -1465,13 +1376,8 @@
                 ? `<img src="${s.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" alt="">`
                 : `<i class="fa-solid fa-microphone" style="color:rgba(255,255,255,0.28); font-size:12px;"></i>`;
 
-            const lvlBadge = s.occupied
-                ? `<span class="seat-lvl-tag">${s.index === 0 ? '👑' : 'Lv.' + (s.level || 1)}</span>`
-                : '';
-
-            const micStatus = s.occupied
-                ? `<div class="seat-mic-badge"><i class="fa-solid ${s.muted ? 'fa-microphone-slash' : 'fa-microphone'}" style="color:${s.muted ? '#fb7185' : '#4ade80'};"></i></div>`
-                : '';
+            const lvlBadge = s.occupied ? `<span class="seat-lvl-tag">${s.index === 0 ? '👑' : 'Lv.' + (s.level || 1)}</span>` : '';
+            const micStatus = s.occupied ? `<div class="seat-mic-badge"><i class="fa-solid ${s.muted ? 'fa-microphone-slash' : 'fa-microphone'}" style="color:${s.muted ? '#fb7185' : '#4ade80'};"></i></div>` : '';
 
             cell.innerHTML = `
                 <div class="seat-avatar-wrap">${innerAvatar}${lvlBadge}${micStatus}</div>
@@ -1515,13 +1421,71 @@
                 seatRef.onDisconnect().remove();
             }
         } else if (seat.uid === me.uid) {
-            if (confirm('دەتەوێت لەسەر مایک دابەزیت؟')) {
-                leaveMyCurrentSeat();
-            }
+            if (confirm('دەتەوێت لەسەر مایک دابەزیت؟')) leaveMyCurrentSeat();
         } else {
-            selectedRecipients = [idx];
-            sendToAllMode = false;
-            openGiftDrawer();
+            // کردنەوەی کارتی پڕۆفایل + Add Friend + ناردنی دیاری
+            openRoomPlayerCard({ uid: seat.uid, name: seat.name, avatar: seat.avatar, level: seat.level || 1, seatIdx: idx });
+        }
+    }
+
+    // کارتی پڕۆفایل و ناردنی هاوڕێیەتی بۆ هەر کەسێک لە ژوورەکەدا
+    function openRoomPlayerCard(player) {
+        if (!player || !player.uid || player.uid === me.uid) return;
+        const old = document.getElementById('ykRoomPlayerCard');
+        if (old) old.remove();
+
+        const shortId = player.uid.replace(/[^0-9]/g, '').substring(0, 9) || player.uid.substring(0, 8);
+        const modal = document.createElement('div');
+        modal.id = 'ykRoomPlayerCard';
+        modal.style.cssText = `position:fixed; inset:0; background:rgba(4,2,14,0.84); backdrop-filter:blur(8px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:18px; direction:rtl; font-family:'Vazirmatn',sans-serif; color:#fff;`;
+        modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+        modal.innerHTML = `
+            <div style="width:100%; max-width:340px; background:linear-gradient(180deg,#1c0e44 0%,#0d0624 100%); border:2px solid #ffb800; border-radius:26px; padding:20px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.9);">
+                <img src="${player.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:78px; height:78px; border-radius:50%; border:3px solid #ffb800; object-fit:cover; margin-bottom:8px;">
+                <div style="font-size:18px; font-weight:900; color:#fff;">${player.name}</div>
+                <div style="font-size:11.5px; color:#fde047; margin:3px 0 14px;">ID: ${shortId} • ئاستی یاریزان: Lv.${player.level || 1}</div>
+
+                <div style="display:flex; flex-direction:column; gap:9px;">
+                    <button id="ykAddFriendActionBtn" onclick="sendFriendRequestInRoom('${player.uid}', '${player.name.replace(/'/g, '')}')" style="width:100%; background:linear-gradient(135deg,#10b981,#059669); color:#fff; border:none; border-radius:14px; padding:11px; font-weight:900; font-size:13.5px; cursor:pointer;">
+                        ➕ ناردنی داواکاری هاوڕێیەتی (Add Friend)
+                    </button>
+
+                    <button onclick="window.location.href='profile.html?uid=${encodeURIComponent(player.uid)}'" style="width:100%; background:rgba(168,85,247,0.28); border:1.5px solid #a855f7; color:#fff; border-radius:14px; padding:10px; font-weight:900; font-size:13px; cursor:pointer;">
+                        👤 بینینی پڕۆفایلی تەواو
+                    </button>
+
+                    ${player.seatIdx !== undefined ? `
+                    <button onclick="document.getElementById('ykRoomPlayerCard').remove(); selectedRecipients=[${player.seatIdx}]; sendToAllMode=false; openGiftDrawer();" style="width:100%; background:linear-gradient(135deg,#ffd000,#ff8800); color:#1a0f00; border:none; border-radius:14px; padding:10px; font-weight:900; font-size:13px; cursor:pointer;">
+                        🎁 ناردنی دیاری (ئەڵماس)
+                    </button>` : ''}
+                </div>
+
+                <button onclick="document.getElementById('ykRoomPlayerCard').remove()" style="margin-top:12px; background:none; border:none; color:#94a3b8; font-size:12px; cursor:pointer;">داخستن</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    async function sendFriendRequestInRoom(targetUid, targetName) {
+        if (!window.firebase || !me.uid) return;
+        const btn = document.getElementById('ykAddFriendActionBtn');
+        try {
+            await firebase.database().ref(`friendRequests/${targetUid}/${me.uid}`).set({
+                fromUid: me.uid,
+                fromName: me.name,
+                fromAvatar: me.avatar,
+                status: 'pending',
+                ts: Date.now()
+            });
+            if (btn) {
+                btn.innerText = 'داواکاری هاوڕێیەتی نێردرا ✅';
+                btn.style.background = '#334155';
+                btn.disabled = true;
+            }
+            appendChatLine(`🤝 <b>${me.name}</b> داواکاری هاوڕێیەتی نارد بۆ <b>${targetName}</b>!`, true);
+        } catch (e) {
+            alert('نەتوانرا داواکارییەکە بنێردرێت.');
         }
     }
 
@@ -1677,12 +1641,11 @@
     }
 
     function renderRealAudience(users) {
-        document.getElementById('viewersTotal').innerText = users.length;
-        document.getElementById('realAudienceStrip').innerHTML = users.slice(0, 12).map(u => `
-            <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="aud-pic" title="${u.name}" alt="">
-        `).join('');
-    }
-
+     document.getElementById('viewersTotal').innerText = users.length;
+     document.getElementById('realAudienceStrip').innerHTML = users.slice(0, 12).map(u => `
+         <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="aud-pic" style="cursor:pointer;" onclick="openRoomPlayerCard({uid:'${u.uid}',name:'${(u.name||'یاریزان').replace(/'/g,'')}',avatar:'${u.avatar||'images.png/controller.png'}'})" title="${u.name}" alt="">
+     `).join('');
+ }
     function syncRoomStatsToServer() {
         if (!roomDbRef) return;
         roomDbRef.child('stats').update({
@@ -2124,7 +2087,7 @@
         el.classList.add('active');
     }
 
-    function executeSendGift() {
+ function executeSendGift() {
         const gift = getFullGiftList().find(g => g.id === selectedGiftId);
         if (!gift) return;
         const maxMics = getActiveTier(roomStats.level).mics;
@@ -2138,29 +2101,34 @@
         }
 
         const perSeatGain = gift.price * giftComboMultiplier;
+        // بڕی ئەڵماس کە دەچێتە سەر جزدانی وەرگر
+        const diamondsForRecipient = (gift.currency === 'diamonds') ? perSeatGain : Math.max(1, Math.floor(perSeatGain / 100));
+
         targets.forEach(t => {
             t.support = (t.support || 0) + perSeatGain;
-            if (t.team === 'red') roomStats.redScore += perSeatGain; else roomStats.blueScore += perSeatGain;
-            if (roomDbRef) roomDbRef.child(`seats/${t.index}/support`).set(t.support);
+            if (roomStats.pkEndTime && roomStats.pkEndTime > Date.now()) {
+                if (t.team === 'red') roomStats.redScore += perSeatGain; else roomStats.blueScore += perSeatGain;
+            }
+            if (roomDbRef) {
+                roomDbRef.child(`seats/${t.index}/support`).set(t.support);
+                // زیادکردنی ئەڵماس لە سێرڤەر بۆ جزدانی وەرگر
+                if (t.uid && t.uid !== me.uid) {
+                    firebase.database().ref(`players/${t.uid}/wallet/diamonds`).transaction(cur => (cur ?? 40) + diamondsForRecipient);
+                    firebase.database().ref(`players/${t.uid}/giftNotifications`).push({
+                        fromName: me.name,
+                        diamonds: diamondsForRecipient,
+                        giftName: gift.name,
+                        ts: Date.now()
+                    });
+                }
+            }
         });
 
-        // زیادکردنی XP (هەر ١ ئەڵماس = ١٠ XP، هەر ١٠٠ گۆڵد = ٥ XP)
-        const xpGained = (gift.currency === 'diamonds') ? (totalCost * 10) : Math.floor(totalCost * 0.05);
-        roomStats.xp += xpGained;
         if (gift.currency === 'diamonds') roomStats.totalDiamonds += totalCost;
-
-        dailyProgress.gifts = (dailyProgress.gifts || 0) + 1;
-        saveDailyProgress();
 
         updateRoomStatsUI();
         syncRoomStatsToServer();
         render18Seats();
-
-        if (totalCost >= 3000 && roomStats.level >= 15) {
-            const chest = document.getElementById('luckyChestBox');
-            chest.style.display = 'flex';
-            setTimeout(() => { chest.style.display = 'none'; }, 15000);
-        }
 
         const targetLabel = sendToAllMode ? 'هەموو مایکەکان' : (targets[0] ? targets[0].name : 'سەرۆک');
         document.getElementById('giftDrawerOverlay').classList.remove('open');
@@ -2208,7 +2176,6 @@
     }
 
     function playRoomApplause() {
-        if (roomStats.level < 4) { alert('چەپڵە و حەماسەت لە ئاستی Lv.4 دەکرێتەوە!'); return; }
         spawnParticles(0xffd000, 25);
         sendLiveText('👏 چەپڵەیەکی گەرمی لێدا بۆ ژوورەکە!');
     }
@@ -2218,15 +2185,13 @@
     function postChatMessage() {
         const inp = document.getElementById('roomChatInput');
         if (!inp.value.trim()) return;
-        dailyProgress.chats = (dailyProgress.chats || 0) + 1;
-        saveDailyProgress();
         sendLiveText(inp.value.trim());
         inp.value = '';
     }
 
     function sendLiveText(text) {
         if (roomDbRef) {
-            roomDbRef.child('messages').push({ uid: me.uid, name: me.name, level: me.level, text, ts: Date.now() });
+            roomDbRef.child('messages').push({ uid: me.uid, name: me.name, avatar: me.avatar, level: me.level, text, ts: Date.now() });
         } else {
             appendChatLine(`<span class="lvl-badge">Lv.${me.level}</span><b style="color:#ffe680;">${me.name}:</b> ${text}`);
         }
@@ -2242,28 +2207,61 @@
         list.scrollTop = list.scrollHeight;
     }
 
+    // دەستپێکردن و وەستاندنی PK تەنها بە کلیک
     function startOrResetPK() {
-        if (roomStats.level < 4 && !(window.YariAdmin && YariAdmin.isAdmin())) {
-            alert('ڕکابەریی PK لە ئاستی Lv.4 دەکرێتەوە!');
+        if (roomStats.level < 3 && !(window.YariAdmin && YariAdmin.isAdmin())) {
+            alert('ڕکابەریی PK لە ئاستی Lv.3 دەکرێتەوە!');
             return;
         }
-        roomStats.redScore = 0;
-        roomStats.blueScore = 0;
-        roomStats.pkEndTime = Date.now() + 5 * 60 * 1000;
-        roomStats.xp += 250;
-        dailyProgress.pk = (dailyProgress.pk || 0) + 1;
-        saveDailyProgress();
-        syncRoomStatsToServer();
-        updateRoomStatsUI();
-        sendLiveText('⚔️ ڕکابەریی ٥ خولەکیی PK دەستی پێکرد!');
+        const isCurrentlyActive = roomStats.pkEndTime && roomStats.pkEndTime > Date.now();
+        if (isCurrentlyActive) {
+            if (!confirm('دەتەوێت یاریی PKـی ئێستا بوەستێنیت؟')) return;
+            roomStats.pkEndTime = 0;
+            roomStats.redScore = 0;
+            roomStats.blueScore = 0;
+            syncRoomStatsToServer();
+            updateRoomStatsUI();
+            sendLiveText('🛑 یاریی PK وەستێنرا و ژوورەکە گەڕایەوە دۆخی ئاسایی.');
+        } else {
+            roomStats.redScore = 0;
+            roomStats.blueScore = 0;
+            roomStats.pkEndTime = Date.now() + 5 * 60 * 1000;
+            syncRoomStatsToServer();
+            updateRoomStatsUI();
+            sendLiveText('⚔️ ڕکابەریی ٥ خولەکیی PK دەستی پێکرد!');
+        }
     }
 
     setInterval(() => {
         const disp = document.getElementById('pkClockDisplay');
-        if (!roomStats.pkEndTime || roomStats.pkEndTime <= Date.now()) { disp.innerText = 'PK دەستپێبکە'; return; }
+        if (!roomStats.pkEndTime || roomStats.pkEndTime <= Date.now()) {
+            disp.innerText = '⚔️ PK دەستپێبکە';
+            const arena = document.querySelector('.pk-arena-container');
+            if (arena && arena.classList.contains('pk-active')) updateRoomStatsUI();
+            return;
+        }
         const rem = Math.max(0, Math.floor((roomStats.pkEndTime - Date.now()) / 1000));
-        disp.innerText = `${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}`;
+        disp.innerText = `🛑 ${String(Math.floor(rem / 60)).padStart(2, '0')}:${String(rem % 60).padStart(2, '0')}`;
     }, 1000);
+
+    // گوێگرتن بۆ وەرگرتنی ئەڵماسی دیاری لەلایەن هاوڕێیانەوە لە کاتی ڕاستەقینەدا
+    firebase.auth().onAuthStateChanged((u) => {
+        if (!u || u.isAnonymous) return;
+        const myWalletDiamondsRef = firebase.database().ref(`players/${u.uid}/wallet/diamonds`);
+        myWalletDiamondsRef.on('value', snap => {
+            if (snap.exists()) {
+                const serverDiamonds = snap.val();
+                localStorage.setItem('yk_wallet_diamonds', String(serverDiamonds));
+                if (window.YariWallet && YariWallet.updateWalletUI) YariWallet.updateWalletUI();
+            }
+        });
+        firebase.database().ref(`players/${u.uid}/giftNotifications`).limitToLast(1).on('child_added', snap => {
+            const n = snap.val();
+            if (n && n.ts >= joinTimestamp - 3000) {
+                appendChatLine(`💎 <b>پیرۆزە! +${n.diamonds} ئەڵماست</b> پێگەیشت لە دیارییەکەی <b>${n.fromName}</b>!`, true);
+            }
+        });
+    });
 
     window.addEventListener('DOMContentLoaded', () => {
         initPixi120();
