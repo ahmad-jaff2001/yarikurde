@@ -370,11 +370,14 @@
                 <span id="profName">ناوی یاریزان</span>
                 <i class="fa-solid fa-pen-to-square text-[13px] cursor-pointer" style="color: var(--text-muted);" onclick="editProfile()"></i>
             </div>
+           <div style="display:flex; gap:8px; justify-content:center; margin-top:10px;">
+                <button onclick="YariAuth.openAuthModal()" style="background:linear-gradient(135deg,#ffd000,#ff8800); color:#1a0f00; border:none; border-radius:12px; padding:6px 14px; font-weight:900; font-size:12px; cursor:pointer;">چوونەژوورەوە (Google / ئیمەیڵ)</button>
+                <button onclick="YariAuth.logoutAccount()" style="background:rgba(239,68,68,0.25); color:#fca5a5; border:1px solid #ef4444; border-radius:12px; padding:6px 12px; font-weight:800; font-size:12px; cursor:pointer;">چوونەدەرەوە</button>
+            </div>
             <div class="p-id" onclick="copyMyID()" title="کۆپیکردنی ئایدی">
                 <span>ID:</span> <span id="profID">17119950916</span>
                 <i class="fa-regular fa-copy"></i>
             </div>
-            
             <div class="badges-row">
                 <div class="badge-pill">🇮🇶 عێراق</div>
                 <div class="badge-pill"><i class="fa-solid fa-mars text-blue-400"></i> نێر</div>
@@ -497,6 +500,8 @@
     <script src="online-engine.js"></script>
     <script src="wallet-engine.js"></script>
     <script src="admin-engine.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+<script src="auth-engine.js"></script>
 
     <script>
         function copyMyID() {
