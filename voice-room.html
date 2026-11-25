@@ -1420,7 +1420,7 @@
     }
 
     // =========================================================================
-    // ٣. تۆڕی مایکەکان (سەرەتا ٥ مایک لە Lv.1 -> تا ١٨ مایک لە Lv.60+)
+    // ٣. تۆڕی مایکەکان (١٠٠٪ زیندوو + دەرچوونی خۆکار لەسەر مایک)
     // =========================================================================
     const seats18 = Array.from({ length: 18 }, (_, idx) => ({
         index: idx,
@@ -1482,14 +1482,25 @@
         });
     }
 
+    function leaveMyCurrentSeat() {
+        if (mySeatIndex !== null && seats18[mySeatIndex] && seats18[mySeatIndex].uid === me.uid) {
+            const oldIdx = mySeatIndex;
+            resetSeat(oldIdx);
+            mySeatIndex = null;
+            if (roomDbRef) {
+                const oldRef = roomDbRef.child(`seats/${oldIdx}`);
+                oldRef.onDisconnect().cancel();
+                oldRef.remove();
+            }
+            render18Seats();
+        }
+    }
+
     function handleSeatTap(idx) {
         const seat = seats18[idx];
         if (!seat) return;
         if (!seat.occupied) {
-            if (mySeatIndex !== null && seats18[mySeatIndex].uid === me.uid) {
-                resetSeat(mySeatIndex);
-                if (roomDbRef) roomDbRef.child(`seats/${mySeatIndex}`).set(seats18[mySeatIndex]);
-            }
+            leaveMyCurrentSeat();
             seat.occupied = true;
             seat.uid = me.uid;
             seat.name = me.name;
@@ -1498,13 +1509,14 @@
             seat.muted = !micEnabled;
             mySeatIndex = idx;
             render18Seats();
-            if (roomDbRef) roomDbRef.child(`seats/${idx}`).set(seat);
+            if (roomDbRef) {
+                const seatRef = roomDbRef.child(`seats/${idx}`);
+                seatRef.set(seat);
+                seatRef.onDisconnect().remove();
+            }
         } else if (seat.uid === me.uid) {
             if (confirm('دەتەوێت لەسەر مایک دابەزیت؟')) {
-                resetSeat(idx);
-                mySeatIndex = null;
-                render18Seats();
-                if (roomDbRef) roomDbRef.child(`seats/${idx}`).set(seats18[idx]);
+                leaveMyCurrentSeat();
             }
         } else {
             selectedRecipients = [idx];
@@ -1520,10 +1532,16 @@
         seats18[idx].avatar = null;
         seats18[idx].muted = true;
         seats18[idx].speaking = false;
+        seats18[idx].support = 0;
     }
 
+    window.addEventListener('pagehide', () => {
+        leaveMyCurrentSeat();
+        if (roomDbRef) roomDbRef.child(`presence/${me.uid}`).remove();
+    });
+
     // =========================================================================
-    // ٤. پەیوەندیی ڕاستەوخۆ بە Firebase (سێرڤەری یاری کوردی)
+    // ٤. پەیوەندیی ڕاستەوخۆ بە Firebase (١٠٠٪ ڕاستەقینە بێ ژمارەی ساختە)
     // =========================================================================
     function connectRoomToServer() {
         renderRealAudience([{ uid: me.uid, name: me.name, avatar: me.avatar }]);
@@ -1532,17 +1550,13 @@
             return;
         }
 
-        if (firebase.auth && !firebase.auth().currentUser) {
-            firebase.auth().signInAnonymously().catch(() => {});
-        }
-
         roomDbRef = firebase.database().ref(`voice_rooms_live/${activeRoomId}`);
+        const listCountRef = firebase.database().ref(`voice_rooms_list/${activeRoomId}/onlineCount`);
 
         const myPresenceRef = roomDbRef.child(`presence/${me.uid}`);
         myPresenceRef.set({ uid: me.uid, name: me.name, avatar: me.avatar, joinedAt: joinTimestamp });
         myPresenceRef.onDisconnect().remove();
 
-        // تۆمارکردنی میوانی نوێ (+50 XP بۆ هەر سەردانیکەرێکی نوێ)
         const visitorRef = roomDbRef.child(`uniqueVisitors/${me.uid}`);
         visitorRef.once('value', vSnap => {
             if (!vSnap.exists()) {
@@ -1558,26 +1572,52 @@
 
         roomDbRef.child('presence').on('value', snap => {
             const val = snap.val() || {};
+            const activeUids = new Set(Object.keys(val));
             onlineUsersList = Object.values(val);
-            const count = Math.max(1, onlineUsersList.length);
-            renderRealAudience(onlineUsersList.length ? onlineUsersList : [{ uid: me.uid, name: me.name, avatar: me.avatar }]);
-            firebase.database().ref(`voice_rooms_list/${activeRoomId}/onlineCount`).set(count);
+            const count = onlineUsersList.length;
+
+            renderRealAudience(onlineUsersList);
+            listCountRef.set(count);
+            if (count <= 1) listCountRef.onDisconnect().set(0);
+            else listCountRef.onDisconnect().cancel();
+
+            // پاککردنەوەی خۆکاری هەر کەسێک کە لە ژوور دەرچووە بەڵام لەسەر مایک مابووەوە
+            let cleaned = false;
+            seats18.forEach((s, i) => {
+                if (s.occupied && s.uid && !activeUids.has(s.uid)) {
+                    resetSeat(i);
+                    roomDbRef.child(`seats/${i}`).remove();
+                    cleaned = true;
+                }
+            });
+            if (cleaned) render18Seats();
+
+            // داخستنی دەنگی ئەوانەی دەرچوون
+            Object.keys(peerConnections).forEach(key => {
+                const remoteUid = key.replace(/^(caller|callee)_/, '');
+                if (!activeUids.has(remoteUid)) {
+                    try { peerConnections[key].close(); } catch (e) {}
+                    delete peerConnections[key];
+                    const audioEl = document.getElementById(`remote-audio-${remoteUid}`);
+                    if (audioEl) audioEl.remove();
+                }
+            });
+
             if (micEnabled && micStream) connectVoiceToPeers();
         });
 
         roomDbRef.child('seats').on('value', snap => {
-            const serverSeats = snap.val();
-            if (serverSeats) {
-                for (let i = 0; i < 18; i++) {
-                    if (serverSeats[i]) {
-                        Object.assign(seats18[i], serverSeats[i]);
-                        if (seats18[i].uid === me.uid) mySeatIndex = i;
-                    }
+            const serverSeats = snap.val() || {};
+            mySeatIndex = null;
+            for (let i = 0; i < 18; i++) {
+                if (serverSeats[i] && serverSeats[i].occupied && serverSeats[i].uid) {
+                    Object.assign(seats18[i], serverSeats[i]);
+                    if (seats18[i].uid === me.uid) mySeatIndex = i;
+                } else {
+                    resetSeat(i);
                 }
-                render18Seats();
-            } else if (roomMeta.ownerUid === me.uid || activeRoomId === 'room_7701') {
-                handleSeatTap(0);
             }
+            render18Seats();
         });
 
         roomDbRef.child('stats').on('value', snap => {
@@ -1638,14 +1678,16 @@
     }
 
     // =========================================================================
-    // ٥. مەکینەی دەنگی ڕاستەوخۆی نێوان مۆبایلەکان (WebRTC Audio)
+    // ٥. مەکینەی دەنگی ڕاستەوخۆی پڕۆفیشناڵ (WebRTC HD Audio + Voice Wave)
     // =========================================================================
     let micEnabled = false, micStream = null, roomMuted = false;
+    let voiceAudioCtx = null, voiceAnalyserTimer = null;
     const peerConnections = {};
-   const rtcConfig = {
+    const rtcConfig = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
+            { urls: 'stun:stun2.l.google.com:19302' },
             {
                 urls: 'turn:openrelay.metered.ca:80',
                 username: 'openrelayproject',
@@ -1659,7 +1701,6 @@
         ]
     };
 
-    // کردنەوەی قفڵی دەنگ لەسەر مۆبایل بە یەکەم دەستلێدان
     function unlockAllRemoteAudio() {
         document.querySelectorAll('audio[id^="remote-audio-"]').forEach(a => {
             a.muted = roomMuted;
@@ -1672,12 +1713,13 @@
     function initWebRTCReceiver() {
         if (!roomDbRef) return;
         const myInbox = roomDbRef.child(`rtcSignals/${me.uid}`);
+        myInbox.remove(); // پاککردنەوەی سیگناڵە کۆنەکان لە کاتی هاتنەژوورەوە
         myInbox.onDisconnect().remove();
 
-        const handleIncomingOffer = async (snap) => {
-            const fromUid = snap.key;
+        myInbox.on('child_added', async (snap) => {
             const data = snap.val();
-            if (!data || !data.offer || data.answer) return;
+            if (!data || !data.offer || !data.fromUid) return;
+            const fromUid = data.fromUid;
 
             const pc = createPeer(fromUid, snap.ref, 'callee');
             try {
@@ -1692,10 +1734,7 @@
             } catch (err) {
                 console.error('WebRTC Answer Error:', err);
             }
-        };
-
-        myInbox.on('child_added', handleIncomingOffer);
-        myInbox.on('child_changed', handleIncomingOffer);
+        });
     }
 
     function createPeer(remoteUid, sigRef, role) {
@@ -1743,14 +1782,19 @@
                 continue;
             }
 
-            const sigRef = roomDbRef.child(`rtcSignals/${u.uid}/${me.uid}`);
-            await sigRef.remove();
+            const callKey = `${me.uid}_${Date.now()}`;
+            const sigRef = roomDbRef.child(`rtcSignals/${u.uid}/${callKey}`);
+            sigRef.onDisconnect().remove();
 
             const pc = createPeer(u.uid, sigRef, 'caller');
             const offer = await pc.createOffer({ offerToReceiveAudio: false });
             await pc.setLocalDescription(offer);
 
-            await sigRef.set({ offer: { type: offer.type, sdp: offer.sdp }, ts: Date.now() });
+            await sigRef.set({
+                fromUid: me.uid,
+                offer: { type: offer.type, sdp: offer.sdp },
+                ts: Date.now()
+            });
 
             const pendingCandidates = [];
             sigRef.child('calleeCandidates').on('child_added', cSnap => {
@@ -1776,6 +1820,35 @@
         }
     }
 
+    function startMicWaveMonitor(stream) {
+        stopMicWaveMonitor();
+        try {
+            voiceAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const src = voiceAudioCtx.createMediaStreamSource(stream);
+            const analyser = voiceAudioCtx.createAnalyser();
+            analyser.fftSize = 256;
+            src.connect(analyser);
+            const dataArr = new Uint8Array(analyser.frequencyBinCount);
+            voiceAnalyserTimer = setInterval(() => {
+                analyser.getByteFrequencyData(dataArr);
+                const avg = dataArr.reduce((a, b) => a + b, 0) / dataArr.length;
+                if (mySeatIndex !== null) {
+                    const cell = document.getElementById(`seat-cell-${mySeatIndex}`);
+                    if (cell) cell.classList.toggle('speaking', avg > 15);
+                }
+            }, 150);
+        } catch (e) {}
+    }
+
+    function stopMicWaveMonitor() {
+        if (voiceAnalyserTimer) { clearInterval(voiceAnalyserTimer); voiceAnalyserTimer = null; }
+        if (voiceAudioCtx) { try { voiceAudioCtx.close(); } catch (e) {} voiceAudioCtx = null; }
+        if (mySeatIndex !== null) {
+            const cell = document.getElementById(`seat-cell-${mySeatIndex}`);
+            if (cell) cell.classList.remove('speaking');
+        }
+    }
+
     async function toggleVoiceMic() {
         const btn = document.getElementById('micToggleBtn');
         if (!micEnabled) {
@@ -1793,13 +1866,21 @@
                     render18Seats();
                     if (roomDbRef) roomDbRef.child(`seats/${mySeatIndex}/muted`).set(false);
                 }
+                startMicWaveMonitor(micStream);
                 connectVoiceToPeers();
             } catch (e) {
                 alert('تکایە ڕێگە بە مایکرۆفۆن بدە.');
             }
         } else {
             micEnabled = false;
+            stopMicWaveMonitor();
             if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
+            Object.keys(peerConnections).forEach(k => {
+                if (k.startsWith('caller_')) {
+                    try { peerConnections[k].close(); } catch (e) {}
+                    delete peerConnections[k];
+                }
+            });
             btn.classList.remove('mic-active');
             btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
             if (mySeatIndex !== null) {
@@ -1808,6 +1889,14 @@
                 if (roomDbRef) roomDbRef.child(`seats/${mySeatIndex}/muted`).set(true);
             }
         }
+    }
+
+    function toggleRoomSpeaker() {
+        roomMuted = !roomMuted;
+        document.querySelectorAll('audio[id^="remote-audio-"]').forEach(a => { a.muted = roomMuted; });
+        document.getElementById('speakerToggleBtn').innerHTML = roomMuted
+            ? '<i class="fa-solid fa-volume-xmark" style="color:#fb7185;"></i>'
+            : '<i class="fa-solid fa-volume-high"></i>';
     }
 
     function toggleRoomSpeaker() {
