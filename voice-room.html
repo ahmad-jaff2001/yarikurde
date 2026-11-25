@@ -1642,15 +1642,34 @@
     // =========================================================================
     let micEnabled = false, micStream = null, roomMuted = false;
     const peerConnections = {};
-    const rtcConfig = {
+   const rtcConfig = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun2.l.google.com:19302' }
+            {
+                urls: 'turn:openrelay.metered.ca:80',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            },
+            {
+                urls: 'turn:openrelay.metered.ca:443',
+                username: 'openrelayproject',
+                credential: 'openrelayproject'
+            }
         ]
     };
 
-   function initWebRTCReceiver() {
+    // کردنەوەی قفڵی دەنگ لەسەر مۆبایل بە یەکەم دەستلێدان
+    function unlockAllRemoteAudio() {
+        document.querySelectorAll('audio[id^="remote-audio-"]').forEach(a => {
+            a.muted = roomMuted;
+            a.play().catch(() => {});
+        });
+    }
+    document.addEventListener('click', unlockAllRemoteAudio);
+    document.addEventListener('touchstart', unlockAllRemoteAudio);
+
+    function initWebRTCReceiver() {
         if (!roomDbRef) return;
         const myInbox = roomDbRef.child(`rtcSignals/${me.uid}`);
         myInbox.onDisconnect().remove();
@@ -1658,37 +1677,36 @@
         const handleIncomingOffer = async (snap) => {
             const fromUid = snap.key;
             const data = snap.val();
-            if (!data || !data.offer) return;
+            if (!data || !data.offer || data.answer) return;
 
             const pc = createPeer(fromUid, snap.ref, 'callee');
-            await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
+            try {
+                await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                await snap.ref.child('answer').set({ type: answer.type, sdp: answer.sdp });
 
-            // وەڵامەکە دەنێرێتەوە بۆ هەمان شوێن کە نێرەر چاوەڕێیەتی
-            await snap.ref.child('answer').set({ type: answer.type, sdp: answer.sdp });
-
-            snap.ref.child('callerCandidates').on('child_added', cSnap => {
-                if (cSnap.val()) pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
-            });
+                snap.ref.child('callerCandidates').on('child_added', cSnap => {
+                    if (cSnap.val()) pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
+                });
+            } catch (err) {
+                console.error('WebRTC Answer Error:', err);
+            }
         };
 
         myInbox.on('child_added', handleIncomingOffer);
-        myInbox.on('child_changed', (snap) => {
-            const fromUid = snap.key;
-            const data = snap.val();
-            if (data && data.offer && !data.answer) handleIncomingOffer(snap);
-        });
+        myInbox.on('child_changed', handleIncomingOffer);
     }
 
     function createPeer(remoteUid, sigRef, role) {
-        if (peerConnections[remoteUid]) {
-            try { peerConnections[remoteUid].close(); } catch (e) {}
+        const key = `${role}_${remoteUid}`;
+        if (peerConnections[key]) {
+            try { peerConnections[key].close(); } catch (e) {}
         }
         const pc = new RTCPeerConnection(rtcConfig);
-        peerConnections[remoteUid] = pc;
+        peerConnections[key] = pc;
 
-        if (micEnabled && micStream) {
+        if (role === 'caller' && micEnabled && micStream) {
             micStream.getTracks().forEach(t => pc.addTrack(t, micStream));
         }
 
@@ -1720,22 +1738,40 @@
         for (const u of onlineUsersList) {
             if (u.uid === me.uid) continue;
 
+            const existing = peerConnections[`caller_${u.uid}`];
+            if (existing && (existing.connectionState === 'connected' || existing.connectionState === 'connecting')) {
+                continue;
+            }
+
             const sigRef = roomDbRef.child(`rtcSignals/${u.uid}/${me.uid}`);
             await sigRef.remove();
 
             const pc = createPeer(u.uid, sigRef, 'caller');
-            const offer = await pc.createOffer({ offerToReceiveAudio: true });
+            const offer = await pc.createOffer({ offerToReceiveAudio: false });
             await pc.setLocalDescription(offer);
 
             await sigRef.set({ offer: { type: offer.type, sdp: offer.sdp }, ts: Date.now() });
 
-            sigRef.child('answer').on('value', aSnap => {
-                if (aSnap.val() && !pc.currentRemoteDescription) {
-                    pc.setRemoteDescription(new RTCSessionDescription(aSnap.val())).catch(() => {});
+            const pendingCandidates = [];
+            sigRef.child('calleeCandidates').on('child_added', cSnap => {
+                if (!cSnap.val()) return;
+                if (pc.remoteDescription) {
+                    pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
+                } else {
+                    pendingCandidates.push(cSnap.val());
                 }
             });
-            sigRef.child('calleeCandidates').on('child_added', cSnap => {
-                if (cSnap.val()) pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
+
+            sigRef.child('answer').on('value', async aSnap => {
+                if (aSnap.val() && !pc.remoteDescription) {
+                    try {
+                        await pc.setRemoteDescription(new RTCSessionDescription(aSnap.val()));
+                        for (const cand of pendingCandidates) {
+                            await pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+                        }
+                        pendingCandidates.length = 0;
+                    } catch (err) {}
+                }
             });
         }
     }
