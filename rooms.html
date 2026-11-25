@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ژوورە دەنگییەکان | یاری کوردی</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #05030f;
+            --gold: #ffb800;
+            --gold-bright: #ffe680;
+            --gold-grad: linear-gradient(135deg, #ffd000 0%, #ff8800 100%);
+            --card-bg: rgba(20, 10, 48, 0.82);
+            --border-gold: rgba(255, 184, 0, 0.42);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: linear-gradient(to bottom, rgba(5, 3, 15, 0.72), rgba(5, 3, 15, 0.96)),
+                        url('images.png/background.png') no-repeat center top / cover;
+            background-color: var(--bg-dark);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 40px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 16px;
+        }
+
+        /* سەرپەڕە */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 19px;
+            font-weight: 900;
+            color: var(--gold-bright);
+        }
+
+        /* دوگمەی دروستکردنی ژوور */
+        .create-room-banner {
+            background: linear-gradient(135deg, rgba(126, 34, 206, 0.45), rgba(24, 11, 56, 0.9));
+            border: 1.5px solid var(--gold);
+            border-radius: 22px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 18px;
+            box-shadow: 0 10px 30px rgba(255, 184, 0, 0.22);
+            cursor: pointer;
+        }
+
+        .create-btn {
+            background: var(--gold-grad);
+            color: #1a0f00;
+            border: none;
+            border-radius: 16px;
+            padding: 9px 15px;
+            font-size: 13px;
+            font-weight: 900;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        /* لیستی ژوورە دروستکراوەکان */
+        .rooms-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .room-item-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid var(--border-gold);
+            border-radius: 20px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .room-item-card:active {
+            transform: scale(0.98);
+        }
+
+        .room-cover {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .room-info {
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .room-name {
+            font-size: 15px;
+            font-weight: 900;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 3px;
+        }
+
+        .room-owner {
+            font-size: 11.5px;
+            color: #d8b4fe;
+            margin-bottom: 5px;
+        }
+
+        .room-tags {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-pill {
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255, 184, 0, 0.16);
+            color: var(--gold-bright);
+            border: 1px solid rgba(255, 184, 0, 0.35);
+        }
+
+        .live-wave {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(34, 197, 94, 0.18);
+            border: 1px solid rgba(34, 197, 94, 0.45);
+            color: #4ade80;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 5px 10px;
+            border-radius: 14px;
+        }
+
+        /* مۆداڵی دروستکردنی ژوور */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 2, 14, 0.86);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.open { display: flex; }
+
+        .modal-card {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(180deg, #1b0d42 0%, #0d0524 100%);
+            border: 1.5px solid var(--gold);
+            border-radius: 24px;
+            padding: 20px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 10px 12px;
+            color: #fff;
+            font-size: 13px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        .form-input:focus { border-color: var(--gold); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-bar">
+        <button class="back-btn" onclick="window.location.href='index.html'">
+            <i class="fa-solid fa-arrow-right"></i>
+        </button>
+        <div class="page-title">🎙️ ژوورە دەنگییەکان</div>
+        <div style="width:40px;"></div>
+    </div>
+
+    <!-- کارتی دروستکردنی ژووری هەمیشەیی -->
+    <div class="create-room-banner" onclick="openCreateRoomModal()">
+        <div>
+            <div style="font-size:15px; font-weight:900; color:var(--gold-bright);">دیوەخانی تایبەتی خۆت دروست بکە 👑</div>
+            <div style="font-size:11.5px; color:#e9d5ff; margin-top:2px;">ژوورەکەت هەمیشەیی دەبێت و لە پڕۆفایلەکەتدا دەردەکەوێت</div>
+        </div>
+        <button class="create-btn" id="createOrMyRoomBtn">+ ژووری نوێ</button>
+    </div>
+
+    <div style="font-size:13px; font-weight:900; color:#d8b4fe; margin-bottom:10px;">
+        هەموو ژوورە چالاکەکان (<span id="roomsCount">0</span>)
+    </div>
+
+    <div class="rooms-grid" id="roomsListContainer"></div>
+</div>
+
+<!-- مۆداڵی دروستکردنی ژوور -->
+<div class="modal-overlay" id="createRoomModal" onclick="if(event.target===this) this.classList.remove('open')">
+    <div class="modal-card">
+        <div style="font-size:17px; font-weight:900; color:var(--gold); margin-bottom:12px;">✨ دروستکردنی ژووری دەنگی</div>
+        <div style="font-size:12px; color:#d8b4fe; margin-bottom:5px;">ناوی دیوەخان / ژوورەکەت:</div>
+        <input type="text" id="newRoomTitle" class="form-input" maxlength="32" placeholder="نموونە: دیوەخانی سلێمانی 👑">
+
+        <div style="font-size:12px; color:#d8b4fe; margin-bottom:5px;">جۆری ژوور:</div>
+        <select id="newRoomCategory" class="form-input">
+            <option value="گفتوگۆ و گۆرانی">🎵 گفتوگۆ و گۆرانی</option>
+            <option value="یاری و PK">⚔️ یاری و PK</option>
+            <option value="دیوەخانی VIP">👑 دیوەخانی VIP</option>
+        </select>
+
+        <div style="display:flex; gap:10px; margin-top:6px;">
+            <button class="create-btn" style="flex:1; padding:11px;" onclick="saveNewPermanentRoom()">دروستکردن و چوونەژوورەوە</button>
+            <button onclick="document.getElementById('createRoomModal').classList.remove('open')" style="background:rgba(255,255,255,0.1); border:none; color:#fff; border-radius:14px; padding:0 16px; cursor:pointer;">داخستن</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="online-engine.js"></script>
+<script src="wallet-engine.js"></script>
+<script src="admin-engine.js"></script>
+
+<script>
+    const me = {
+        uid: localStorage.getItem('yk_player_uid') || 'player_' + Math.floor(10000 + Math.random() * 90000),
+        name: localStorage.getItem('yk_player_name') || 'یاریزان',
+        avatar: localStorage.getItem('yk_player_avatar') || 'images.png/controller.png'
+    };
+    localStorage.setItem('yk_player_uid', me.uid);
+
+    const DEFAULT_ROOMS = [
+        {
+            id: 'room_7701',
+            displayId: '7701',
+            title: 'دیوەخانی شاهانەی کوردی 👑',
+            category: 'دیوەخانی VIP',
+            ownerUid: 'official_yk',
+            ownerName: 'یاری کوردی',
+            avatar: 'images.png/diwaxan-bg.jpg',
+            onlineCount: 42
+        }
+    ];
+
+    function getSavedRooms() {
+        const local = JSON.parse(localStorage.getItem('yk_permanent_rooms') || '[]');
+        if (local.length === 0) {
+            localStorage.setItem('yk_permanent_rooms', JSON.stringify(DEFAULT_ROOMS));
+            return DEFAULT_ROOMS;
+        }
+        return local;
+    }
+
+    function renderRoomsList(rooms) {
+        const container = document.getElementById('roomsListContainer');
+        document.getElementById('roomsCount').innerText = rooms.length;
+        container.innerHTML = '';
+
+        // پشکنین ئایا یاریزانەکە خۆی ژووری هەیە
+        const myRoom = rooms.find(r => r.ownerUid === me.uid);
+        const topBtn = document.getElementById('createOrMyRoomBtn');
+        if (myRoom) {
+            topBtn.innerText = 'چوونە ژوورەکەم 🎙️';
+            topBtn.onclick = (e) => {
+                e.stopPropagation();
+                enterRoom(myRoom.id);
+            };
+        }
+
+        rooms.forEach(room => {
+            const card = document.createElement('div');
+            card.className = 'room-item-card';
+            card.onclick = () => enterRoom(room.id);
+            card.innerHTML = `
+                <img src="${room.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="room-cover" alt="">
+                <div class="room-info">
+                    <div class="room-name">${room.title}</div>
+                    <div class="room-owner">سەرۆک: <b>${room.ownerName}</b> • ID: ${room.displayId}</div>
+                    <div class="room-tags">
+                        <span class="tag-pill">${room.category || 'گفتوگۆ'}</span>
+                        ${room.ownerUid === me.uid ? '<span class="tag-pill" style="background:rgba(56,189,248,0.2); color:#38bdf8; border-color:#38bdf8;">ژوورەکەی من</span>' : ''}
+                    </div>
+                </div>
+                <div class="live-wave">
+                    <i class="fa-solid fa-signal"></i>
+                    <span>${room.onlineCount || 12}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function openCreateRoomModal() {
+        const rooms = getSavedRooms();
+        const existing = rooms.find(r => r.ownerUid === me.uid);
+        if (existing) {
+            enterRoom(existing.id);
+            return;
+        }
+        document.getElementById('newRoomTitle').value = `دیوەخانی ${me.name}`;
+        document.getElementById('createRoomModal').classList.add('open');
+    }
+
+    function saveNewPermanentRoom() {
+        const title = document.getElementById('newRoomTitle').value.trim();
+        const category = document.getElementById('newRoomCategory').value;
+        if (!title) {
+            alert('تکایە ناوێک بۆ ژوورەکەت بنووسە!');
+            return;
+        }
+
+        const displayId = String(Math.floor(1000 + Math.random() * 8999));
+        const roomId = 'room_' + displayId;
+
+        const newRoom = {
+            id: roomId,
+            displayId: displayId,
+            title: title,
+            category: category,
+            ownerUid: me.uid,
+            ownerName: me.name,
+            avatar: me.avatar,
+            onlineCount: 1,
+            createdAt: Date.now()
+        };
+
+        // پاشەکەوتکردنی هەمیشەیی لە مۆبایل و پڕۆفایلدا
+        const rooms = getSavedRooms();
+        rooms.unshift(newRoom);
+        localStorage.setItem('yk_permanent_rooms', JSON.stringify(rooms));
+        localStorage.setItem('yk_my_own_room', JSON.stringify(newRoom));
+
+        // پاشەکەوتکردنی هەمیشەیی لە Firebase تا هەرگیز نەسڕێتەوە
+        if (window.firebase && firebase.apps.length) {
+            firebase.database().ref(`voice_rooms_list/${roomId}`).set(newRoom);
+            firebase.database().ref(`players/${me.uid}/myRoom`).set(newRoom);
+        }
+
+        enterRoom(roomId);
+    }
+
+    function enterRoom(roomId) {
+        window.location.href = `voice-room.html?roomId=${encodeURIComponent(roomId)}`;
+    }
+
+    function syncRoomsFromFirebase() {
+        const localRooms = getSavedRooms();
+        renderRoomsList(localRooms);
+
+        if (window.firebase && firebase.apps.length) {
+            firebase.database().ref('voice_rooms_list').on('value', (snap) => {
+                const val = snap.val();
+                if (val) {
+                    const serverList = Object.values(val);
+                    // تێکەڵکردنی ژووری فەرمی و ژوورە دروستکراوەکانی سێرڤەر بێ سڕینەوە
+                    const mergedMap = {};
+                    [...DEFAULT_ROOMS, ...localRooms, ...serverList].forEach(r => {
+                        mergedMap[r.id] = r;
+                    });
+                    const finalRooms = Object.values(mergedMap).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+                    localStorage.setItem('yk_permanent_rooms', JSON.stringify(finalRooms));
+                    renderRoomsList(finalRooms);
+                }
+            });
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', syncRoomsFromFirebase);
+</script>
+</body>
+</html>

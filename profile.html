@@ -532,6 +532,29 @@
         }
 
         window.addEventListener('DOMContentLoaded', loadProfileData);
+        (function showPlayerRoomInProfile() {
+    const myRoom = JSON.parse(localStorage.getItem('yk_my_own_room') || 'null');
+    const roomCard = document.querySelector('.voice-room-card');
+    if (!roomCard) return;
+    if (myRoom) {
+        const titleEl = roomCard.querySelector('h4, .room-title, div');
+        roomCard.onclick = () => window.location.href = `voice-room.html?roomId=${myRoom.id}`;
+        roomCard.innerHTML = `
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${myRoom.avatar || 'images.png/controller.png'}" style="width:46px; height:46px; border-radius:14px; border:1.5px solid #ffb800; object-fit:cover;">
+                    <div>
+                        <div style="font-size:14px; font-weight:900; color:#ffd000;">${myRoom.title}</div>
+                        <div style="font-size:11px; color:#d8b4fe;">ID: ${myRoom.displayId} • ${myRoom.category}</div>
+                    </div>
+                </div>
+                <span style="background:linear-gradient(135deg,#ffd000,#ff8800); color:#1a0f00; font-size:11px; font-weight:900; padding:5px 12px; border-radius:14px;">چوونەژوورەوە</span>
+            </div>
+        `;
+    } else {
+        roomCard.onclick = () => window.location.href = 'rooms.html';
+    }
+})();
     </script>
 </body>
 </html>

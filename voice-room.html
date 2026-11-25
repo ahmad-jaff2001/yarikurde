@@ -807,6 +807,16 @@
     };
 
     document.getElementById('topHostAvatar').src = currentPlayer.avatar;
+    const urlRoomId = new URLSearchParams(window.location.search).get('roomId');
+if (urlRoomId) {
+    const allRooms = JSON.parse(localStorage.getItem('yk_permanent_rooms') || '[]');
+    const activeRoom = allRooms.find(r => r.id === urlRoomId);
+    if (activeRoom) {
+        document.querySelector('.host-pill-title').innerText = activeRoom.title;
+        document.querySelector('.host-pill-sub').innerHTML = `<span class="live-dot"></span><span>ID: ${activeRoom.displayId}</span> • <span>${activeRoom.category}</span>`;
+        if (activeRoom.avatar) document.getElementById('topHostAvatar').src = activeRoom.avatar;
+    }
+}
 
     let roomAudioMuted = false;
 
