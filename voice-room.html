@@ -68,28 +68,28 @@
             z-index: 22;
         }
 
-        /* شانۆی دیاریی بێ چوارچێوە - بچووککراوە و کاڵکراوە تا تەواو تێکەڵی ژوورەکە بێت */
+       /* شانۆی دیاریی گەورە و کاڵ (تێکەڵ لەگەڵ ژوورەکە) */
         #frameless-gift-stage {
             position: absolute;
             inset: 0;
             z-index: 21;
             display: none;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
+            padding-bottom: 64px;
             pointer-events: none;
         }
 
         .frameless-video {
-            width: 255px;
-            height: 255px;
+            width: 100%;
+            height: 64dvh;
             object-fit: cover;
-            border-radius: 50%;
-            opacity: 0.72;
+            opacity: 0.76;
             mix-blend-mode: screen;
-            filter: contrast(1.08) brightness(1.05);
-            -webkit-mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.95) 28%, rgba(0,0,0,0.5) 54%, transparent 73%);
-            mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.95) 28%, rgba(0,0,0,0.5) 54%, transparent 73%);
-            animation: holoSoftPop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            filter: contrast(1.06) brightness(1.04);
+            -webkit-mask-image: radial-gradient(ellipse 90% 82% at 50% 52%, rgba(0,0,0,0.95) 36%, rgba(0,0,0,0.55) 66%, transparent 96%);
+            mask-image: radial-gradient(ellipse 90% 82% at 50% 52%, rgba(0,0,0,0.95) 36%, rgba(0,0,0,0.55) 66%, transparent 96%);
+            animation: holoSoftPop 0.4s ease-out;
         }
 
         @keyframes holoSoftPop {
