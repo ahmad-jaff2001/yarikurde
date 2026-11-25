@@ -160,8 +160,13 @@
         document.body.appendChild(div);
     }
 
-    auth.onAuthStateChanged((user) => {
-        if (user) syncUserAccount(user);
+   auth.onAuthStateChanged((user) => {
+        if (user) {
+            syncUserAccount(user);
+            closeAuthModal();
+        } else {
+            openAuthModal();
+        }
     });
 
     window.YariAuth = {
