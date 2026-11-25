@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ژووری دەنگی شاهانە | یاری کوردی</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- مەکینەی PixiJS v7 بۆ گرافیکی 120FPS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+
+    <style>
+        :root {
+            --gold: #ffb800;
+            --gold-light: #ffe066;
+            --gold-grad: linear-gradient(135deg, #ffd000 0%, #ff8800 100%);
+            --glass-bg: rgba(16, 8, 38, 0.72);
+            --glass-border: rgba(255, 184, 0, 0.38);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background: #060212;
+            color: #ffffff;
+            height: 100dvh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+        }
+
+        .app-shell {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+        }
+
+        /* باکگراوندی شاهانەی Yari Kurdi */
+        .room-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(180deg, rgba(8, 3, 24, 0.55) 0%, rgba(8, 3, 24, 0.22) 45%, rgba(6, 2, 18, 0.92) 100%),
+                url('images.png/voice-bg.png') center center / cover no-repeat,
+                radial-gradient(circle at top, #3b0764, #070312);
+            z-index: 0;
+        }
+
+        /* چینی 120FPS PixiJS */
+        #pixi-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* پەنجەرەی پیشاندانی ڤیدیۆی دیارییەکان (TikTok Gift Overlay) */
+        #gift-video-stage {
+            position: absolute;
+            inset: 0;
+            z-index: 25;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            padding: 20px;
+        }
+
+        .gift-video-card {
+            position: relative;
+            width: 92%;
+            max-width: 360px;
+            border-radius: 26px;
+            overflow: hidden;
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 45px rgba(255, 184, 0, 0.65), 0 20px 50px rgba(0, 0, 0, 0.9);
+            background: rgba(10, 4, 26, 0.85);
+            animation: giftZoomIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes giftZoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .gift-video-card video,
+        .gift-video-card img {
+            width: 100%;
+            max-height: 56dvh;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* بانەری لای ڕاست لە کاتی ناردنی دیاری */
+        .gift-toast-banner {
+            position: absolute;
+            top: 44%;
+            right: 12px;
+            transform: translateX(130%);
+            background: linear-gradient(90deg, rgba(255, 184, 0, 0.25), rgba(20, 9, 52, 0.95));
+            border: 1.5px solid var(--gold);
+            border-radius: 40px;
+            padding: 6px 14px 6px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 28;
+            box-shadow: 0 8px 25px rgba(255, 184, 0, 0.4);
+            transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .gift-toast-banner.show {
+            transform: translateX(0);
+        }
+
+        .gift-toast-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            object-fit: cover;
+        }
+
+        .gift-combo-num {
+            font-size: 21px;
+            font-weight: 900;
+            color: var(--gold-light);
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255, 184, 0, 0.9);
+        }
+
+        /* ١. بەشی سەرەوەی ژوور (TikTok Top Header) */
+        .top-header {
+            position: relative;
+            z-index: 10;
+            padding: 10px 12px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .host-pill {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            padding: 4px 6px 4px 12px;
+            max-width: 58%;
+        }
+
+        .host-pill img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold);
+            object-fit: cover;
+        }
+
+        .host-pill-title {
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .host-pill-sub {
+            font-size: 10px;
+            color: var(--gold-light);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .viewer-badge {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .icon-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .icon-circle.gold {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* شریتی دووەم: گۆڵد و ئەڵماس و PK */
+        .second-bar {
+            position: relative;
+            z-index: 10;
+            padding: 2px 12px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .wallet-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .w-pill {
+            background: var(--glass-bg);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 3px 9px;
+            font-size: 11px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .pk-btn {
+            background: linear-gradient(135deg, #ef4444, #2563eb);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 4px 12px;
+            border-radius: 16px;
+            cursor: pointer;
+        }
+
+        /* شریتی PK */
+        .pk-box {
+            position: relative;
+            z-index: 10;
+            margin: 0 12px 6px;
+            background: rgba(12, 6, 30, 0.86);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 6px 10px;
+            display: none;
+        }
+
+        .pk-box.active { display: block; }
+
+        .pk-scores {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+
+        .pk-bar {
+            height: 9px;
+            width: 100%;
+            background: #2563eb;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .pk-red {
+            height: 100%;
+            width: 50%;
+            background: linear-gradient(90deg, #dc2626, #f97316);
+            transition: width 0.35s ease;
+        }
+
+        /* ٢. تۆڕی ١٦ مایکەکە (١ سەرۆک + ١٥ میوان) */
+        .mics-wrapper {
+            position: relative;
+            z-index: 10;
+            padding: 2px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .host-seat-row {
+            display: flex;
+            justify-content: center;
+        }
+
+        .guests-seat-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px 4px;
+        }
+
+        .mic-slot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .mic-ring {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(18, 9, 42, 0.72);
+            backdrop-filter: blur(8px);
+            border: 1.5px solid rgba(255, 184, 0, 0.38);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mic-slot.host .mic-ring {
+            width: 62px;
+            height: 62px;
+            border: 2.5px solid var(--gold);
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.45);
+        }
+
+        .mic-ring img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* شەپۆلی زێڕین لە کاتی قسەکردندا */
+        .mic-slot.speaking .mic-ring::after {
+            content: '';
+            position: absolute;
+            inset: -5px;
+            border-radius: 50%;
+            border: 2px solid #ffd000;
+            animation: pulseWave 0.95s infinite ease-out;
+        }
+
+        @keyframes pulseWave {
+            0% { transform: scale(0.95); opacity: 1; }
+            100% { transform: scale(1.28); opacity: 0; }
+        }
+
+        .crown-top {
+            position: absolute;
+            top: -11px;
+            color: var(--gold);
+            font-size: 14px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.9));
+        }
+
+        .mic-mute-dot {
+            position: absolute;
+            bottom: -2px;
+            left: -2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #100726;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+        }
+
+        .mic-username {
+            font-size: 10px;
+            font-weight: 700;
+            margin-top: 3px;
+            max-width: 62px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 4px #000;
+        }
+
+        .mic-points {
+            font-size: 9px;
+            font-weight: 800;
+            color: var(--gold-light);
+            background: rgba(0, 0, 0, 0.55);
+            padding: 0 6px;
+            border-radius: 8px;
+        }
+
+        .seat-emoji-float {
+            position: absolute;
+            top: -8px;
+            font-size: 26px;
+            z-index: 22;
+            pointer-events: none;
+            animation: floatEmoji 1.7s forwards;
+        }
+
+        @keyframes floatEmoji {
+            0% { transform: scale(0.3) translateY(8px); opacity: 0; }
+            25% { transform: scale(1.25) translateY(-4px); opacity: 1; }
+            80% { transform: scale(1) translateY(-10px); opacity: 1; }
+            100% { transform: scale(0.8) translateY(-22px); opacity: 0; }
+        }
+
+        /* ٣. بەشی چاتی لایڤ */
+        .chat-zone {
+            position: relative;
+            z-index: 10;
+            flex: 1;
+            min-height: 105px;
+            max-height: 215px;
+            padding: 6px 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            overflow: hidden;
+        }
+
+        .chat-stream {
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+        }
+
+        .chat-stream::-webkit-scrollbar { display: none; }
+
+        .welcome-box {
+            background: rgba(18, 9, 44, 0.78);
+            border: 1px solid rgba(255, 184, 0, 0.45);
+            border-radius: 14px;
+            padding: 7px 11px;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #fde68a;
+        }
+
+        .chat-row {
+            align-self: flex-start;
+            background: rgba(10, 5, 28, 0.7);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 5px 10px;
+            font-size: 12px;
+            max-width: 92%;
+        }
+
+        .lvl-pill {
+            background: linear-gradient(135deg, #9333ea, #4f46e5);
+            color: #fff;
+            font-size: 9.5px;
+            font-weight: 900;
+            padding: 1px 6px;
+            border-radius: 8px;
+            margin-left: 5px;
+        }
+
+        /* ٤. شریتی خوارەوە */
+        .bottom-bar {
+            position: relative;
+            z-index: 12;
+            padding: 8px 12px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(to top, rgba(5, 2, 16, 0.96), transparent);
+        }
+
+        .input-pill {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 24px;
+            padding: 4px 12px 4px 6px;
+        }
+
+        .input-pill input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 12.5px;
+            padding: 5px 0;
+        }
+
+        .send-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            background: var(--gold-grad);
+            color: #1a0f00;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .action-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(20, 10, 48, 0.88);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            font-size: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .action-btn.mic-live {
+            border-color: #10b981;
+            color: #34d399;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+        }
+
+        .action-btn.gift-main {
+            background: var(--gold-grad);
+            color: #1a0f00;
+            border: none;
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.55);
+        }
+
+        /* سندوقی دیارییەکان و پەنێڵەکان */
+        .sheet-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 30;
+            display: none;
+            align-items: flex-end;
+        }
+
+        .sheet-overlay.open { display: flex; }
+
+        .sheet-panel {
+            width: 100%;
+            background: rgba(15, 8, 38, 0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1.5px solid var(--gold);
+            border-radius: 24px 24px 0 0;
+            padding: 16px;
+            max-height: 76dvh;
+            overflow-y: auto;
+        }
+
+        .gift-items-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 9px;
+            margin: 12px 0 14px;
+        }
+
+        .gift-tile {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 8px 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+
+        .gift-tile.active {
+            border-color: var(--gold);
+            background: rgba(255, 184, 0, 0.16);
+            box-shadow: 0 0 14px rgba(255, 184, 0, 0.3);
+        }
+
+        .gold-cta-btn {
+            width: 100%;
+            background: var(--gold-grad);
+            color: #1a0f00;
+            border: none;
+            border-radius: 16px;
+            padding: 11px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .emoji-popup {
+            position: absolute;
+            bottom: 66px;
+            left: 14px;
+            background: rgba(16, 8, 40, 0.95);
+            border: 1px solid var(--gold);
+            border-radius: 30px;
+            padding: 6px 12px;
+            display: none;
+            gap: 10px;
+            z-index: 25;
+        }
+
+        .emoji-popup.open { display: flex; }
+
+        .center-popup {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            z-index: 40;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .center-popup.open { display: flex; }
+
+        .popup-card {
+            width: 100%;
+            max-width: 340px;
+            background: #140a32;
+            border: 1.5px solid var(--gold);
+            border-radius: 24px;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-shell">
+    <div class="room-bg"></div>
+    <div id="pixi-layer"></div>
+
+    <!-- شانۆی لێدانی ڤیدیۆی دیارییەکان -->
+    <div id="gift-video-stage"></div>
+
+    <!-- بانەری ناردنی دیاری -->
+    <div class="gift-toast-banner" id="giftBanner">
+        <img id="bannerAvatar" src="images.png/controller.png" class="gift-toast-avatar" alt="">
+        <div>
+            <div id="bannerSender" style="font-size:12px; font-weight:900;">یاریزان</div>
+            <div id="bannerGiftTitle" style="font-size:11px; color:#ffd000;">دیاری نارد</div>
+        </div>
+        <div class="gift-combo-num">x1</div>
+    </div>
+
+    <!-- ١. بەشی سەرەوە -->
+    <div>
+        <div class="top-header">
+            <div class="host-pill">
+                <img id="topHostAvatar" src="images.png/controller.png" alt="">
+                <div style="overflow:hidden;">
+                    <div class="host-pill-title">دیوەخانی شاهانەی کوردی 👑</div>
+                    <div class="host-pill-sub"><span>ID: 7701</span> • <span>HD Voice</span></div>
+                </div>
+            </div>
+
+            <div class="top-actions">
+                <div class="viewer-badge">
+                    <i class="fa-solid fa-users" style="color:var(--gold);"></i>
+                    <span id="onlineViewers">28</span>
+                </div>
+                <button class="icon-circle" id="speakerBtn" onclick="toggleSpeakerMute()" title="دەنگی ژوور">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button class="icon-circle" onclick="document.getElementById('leavePopup').classList.add('open')" title="دەرچوون">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- شریتی جزدان و PK -->
+        <div class="second-bar">
+            <div class="wallet-pills">
+                <div class="w-pill" onclick="if(window.YariWallet) YariWallet.openStore('gold')">
+                    🪙 <span data-wallet="gold" style="color:#ffd000;">5,000</span>
+                </div>
+                <div class="w-pill" style="border-color:rgba(56,189,248,0.45);" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')">
+                    💎 <span data-wallet="diamonds" style="color:#38bdf8;">50</span>
+                </div>
+            </div>
+            <button class="pk-btn" onclick="togglePKMode()">⚔️ PK ڕکابەری</button>
+        </div>
+
+        <!-- شریتی PK -->
+        <div class="pk-box" id="pkBox">
+            <div class="pk-scores">
+                <span style="color:#f87171;">تیمی سوور: <span id="redScore">0</span></span>
+                <span style="color:#fde047;">PK LIVE</span>
+                <span style="color:#60a5fa;">تیمی شین: <span id="blueScore">0</span></span>
+            </div>
+            <div class="pk-bar">
+                <div class="pk-red" id="redBarFill"></div>
+            </div>
+        </div>
+
+        <!-- ٢. تۆڕی ١٦ مایکەکە -->
+        <div class="mics-wrapper">
+            <div class="host-seat-row" id="hostSeatBox"></div>
+            <div class="guests-seat-grid" id="guestSeatsBox"></div>
+        </div>
+    </div>
+
+    <!-- ٣. چاتی زیندوو -->
+    <div class="chat-zone">
+        <div class="chat-stream" id="chatStream">
+            <div class="welcome-box">
+                <i class="fa-solid fa-crown"></i>
+                بەخێربێن بۆ ژووری دەنگیی <b>یاری کوردی</b>! دەنگی ژوور بە تەکنەلۆژیای HD پاککراوەتەوە و دیارییەکان بە 120FPS کار دەکەن.
+            </div>
+        </div>
+    </div>
+
+    <!-- لیستی ئیمۆجی سەر مایک -->
+    <div class="emoji-popup" id="emojiPopup">
+        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('❤️')">❤️</span>
+        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('😂')">😂</span>
+        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('👏')">👏</span>
+        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('🔥')">🔥</span>
+        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('👑')">👑</span>
+    </div>
+
+    <!-- ٤. شریتی خوارەوە -->
+    <div class="bottom-bar">
+        <div class="input-pill">
+            <input type="text" id="chatMsgInput" placeholder="نامەیەک بنووسە..." onkeypress="if(event.key==='Enter') sendRoomChat()">
+            <button class="send-btn" onclick="sendRoomChat()"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+        <button class="action-btn" id="myMicBtn" onclick="toggleHDMicrophone()" title="مایکرۆفۆن">
+            <i class="fa-solid fa-microphone-slash"></i>
+        </button>
+        <button class="action-btn" onclick="document.getElementById('emojiPopup').classList.toggle('open')" title="ئیمۆجی">
+            😊
+        </button>
+        <button class="action-btn gift-main" onclick="openGiftSheet()" title="سندوقی دیاری">
+            <i class="fa-solid fa-gift"></i>
+        </button>
+    </div>
+
+    <!-- سندوقی دیارییەکان (لەگەڵ ٨ ڤیدیۆکەی خۆت) -->
+    <div class="sheet-overlay" id="giftSheet" onclick="if(event.target===this) this.classList.remove('open')">
+        <div class="sheet-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:15px; font-weight:900; color:var(--gold);">🎁 سندوقی دیارییە شاهانەکان</div>
+                <div style="font-size:11.5px;">
+                    بۆ: <select id="giftTargetSeat" style="background:#1e1145; color:#ffd000; border:1px solid #ffb800; border-radius:8px; padding:2px 8px;"></select>
+                </div>
+            </div>
+            <div class="gift-items-grid" id="giftItemsGrid"></div>
+            <button class="gold-cta-btn" onclick="sendChosenGift()">ناردنی دیاری ✨</button>
+        </div>
+    </div>
+
+    <!-- مۆداڵی Keep / Leave -->
+    <div class="center-popup" id="leavePopup">
+        <div class="popup-card">
+            <div style="font-size:17px; font-weight:900; color:var(--gold); margin-bottom:8px;">دەرچوون لە ژووری دەنگی</div>
+            <p style="font-size:12.5px; color:#d8b4fe; margin-bottom:16px;">دەتەوێت ژوورەکە بچووک بکەیتەوە (Keep) یان بە تەواوی دەربچیت؟</p>
+            <div style="display:flex; gap:10px;">
+                <button class="gold-cta-btn" onclick="keepRoomMinimized()">مانەوە (Keep)</button>
+                <button onclick="window.location.href='index.html'" style="width:100%; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; border-radius:16px; font-weight:900; cursor:pointer;">دەرچوون (Leave)</button>
+            </div>
+            <button onclick="document.getElementById('leavePopup').classList.remove('open')" style="margin-top:12px; background:none; border:none; color:#a49ec8; font-size:12px; cursor:pointer;">پاشگەزبوونەوە</button>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase & Wallet -->
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+<script src="online-engine.js"></script>
+<script src="wallet-engine.js"></script>
+
+<script>
+    const currentPlayer = {
+        uid: localStorage.getItem('yk_player_uid') || 'user_' + Math.floor(Math.random() * 90000),
+        name: localStorage.getItem('yk_player_name') || 'یاریزان',
+        avatar: localStorage.getItem('yk_player_avatar') || 'images.png/controller.png'
+    };
+
+    document.getElementById('topHostAvatar').src = currentPlayer.avatar;
+
+    let roomAudioMuted = false;
+
+    // ١. مەکینەی 120FPS PixiJS
+    let pixiApp = null;
+    const fxParticles = [];
+
+    function startPixiEngine() {
+        const host = document.getElementById('pixi-layer');
+        pixiApp = new PIXI.Application({
+            resizeTo: host,
+            backgroundAlpha: 0,
+            antialias: true,
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true
+        });
+        pixiApp.ticker.maxFPS = 120;
+        host.appendChild(pixiApp.view);
+
+        for (let i = 0; i < 22; i++) {
+            addSparkle(
+                Math.random() * pixiApp.screen.width,
+                Math.random() * pixiApp.screen.height,
+                (Math.random() - 0.5) * 0.35,
+                -0.2 - Math.random() * 0.35,
+                0xffd000,
+                2 + Math.random() * 2,
+                true
+            );
+        }
+
+        pixiApp.ticker.add((delta) => {
+            for (let i = fxParticles.length - 1; i >= 0; i--) {
+                const p = fxParticles[i];
+                p.g.x += p.vx * delta;
+                p.g.y += p.vy * delta;
+                if (p.ambient) {
+                    if (p.g.y < -10) p.g.y = pixiApp.screen.height + 10;
+                } else {
+                    p.life -= 0.016 * delta;
+                    p.g.alpha = Math.max(0, p.life);
+                    if (p.life <= 0) {
+                        pixiApp.stage.removeChild(p.g);
+                        fxParticles.splice(i, 1);
+                    }
+                }
+            }
+        });
+    }
+
+    function addSparkle(x, y, vx, vy, color, r, ambient = false) {
+        if (!pixiApp) return;
+        const g = new PIXI.Graphics();
+        g.beginFill(color, ambient ? 0.45 : 0.95);
+        g.drawCircle(0, 0, r);
+        g.endFill();
+        g.x = x;
+        g.y = y;
+        pixiApp.stage.addChild(g);
+        fxParticles.push({ g, vx, vy, life: 1, ambient });
+    }
+
+    function burst120FPS(color = 0xffd000) {
+        if (!pixiApp) return;
+        const cx = pixiApp.screen.width / 2;
+        const cy = pixiApp.screen.height * 0.42;
+        for (let i = 0; i < 60; i++) {
+            const a = Math.random() * Math.PI * 2;
+            const s = 1.5 + Math.random() * 5;
+            addSparkle(cx, cy, Math.cos(a) * s, Math.sin(a) * s, i % 2 === 0 ? color : 0xffffff, 3 + Math.random() * 3.5, false);
+        }
+    }
+
+    // ٢. سیستمی ١٦ مایکەکە
+    const roomSeats = Array.from({ length: 16 }, (_, i) => ({
+        index: i,
+        occupied: i === 0,
+        uid: i === 0 ? currentPlayer.uid : null,
+        name: i === 0 ? currentPlayer.name : `مایک ${i}`,
+        avatar: i === 0 ? currentPlayer.avatar : null,
+        muted: i !== 0,
+        speaking: false,
+        score: 0
+    }));
+
+    let myCurrentSeat = 0;
+
+    function drawSeats() {
+        const hostContainer = document.getElementById('hostSeatBox');
+        const guestsContainer = document.getElementById('guestSeatsBox');
+        hostContainer.innerHTML = '';
+        guestsContainer.innerHTML = '';
+
+        roomSeats.forEach((s) => {
+            const slot = document.createElement('div');
+            slot.className = `mic-slot ${s.index === 0 ? 'host' : ''} ${s.speaking ? 'speaking' : ''}`;
+            slot.id = `mic-slot-${s.index}`;
+            slot.onclick = () => onSeatClick(s.index);
+
+            const content = s.occupied
+                ? `<img src="${s.avatar || 'images.png/controller.png'}" alt="">`
+                : `<i class="fa-solid fa-plus" style="color:rgba(255,255,255,0.4); font-size:13px;"></i>`;
+
+            const micIcon = s.occupied
+                ? `<div class="mic-mute-dot"><i class="fa-solid ${s.muted ? 'fa-microphone-slash' : 'fa-microphone'}" style="color:${s.muted ? '#f87171' : '#34d399'};"></i></div>`
+                : '';
+
+            slot.innerHTML = `
+                ${s.index === 0 ? '<div class="crown-top"><i class="fa-solid fa-crown"></i></div>' : ''}
+                <div class="mic-ring">${content}${micIcon}</div>
+                <div class="mic-username">${s.occupied ? s.name : s.index}</div>
+                <div class="mic-points">💎 ${s.score}</div>
+            `;
+
+            if (s.index === 0) hostContainer.appendChild(slot);
+            else guestsContainer.appendChild(slot);
+        });
+    }
+
+    function onSeatClick(idx) {
+        const s = roomSeats[idx];
+        if (!s.occupied) {
+            if (myCurrentSeat !== null) {
+                roomSeats[myCurrentSeat].occupied = false;
+                roomSeats[myCurrentSeat].uid = null;
+                roomSeats[myCurrentSeat].speaking = false;
+            }
+            s.occupied = true;
+            s.uid = currentPlayer.uid;
+            s.name = currentPlayer.name;
+            s.avatar = currentPlayer.avatar;
+            s.muted = !isMicOn;
+            myCurrentSeat = idx;
+            drawSeats();
+            addSystemLog(`${currentPlayer.name} سەرکەوتە سەر مایکی ${idx}`);
+        } else {
+            openGiftSheet(idx);
+        }
+    }
+
+    // ٣. سیستمی دەنگی HD بێ تێکچوون و بێ دەنگدانەوە (Echo Cancellation + Noise Suppression)
+    let isMicOn = false;
+    let localAudioStream = null;
+    let sharedAudioCtx = null;
+
+    async function toggleHDMicrophone() {
+        const btn = document.getElementById('myMicBtn');
+        if (!isMicOn) {
+            try {
+                localAudioStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true,
+                        channelCount: 1,
+                        sampleRate: 48000
+                    }
+                });
+                isMicOn = true;
+                btn.classList.add('mic-live');
+                btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+                if (myCurrentSeat !== null) {
+                    roomSeats[myCurrentSeat].muted = false;
+                    drawSeats();
+                }
+                monitorMicActivity(localAudioStream);
+            } catch (err) {
+                alert('تکایە لە وێبگەڕەکەتدا ڕێگە بە مایکرۆفۆن بدە.');
+            }
+        } else {
+            isMicOn = false;
+            if (localAudioStream) {
+                localAudioStream.getTracks().forEach(t => t.stop());
+                localAudioStream = null;
+            }
+            btn.classList.remove('mic-live');
+            btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
+            if (myCurrentSeat !== null) {
+                roomSeats[myCurrentSeat].muted = true;
+                roomSeats[myCurrentSeat].speaking = false;
+                drawSeats();
+            }
+        }
+    }
+
+    function monitorMicActivity(stream) {
+        if (!sharedAudioCtx) {
+            sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (sharedAudioCtx.state === 'suspended') {
+            sharedAudioCtx.resume();
+        }
+        const source = sharedAudioCtx.createMediaStreamSource(stream);
+        const analyser = sharedAudioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.75;
+        source.connect(analyser);
+        const freqData = new Uint8Array(analyser.frequencyBinCount);
+
+        function loop() {
+            if (!isMicOn) return;
+            analyser.getByteFrequencyData(freqData);
+            let total = 0;
+            for (let i = 0; i < freqData.length; i++) total += freqData[i];
+            const level = total / freqData.length;
+            if (myCurrentSeat !== null) {
+                const talking = level > 16;
+                if (roomSeats[myCurrentSeat].speaking !== talking) {
+                    roomSeats[myCurrentSeat].speaking = talking;
+                    const el = document.getElementById(`mic-slot-${myCurrentSeat}`);
+                    if (el) el.classList.toggle('speaking', talking);
+                }
+            }
+            requestAnimationFrame(loop);
+        }
+        loop();
+    }
+
+    function toggleSpeakerMute() {
+        roomAudioMuted = !roomAudioMuted;
+        const btn = document.getElementById('speakerBtn');
+        btn.innerHTML = roomAudioMuted
+            ? '<i class="fa-solid fa-volume-xmark" style="color:#f87171;"></i>'
+            : '<i class="fa-solid fa-volume-high"></i>';
+    }
+
+    // ٤. لیستی دیارییەکان (لەگەڵ ٨ ڤیدیۆکەی ناو فۆڵدەری images.png)
+    const ROOM_GIFTS = [
+        { id: 'tea', name: 'چای کوردی', icon: '🍵', currency: 'gold', price: 500, duration: 3, video: '' },
+        { id: 'rose', name: 'گوڵی سوور', icon: '🌹', currency: 'gold', price: 1500, duration: 3, video: '' },
+        { id: 'tom_car', name: 'ئۆتۆمبێلی تۆم', icon: '🚗', currency: 'diamonds', price: 100, duration: 3.8, video: 'images.png/tom-car.mp4' },
+        { id: 'baby_lion', name: 'بەچکە شێر', icon: '🦁', currency: 'diamonds', price: 400, duration: 4.7, video: 'images.png/baby-lion.mp4' },
+        { id: 'red_wolf', name: 'گورگی مانگی سوور', icon: '🐺', currency: 'diamonds', price: 800, duration: 6.0, video: 'images.png/red-wolf.mp4' },
+        { id: 'panther', name: 'پڵنگی ئاگرین', icon: '🐆', currency: 'diamonds', price: 1200, duration: 6.8, video: 'images.png/panther.mp4' },
+        { id: 'snow_wolf', name: 'گورگی بەفرین', icon: '❄️', currency: 'diamonds', price: 1800, duration: 8.0, video: 'images.png/snow-wolf.mp4' },
+        { id: 'lambo', name: 'لامبۆرگینی زێڕین', icon: '🏎️', currency: 'diamonds', price: 3000, duration: 8.0, video: 'images.png/lambo.mp4' },
+        { id: 'maybach', name: 'مارسیدس مایباخ', icon: '🚘', currency: 'diamonds', price: 5000, duration: 9.9, video: 'images.png/maybach.mp4' },
+        { id: 'royal_lions', name: 'شێرەکانی شاهانە', icon: '👑', currency: 'diamonds', price: 16000, duration: 10.1, video: 'images.png/royal-lions.mp4' }
+    ];
+
+    let chosenGiftId = 'tom_car';
+
+    function openGiftSheet(targetSeatIdx = 0) {
+        const select = document.getElementById('giftTargetSeat');
+        select.innerHTML = '';
+        roomSeats.filter(s => s.occupied).forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.index;
+            opt.text = `${s.name} (${s.index === 0 ? 'سەرۆک' : 'مایک ' + s.index})`;
+            if (s.index === targetSeatIdx) opt.selected = true;
+            select.appendChild(opt);
+        });
+
+        const grid = document.getElementById('giftItemsGrid');
+        grid.innerHTML = '';
+        ROOM_GIFTS.forEach(g => {
+            const div = document.createElement('div');
+            div.className = `gift-tile ${g.id === chosenGiftId ? 'active' : ''}`;
+            div.onclick = () => {
+                chosenGiftId = g.id;
+                openGiftSheet(parseInt(select.value, 10));
+            };
+            div.innerHTML = `
+                <div style="font-size:28px;">${g.icon}</div>
+                <div style="font-size:10.5px; font-weight:800; text-align:center;">${g.name}</div>
+                <div style="font-size:10px; font-weight:900; color:#ffe066;">${g.currency === 'gold' ? '🪙' : '💎'} ${g.price.toLocaleString()}</div>
+            `;
+            grid.appendChild(div);
+        });
+
+        document.getElementById('giftSheet').classList.add('open');
+    }
+
+    function sendChosenGift() {
+        const gift = ROOM_GIFTS.find(g => g.id === chosenGiftId);
+        if (!gift) return;
+
+        if (window.YariWallet) {
+            const ok = gift.currency === 'gold'
+                ? YariWallet.spendGold(gift.price)
+                : YariWallet.spendDiamonds(gift.price);
+            if (!ok) {
+                alert(gift.currency === 'gold' ? 'گۆڵدی پێویستت نییە!' : 'ئەڵماسی پێویستت نییە!');
+                YariWallet.openStore(gift.currency);
+                return;
+            }
+        }
+
+        const seatIdx = parseInt(document.getElementById('giftTargetSeat').value || '0', 10);
+        const target = roomSeats[seatIdx];
+        if (target) {
+            target.score += gift.price;
+            drawSeats();
+        }
+
+        if (isPKOn) {
+            if (seatIdx % 2 === 0) redTeamPts += gift.price;
+            else blueTeamPts += gift.price;
+            refreshPKUI();
+        }
+
+        document.getElementById('giftSheet').classList.remove('open');
+        playGiftVideoAndFX(gift, target ? target.name : 'سەرۆک');
+    }
+
+    let activeGiftTimer = null;
+
+    function playGiftVideoAndFX(gift, receiverName) {
+        addSystemLog(`🎁 ${currentPlayer.name} دیاری (${gift.name})ـی نارد بۆ ${receiverName}!`);
+
+        const banner = document.getElementById('giftBanner');
+        document.getElementById('bannerAvatar').src = currentPlayer.avatar;
+        document.getElementById('bannerSender').innerText = currentPlayer.name;
+        document.getElementById('bannerGiftTitle').innerText = `${gift.icon} ${gift.name}`;
+        banner.classList.add('show');
+
+        burst120FPS(gift.currency === 'gold' ? 0xffd000 : 0x38bdf8);
+
+        const stage = document.getElementById('gift-video-stage');
+        stage.innerHTML = '';
+        stage.style.display = 'flex';
+
+        if (gift.video) {
+            const card = document.createElement('div');
+            card.className = 'gift-video-card';
+            const vid = document.createElement('video');
+            vid.src = gift.video;
+            vid.autoplay = true;
+            vid.playsInline = true;
+            vid.muted = roomAudioMuted;
+            vid.volume = 0.9;
+            card.appendChild(vid);
+            stage.appendChild(card);
+            vid.play().catch(() => {});
+        } else {
+            const emojiBig = document.createElement('div');
+            emojiBig.style.fontSize = '115px';
+            emojiBig.style.filter = 'drop-shadow(0 0 35px rgba(255,184,0,0.95))';
+            emojiBig.innerText = gift.icon;
+            stage.appendChild(emojiBig);
+        }
+
+        clearTimeout(activeGiftTimer);
+        activeGiftTimer = setTimeout(() => {
+            stage.style.display = 'none';
+            stage.innerHTML = '';
+            banner.classList.remove('show');
+        }, (gift.duration || 4) * 1000);
+    }
+
+    // ٥. ئیمۆجی، چات، و PK
+    function triggerSeatEmoji(emoji) {
+        document.getElementById('emojiPopup').classList.remove('open');
+        const idx = myCurrentSeat !== null ? myCurrentSeat : 0;
+        const slot = document.getElementById(`mic-slot-${idx}`);
+        if (!slot) return;
+        const el = document.createElement('div');
+        el.className = 'seat-emoji-float';
+        el.innerText = emoji;
+        slot.appendChild(el);
+        setTimeout(() => el.remove(), 1700);
+    }
+
+    function sendRoomChat() {
+        const inp = document.getElementById('chatMsgInput');
+        const txt = inp.value.trim();
+        if (!txt) return;
+        inp.value = '';
+
+        const stream = document.getElementById('chatStream');
+        const row = document.createElement('div');
+        row.className = 'chat-row';
+        row.innerHTML = `<span class="lvl-pill">Lv.45</span><b style="color:#ffe066; margin-left:4px;">${currentPlayer.name}:</b><span>${txt}</span>`;
+        stream.appendChild(row);
+        stream.scrollTop = stream.scrollHeight;
+    }
+
+    function addSystemLog(text) {
+        const stream = document.getElementById('chatStream');
+        const row = document.createElement('div');
+        row.className = 'chat-row';
+        row.style.borderColor = 'rgba(255,184,0,0.4)';
+        row.innerHTML = `<span style="color:#ffd000; font-weight:800;">${text}</span>`;
+        stream.appendChild(row);
+        stream.scrollTop = stream.scrollHeight;
+    }
+
+    let isPKOn = false, redTeamPts = 0, blueTeamPts = 0;
+
+    function togglePKMode() {
+        isPKOn = !isPKOn;
+        redTeamPts = 0;
+        blueTeamPts = 0;
+        document.getElementById('pkBox').classList.toggle('active', isPKOn);
+        refreshPKUI();
+        if (isPKOn) addSystemLog('⚔️ ڕکابەریی PK دەستی پێکرد!');
+    }
+
+    function refreshPKUI() {
+        document.getElementById('redScore').innerText = redTeamPts;
+        document.getElementById('blueScore').innerText = blueTeamPts;
+        const sum = redTeamPts + blueTeamPts;
+        const pct = sum === 0 ? 50 : Math.min(90, Math.max(10, (redTeamPts / sum) * 100));
+        document.getElementById('redBarFill').style.width = pct + '%';
+    }
+
+    function keepRoomMinimized() {
+        localStorage.setItem('yk_minimized_room', '1');
+        window.location.href = 'index.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        startPixiEngine();
+        drawSeats();
+    });
+</script>
+</body>
+</html>
