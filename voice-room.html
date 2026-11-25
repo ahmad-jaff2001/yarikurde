@@ -302,9 +302,9 @@
             margin: 0 6px;
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 184, 0, 0.25);
-            background: rgba(16, 9, 38, 0.72);
-            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 184, 0, 0.14);
+            background: rgba(10, 5, 24, 0.14);
+            backdrop-filter: blur(1.5px);
             transition: all 0.35s ease;
         }
 
@@ -315,6 +315,7 @@
                 rgba(136, 19, 55, 0.34) 49.5%,
                 rgba(29, 78, 216, 0.34) 50.5%,
                 rgba(30, 58, 138, 0.48) 100%);
+            backdrop-filter: blur(6px);
         }
 
         .pk-score-header {
@@ -324,7 +325,7 @@
             padding: 4px 10px;
             font-size: 11px;
             font-weight: 900;
-            background: rgba(255, 255, 255, 0.05);
+            background: transparent;
         }
 
         .pk-arena-container.pk-active .pk-score-header {
@@ -393,16 +394,22 @@
             position: relative;
         }
 
-        .seat-avatar-wrap {
+      .seat-avatar-wrap {
             position: relative;
             width: 41px;
             height: 41px;
             border-radius: 50%;
-            background: rgba(15, 8, 36, 0.72);
-            border: 1.5px solid rgba(255, 255, 255, 0.22);
+            background: rgba(12, 6, 30, 0.88);
+            border: 1.5px solid rgba(255, 184, 0, 0.45);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.72);
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .seat-avatar-wrap i {
+            color: rgba(255, 224, 102, 0.88) !important;
+            font-size: 13px !important;
         }
 
         .seat-cell.host-seat .seat-avatar-wrap {
@@ -493,7 +500,7 @@
             justify-content: space-between;
             gap: 8px;
             padding: 4px 10px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.2);
             font-size: 9px;
             font-weight: 800;
             cursor: pointer;
