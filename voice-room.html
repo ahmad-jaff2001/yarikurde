@@ -1650,31 +1650,48 @@
         ]
     };
 
-    function initWebRTCReceiver() {
+   function initWebRTCReceiver() {
         if (!roomDbRef) return;
         const myInbox = roomDbRef.child(`rtcSignals/${me.uid}`);
         myInbox.onDisconnect().remove();
 
-        myInbox.on('child_added', async snap => {
+        const handleIncomingOffer = async (snap) => {
             const fromUid = snap.key;
             const data = snap.val();
             if (!data || !data.offer) return;
-            const pc = createPeer(fromUid);
+
+            const pc = createPeer(fromUid, snap.ref, 'callee');
             await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
-            roomDbRef.child(`rtcSignals/${fromUid}/${me.uid}/answer`).set({ type: answer.type, sdp: answer.sdp });
-            snap.ref.child('candidates').on('child_added', cSnap => {
+
+            // وەڵامەکە دەنێرێتەوە بۆ هەمان شوێن کە نێرەر چاوەڕێیەتی
+            await snap.ref.child('answer').set({ type: answer.type, sdp: answer.sdp });
+
+            snap.ref.child('callerCandidates').on('child_added', cSnap => {
                 if (cSnap.val()) pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
             });
+        };
+
+        myInbox.on('child_added', handleIncomingOffer);
+        myInbox.on('child_changed', (snap) => {
+            const fromUid = snap.key;
+            const data = snap.val();
+            if (data && data.offer && !data.answer) handleIncomingOffer(snap);
         });
     }
 
-    function createPeer(remoteUid) {
-        if (peerConnections[remoteUid]) peerConnections[remoteUid].close();
+    function createPeer(remoteUid, sigRef, role) {
+        if (peerConnections[remoteUid]) {
+            try { peerConnections[remoteUid].close(); } catch (e) {}
+        }
         const pc = new RTCPeerConnection(rtcConfig);
         peerConnections[remoteUid] = pc;
-        if (micEnabled && micStream) micStream.getTracks().forEach(t => pc.addTrack(t, micStream));
+
+        if (micEnabled && micStream) {
+            micStream.getTracks().forEach(t => pc.addTrack(t, micStream));
+        }
+
         pc.ontrack = (e) => {
             let audioEl = document.getElementById(`remote-audio-${remoteUid}`);
             if (!audioEl) {
@@ -1688,8 +1705,12 @@
             audioEl.muted = roomMuted;
             audioEl.play().catch(() => {});
         };
+
         pc.onicecandidate = (e) => {
-            if (e.candidate && roomDbRef) roomDbRef.child(`rtcSignals/${remoteUid}/${me.uid}/candidates`).push(e.candidate.toJSON());
+            if (e.candidate && sigRef) {
+                const candPath = role === 'caller' ? 'callerCandidates' : 'calleeCandidates';
+                sigRef.child(candPath).push(e.candidate.toJSON());
+            }
         };
         return pc;
     }
@@ -1698,15 +1719,22 @@
         if (!roomDbRef || !micEnabled || !micStream) return;
         for (const u of onlineUsersList) {
             if (u.uid === me.uid) continue;
-            const pc = createPeer(u.uid);
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
+
             const sigRef = roomDbRef.child(`rtcSignals/${u.uid}/${me.uid}`);
-            await sigRef.set({ offer: { type: offer.type, sdp: offer.sdp } });
+            await sigRef.remove();
+
+            const pc = createPeer(u.uid, sigRef, 'caller');
+            const offer = await pc.createOffer({ offerToReceiveAudio: true });
+            await pc.setLocalDescription(offer);
+
+            await sigRef.set({ offer: { type: offer.type, sdp: offer.sdp }, ts: Date.now() });
+
             sigRef.child('answer').on('value', aSnap => {
-                if (aSnap.val() && !pc.currentRemoteDescription) pc.setRemoteDescription(new RTCSessionDescription(aSnap.val())).catch(() => {});
+                if (aSnap.val() && !pc.currentRemoteDescription) {
+                    pc.setRemoteDescription(new RTCSessionDescription(aSnap.val())).catch(() => {});
+                }
             });
-            sigRef.child('candidates').on('child_added', cSnap => {
+            sigRef.child('calleeCandidates').on('child_added', cSnap => {
                 if (cSnap.val()) pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
             });
         }
