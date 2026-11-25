@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>دیوەخانی شاهانە | یاری کوردی</title>
+    <title>دیوەخانی شاهانە | یاری کوردی Live</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -14,8 +14,9 @@
             --gold: #ffb800;
             --gold-bright: #ffe680;
             --gold-grad: linear-gradient(135deg, #ffe066 0%, #ffb800 50%, #e67e00 100%);
-            --royal-panel: rgba(24, 11, 56, 0.78);
-            --royal-border: rgba(255, 196, 54, 0.42);
+            --pink-grad: linear-gradient(135deg, #ff2e7e 0%, #ff6b35 100%);
+            --glass: rgba(14, 8, 32, 0.72);
+            --border-gold: rgba(255, 196, 54, 0.35);
         }
 
         * {
@@ -28,7 +29,7 @@
         }
 
         body {
-            background: #070214;
+            background: #04010c;
             color: #fff;
             height: 100dvh;
             overflow: hidden;
@@ -48,105 +49,77 @@
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.95);
         }
 
-        /* باکگراوندی شاهانەی Yari Kurdi */
-        .royal-stage-bg {
+        /* باکگراوندی دیوەخانەکەت + تێکەڵەی شاهانە */
+        .room-bg-layer {
             position: absolute;
             inset: 0;
             z-index: 0;
             background:
-                linear-gradient(180deg, rgba(10, 4, 28, 0.32) 0%, rgba(10, 4, 28, 0.10) 48%, rgba(6, 2, 18, 0.85) 100%),
+                linear-gradient(180deg, rgba(12, 5, 28, 0.58) 0%, rgba(10, 4, 24, 0.35) 45%, rgba(5, 2, 14, 0.92) 100%),
                 url('images.png/diwaxan-bg.jpg') center center / cover no-repeat,
-                url('images.png/diwaxan-bg.png') center center / cover no-repeat;
+                url('images.png/diwaxan-bg.png') center center / cover no-repeat,
+                radial-gradient(circle at top, #2e1065, #050211);
         }
+
+        /* چینی 120FPS PixiJS */
         #pixi-layer {
             position: absolute;
             inset: 0;
             pointer-events: none;
-            z-index: 18;
+            z-index: 22;
         }
 
-        /* شانۆی ڤیدیۆی دیارییەکان (بەبێ چوارچێوەی ڕەشی بەتاڵ) */
-        #gift-video-stage {
+        /* شانۆی دیاریی بێ چوارچێوە (Frameless Hologram Overlay وەک TikTok) */
+        #frameless-gift-stage {
             position: absolute;
             inset: 0;
-            z-index: 25;
+            z-index: 20;
             display: none;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-end;
+            padding-bottom: 68px;
             pointer-events: none;
-            padding: 16px;
-            background: radial-gradient(circle, rgba(0,0,0,0.45) 0%, transparent 75%);
         }
 
-        .gift-media-box {
-            width: 86%;
-            max-width: 330px;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 2px solid var(--gold);
-            box-shadow: 0 0 40px rgba(255, 184, 0, 0.7), 0 18px 40px rgba(0, 0, 0, 0.85);
-            animation: popGift 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @keyframes popGift {
-            from { transform: scale(0.6); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .gift-media-box video {
+        .frameless-video {
             width: 100%;
-            max-height: 48dvh;
+            height: 64dvh;
             object-fit: cover;
-            display: block;
-            background: #000;
+            mix-blend-mode: screen;
+            -webkit-mask-image: radial-gradient(ellipse 92% 85% at 50% 52%, #000 58%, transparent 100%);
+            mask-image: radial-gradient(ellipse 92% 85% at 50% 52%, #000 58%, transparent 100%);
+            animation: holoFadeIn 0.35s ease-out;
         }
 
-        /* بانەری نێرەری دیاری لە ژێر ڤیدیۆکە تا ناوەڕاستی ڤیدیۆکە دانەپۆشێت */
-        .gift-sender-pill {
-            margin-top: 12px;
-            background: linear-gradient(90deg, rgba(255, 184, 0, 0.28), rgba(20, 8, 52, 0.95));
+        @keyframes holoFadeIn {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* بانەری ناردنی دیاری بە شێوەی شریتی لای ڕاست */
+        .gift-combo-toast {
+            position: absolute;
+            top: 47%;
+            right: 10px;
+            z-index: 25;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(90deg, rgba(255, 46, 126, 0.85), rgba(24, 10, 56, 0.92));
             border: 1.5px solid var(--gold);
             border-radius: 40px;
-            padding: 6px 16px 6px 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 8px 25px rgba(255, 184, 0, 0.45);
+            padding: 4px 14px 4px 8px;
+            box-shadow: 0 6px 25px rgba(255, 46, 126, 0.55);
+            animation: slideInRight 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .gift-sender-pill img {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            object-fit: cover;
+        @keyframes slideInRight {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
 
-        /* ١. بەشی سەرەوە */
-        .top-header {
-            position: relative;
-            z-index: 10;
-            padding: 10px 12px 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-
-        .host-pill {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--royal-panel);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--royal-border);
-            border-radius: 30px;
-            padding: 4px 6px 4px 12px;
-            max-width: 58%;
-        }
-
-        .host-pill img {
+        .gift-combo-toast img {
             width: 36px;
             height: 36px;
             border-radius: 50%;
@@ -154,384 +127,456 @@
             object-fit: cover;
         }
 
-        .host-pill-title {
-            font-size: 12px;
+        /* ١. بەشی سەرەوەی ژوور (TikTok Header) */
+        .top-bar {
+            position: relative;
+            z-index: 10;
+            padding: 8px 10px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .room-identity {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 28px;
+            padding: 3px 6px 3px 12px;
+            max-width: 58%;
+        }
+
+        .room-identity img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold);
+            object-fit: cover;
+        }
+
+        .room-title-txt {
+            font-size: 11.5px;
             font-weight: 900;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            color: var(--gold-bright);
         }
 
-        .host-pill-sub {
-            font-size: 10px;
-            color: #e9d5ff;
+        .room-id-txt {
+            font-size: 9.5px;
+            color: #d8b4fe;
+        }
+
+        .top-right-btns {
             display: flex;
             align-items: center;
             gap: 5px;
         }
 
-        .live-dot {
-            width: 6px;
-            height: 6px;
+        .mini-circle-btn {
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
-        }
-
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .viewer-badge {
-            background: var(--royal-panel);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--royal-border);
-            border-radius: 20px;
-            padding: 5px 10px;
-            font-size: 11px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .icon-circle {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--royal-panel);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
+            font-size: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
             cursor: pointer;
         }
 
-        /* شریتی جزدان و PK */
-        .second-bar {
+        /* شریتی دووەم: باجەکانی Diamond, Level, Room Gifts */
+        .badges-row {
             position: relative;
             z-index: 10;
-            padding: 3px 12px 6px;
+            padding: 2px 10px 5px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 5px;
         }
 
-        .wallet-pills {
+        .rank-badges {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            overflow-x: auto;
         }
 
-        .w-pill {
-            background: var(--royal-panel);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--royal-border);
+        .rank-badges::-webkit-scrollbar { display: none; }
+
+        .r-pill {
+            font-size: 9.5px;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .r-diamond { background: linear-gradient(90deg, #9333ea, #ec4899); }
+        .r-club { background: linear-gradient(90deg, #2563eb, #06b6d4); }
+        .r-lvl { background: linear-gradient(90deg, #d97706, #f59e0b); color: #1a0f00; }
+        .r-gifts { background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 184, 0, 0.4); color: var(--gold-bright); }
+
+        /* ٢. گۆڕەپانی PK و تۆڕی ١٨ مایکەکە (3x6 Split Arena) */
+        .pk-arena-container {
+            position: relative;
+            z-index: 10;
+            margin: 0 6px;
             border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: linear-gradient(90deg,
+                rgba(190, 18, 60, 0.46) 0%,
+                rgba(136, 19, 55, 0.34) 49.5%,
+                rgba(29, 78, 216, 0.34) 50.5%,
+                rgba(30, 58, 138, 0.48) 100%);
+            backdrop-filter: blur(6px);
+        }
+
+        /* شریتی سەرەوەی PK Scores */
+        .pk-score-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             padding: 3px 10px;
             font-size: 11px;
             font-weight: 900;
+            background: linear-gradient(90deg, #be123c 0%, #881337 45%, #1e3a8a 55%, #1d4ed8 100%);
+            position: relative;
+        }
+
+        .pk-timer-pill {
+            background: rgba(10, 5, 24, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 1px 9px;
+            font-size: 10px;
+            color: #fde047;
             display: flex;
             align-items: center;
-            gap: 5px;
-            cursor: pointer;
+            gap: 4px;
         }
 
-        .pk-btn {
-            background: linear-gradient(135deg, #ef4444, #2563eb);
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            color: #fff;
-            font-size: 11px;
-            font-weight: 900;
-            padding: 4px 12px;
-            border-radius: 16px;
-            cursor: pointer;
-            box-shadow: 0 3px 12px rgba(239, 68, 68, 0.35);
-        }
-
-        .pk-box {
-            position: relative;
-            z-index: 10;
-            margin: 0 12px 6px;
-            background: rgba(16, 7, 38, 0.9);
-            border: 1px solid var(--royal-border);
-            border-radius: 14px;
-            padding: 6px 10px;
-            display: none;
-        }
-
-        .pk-box.active { display: block; }
-
-        .pk-scores {
+        .pk-sub-bar {
             display: flex;
             justify-content: space-between;
-            font-size: 11px;
-            font-weight: 900;
-            margin-bottom: 4px;
+            padding: 2px 10px;
+            font-size: 9px;
+            font-weight: 800;
+            background: rgba(0, 0, 0, 0.32);
         }
 
-        .pk-bar {
-            height: 9px;
-            width: 100%;
-            background: #2563eb;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .pk-red {
-            height: 100%;
-            width: 50%;
-            background: linear-gradient(90deg, #dc2626, #f97316);
-            transition: width 0.35s ease;
-        }
-
-        /* ٢. تۆڕی ١٦ مایکەکە (دیزاینی شاهانەی زێڕین) */
-        .mics-wrapper {
-            position: relative;
-            z-index: 10;
-            padding: 4px 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-        }
-
-        .host-seat-row {
-            display: flex;
-            justify-content: center;
-        }
-
-        .guests-seat-grid {
+        /* تۆڕی ١٨ مایکەکە (٣ ڕیز × ٦ ستوون) */
+        .mics-18-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 9px 4px;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px 2px;
+            padding: 7px 4px 6px;
+            position: relative;
         }
 
-        .mic-slot {
+        /* بانەری هاتنەژوورەوەی یاریزان لەسەر مایکەکان */
+        .entrance-pill {
+            position: absolute;
+            top: 46%;
+            right: 8px;
+            z-index: 16;
+            background: linear-gradient(90deg, rgba(255, 184, 0, 0.92), rgba(147, 51, 234, 0.92));
+            color: #fff;
+            font-size: 10.5px;
+            font-weight: 900;
+            padding: 3px 12px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            gap: 5px;
+            animation: entranceGlide 3.2s forwards;
+        }
+
+        @keyframes entranceGlide {
+            0% { transform: translateX(100%); opacity: 0; }
+            15% { transform: translateX(0); opacity: 1; }
+            85% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(-40%); opacity: 0; }
+        }
+
+        .seat-cell {
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
             cursor: pointer;
+            position: relative;
         }
 
-        .mic-ring {
+        .seat-avatar-wrap {
             position: relative;
-            width: 50px;
-            height: 50px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, rgba(59, 25, 118, 0.9), rgba(18, 7, 42, 0.92));
-            border: 1.5px solid rgba(255, 196, 54, 0.45);
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), inset 0 0 10px rgba(255, 184, 0, 0.14);
+            background: rgba(15, 8, 36, 0.75);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.18s;
         }
 
-        .mic-slot:active .mic-ring { transform: scale(0.93); }
-
-        .mic-slot.host .mic-ring {
-            width: 66px;
-            height: 66px;
-            border: 2.5px solid var(--gold);
-            box-shadow: 0 0 25px rgba(255, 184, 0, 0.55), inset 0 0 15px rgba(255, 184, 0, 0.25);
+        /* چوارچێوەی شاهانە بۆ سەرۆک و مایکە چالاکەکان */
+        .seat-cell.host-seat .seat-avatar-wrap {
+            border: 2px solid var(--gold);
+            box-shadow: 0 0 12px rgba(255, 184, 0, 0.75);
         }
 
-        .mic-ring img {
+        .seat-cell.red-team .seat-avatar-wrap {
+            border-color: rgba(251, 113, 133, 0.65);
+        }
+
+        .seat-cell.blue-team .seat-avatar-wrap {
+            border-color: rgba(96, 165, 250, 0.65);
+        }
+
+        .seat-avatar-wrap img {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
         }
 
-        .mic-slot.speaking .mic-ring::after {
+        /* شەپۆلی قسەکردن */
+        .seat-cell.speaking .seat-avatar-wrap::after {
             content: '';
             position: absolute;
-            inset: -6px;
+            inset: -4px;
             border-radius: 50%;
-            border: 2.5px solid #ffe066;
-            animation: pulseWave 0.9s infinite ease-out;
+            border: 2px solid #ffe066;
+            animation: micWave 0.85s infinite ease-out;
         }
 
-        @keyframes pulseWave {
+        @keyframes micWave {
             0% { transform: scale(0.95); opacity: 1; }
-            100% { transform: scale(1.3); opacity: 0; }
+            100% { transform: scale(1.28); opacity: 0; }
         }
 
-        .crown-top {
+        .seat-lvl-tag {
             position: absolute;
-            top: -12px;
-            color: var(--gold);
-            font-size: 15px;
-            filter: drop-shadow(0 2px 6px rgba(255, 184, 0, 0.8));
+            top: -4px;
+            right: -3px;
+            background: linear-gradient(135deg, #f59e0b, #b45309);
+            color: #fff;
+            font-size: 7.5px;
+            font-weight: 900;
+            padding: 0 4px;
+            border-radius: 6px;
+            border: 1px solid #fff;
         }
 
-        .mic-mute-dot {
+        .seat-mic-badge {
             position: absolute;
             bottom: -2px;
             left: -2px;
-            width: 17px;
-            height: 17px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            background: #140830;
-            border: 1px solid var(--royal-border);
+            background: #0f0724;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8px;
+            font-size: 7px;
         }
 
-        .mic-username {
-            font-size: 10px;
-            font-weight: 800;
-            margin-top: 3px;
-            max-width: 64px;
+        .seat-name-lbl {
+            font-size: 8.5px;
+            font-weight: 700;
+            margin-top: 2px;
+            max-width: 50px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             color: #f3e8ff;
-            text-shadow: 0 1px 4px #000;
         }
 
-        .mic-points {
-            font-size: 9px;
+        .seat-support-pill {
+            font-size: 8px;
             font-weight: 800;
-            color: var(--gold-bright);
-            background: rgba(15, 6, 36, 0.72);
-            border: 1px solid rgba(255, 184, 0, 0.22);
-            padding: 0 6px;
+            color: #cbd5e1;
+            background: rgba(0, 0, 0, 0.48);
+            padding: 0 5px;
             border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
         }
 
-        .seat-emoji-float {
-            position: absolute;
-            top: -8px;
-            font-size: 26px;
-            z-index: 22;
-            pointer-events: none;
-            animation: floatEmoji 1.7s forwards;
+        /* شریتی Upgrade Lv4 لە ژێر مایکەکان */
+        .pk-upgrade-footer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.45);
+            font-size: 8.5px;
+            font-weight: 800;
         }
 
-        @keyframes floatEmoji {
-            0% { transform: scale(0.3) translateY(8px); opacity: 0; }
-            25% { transform: scale(1.25) translateY(-4px); opacity: 1; }
-            80% { transform: scale(1) translateY(-10px); opacity: 1; }
-            100% { transform: scale(0.8) translateY(-22px); opacity: 0; }
+        .upg-pill {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 2px 7px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
-        /* ٣. چاتی زیندوو */
-        .chat-zone {
+        /* ٣. ڕیزی بینەرەکان (Audience Strip وەک ڤیدیۆکە) */
+        .audience-bar {
             position: relative;
             z-index: 10;
+            padding: 5px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .audience-avatars {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            overflow-x: auto;
+        }
+
+        .audience-avatars::-webkit-scrollbar { display: none; }
+
+        .aud-pic {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 184, 0, 0.5);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .aud-count-pill {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 2px 9px;
+            font-size: 10.5px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        /* ٤. بەشی چاتی لایڤ */
+        .chat-area {
+            position: relative;
+            z-index: 12;
             flex: 1;
-            min-height: 100px;
-            max-height: 205px;
-            padding: 6px 12px;
+            min-height: 95px;
+            padding: 4px 10px;
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
             overflow: hidden;
         }
 
-        .chat-stream {
+        .chat-list {
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-            mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
-            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%);
+            gap: 5px;
+            mask-image: linear-gradient(to bottom, transparent 0%, black 14%);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 14%);
         }
 
-        .chat-stream::-webkit-scrollbar { display: none; }
+        .chat-list::-webkit-scrollbar { display: none; }
 
-        .welcome-box {
-            background: rgba(26, 12, 60, 0.82);
-            border: 1px solid var(--royal-border);
-            border-radius: 14px;
-            padding: 7px 11px;
-            font-size: 11px;
-            line-height: 1.5;
-            color: #fde68a;
-        }
-
-        .chat-row {
+        .chat-bubble {
             align-self: flex-start;
-            background: rgba(18, 8, 44, 0.78);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 5px 10px;
-            font-size: 12px;
-            max-width: 92%;
+            background: rgba(12, 6, 30, 0.62);
+            backdrop-filter: blur(4px);
+            border-radius: 12px;
+            padding: 4px 9px;
+            font-size: 11.5px;
+            max-width: 88%;
+            line-height: 1.4;
         }
 
-        .lvl-pill {
-            background: linear-gradient(135deg, #9333ea, #4f46e5);
+        .lvl-badge {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
             color: #fff;
-            font-size: 9.5px;
+            font-size: 9px;
             font-weight: 900;
-            padding: 1px 6px;
-            border-radius: 8px;
-            margin-left: 5px;
+            padding: 1px 5px;
+            border-radius: 6px;
+            margin-left: 4px;
         }
 
-        /* ٤. شریتی خوارەوە */
-        .bottom-bar {
+        /* ٥. شریتی خوارەوە (TikTok Bottom Bar) */
+        .bottom-controls {
             position: relative;
-            z-index: 12;
-            padding: 8px 12px 14px;
+            z-index: 15;
+            padding: 6px 10px 12px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: linear-gradient(to top, rgba(7, 2, 20, 0.98), transparent);
+            gap: 7px;
+            background: linear-gradient(to top, rgba(4, 1, 12, 0.96), transparent);
         }
 
-        .input-pill {
+        .chat-input-box {
             flex: 1;
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.11);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 196, 54, 0.28);
-            border-radius: 24px;
-            padding: 4px 12px 4px 6px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 22px;
+            padding: 3px 10px 3px 5px;
         }
 
-        .input-pill input {
+        .chat-input-box input {
             flex: 1;
             background: transparent;
             border: none;
             outline: none;
             color: #fff;
-            font-size: 12.5px;
+            font-size: 12px;
             padding: 5px 0;
         }
 
-        .send-btn {
-            width: 30px;
-            height: 30px;
+        .send-chat-btn {
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             border: none;
             background: var(--gold-grad);
             color: #1a0f00;
-            font-size: 12px;
+            font-size: 11px;
             cursor: pointer;
         }
 
-        .action-btn {
-            width: 42px;
-            height: 42px;
+        .ctrl-circle {
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            background: rgba(24, 11, 56, 0.9);
-            border: 1.5px solid rgba(255, 196, 54, 0.35);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             color: #fff;
-            font-size: 17px;
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -539,124 +584,225 @@
             flex-shrink: 0;
         }
 
-        .action-btn.mic-live {
+        .ctrl-circle.mic-active {
+            background: rgba(16, 185, 129, 0.25);
             border-color: #10b981;
             color: #34d399;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
         }
 
-        .action-btn.gift-main {
-            background: var(--gold-grad);
-            color: #1a0f00;
+        .ctrl-circle.gift-btn {
+            background: var(--pink-grad);
             border: none;
-            box-shadow: 0 0 22px rgba(255, 184, 0, 0.6);
+            box-shadow: 0 0 18px rgba(255, 46, 126, 0.65);
         }
 
-        /* سندوقی دیارییەکان */
-        .sheet-overlay {
+        /* ٦. سندوقی دیارییەکانی TikTok (Multi-Recipient + 1/7/77/777) */
+        .gift-drawer-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(0, 0, 0, 0.65);
-            z-index: 30;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 35;
             display: none;
             align-items: flex-end;
         }
 
-        .sheet-overlay.open { display: flex; }
+        .gift-drawer-overlay.open { display: flex; }
 
-        .sheet-panel {
+        .gift-drawer {
             width: 100%;
-            background: linear-gradient(180deg, #1b0d42 0%, #0e0624 100%);
-            border-top: 1.5px solid var(--gold);
-            border-radius: 24px 24px 0 0;
-            padding: 16px;
-            max-height: 76dvh;
-            overflow-y: auto;
+            background: rgba(14, 12, 24, 0.97);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 22px 22px 0 0;
+            padding: 12px 12px 16px;
         }
 
-        .gift-items-grid {
+        /* شریتی هەڵبژاردنی وەرگرەکان (All + وێنەی مایکەکان) */
+        .recipient-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .recipient-strip::-webkit-scrollbar { display: none; }
+
+        .rec-all-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1.5px solid transparent;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 6px 12px;
+            border-radius: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .rec-all-btn.selected {
+            border-color: #ff2e7e;
+            background: rgba(255, 46, 126, 0.25);
+            color: #ff85b3;
+        }
+
+        .rec-user-chip {
+            position: relative;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .rec-user-chip.selected {
+            border-color: #ff2e7e;
+            box-shadow: 0 0 10px rgba(255, 46, 126, 0.6);
+        }
+
+        .rec-user-chip img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .rec-seat-num {
+            position: absolute;
+            bottom: -3px;
+            right: -2px;
+            background: #ff2e7e;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 0 4px;
+            border-radius: 6px;
+        }
+
+        /* تابەکانی HOT / VIP */
+        .gift-tabs-row {
+            display: flex;
+            gap: 16px;
+            padding: 8px 4px;
+            font-size: 12.5px;
+            font-weight: 900;
+        }
+
+        .g-tab {
+            color: #94a3b8;
+            cursor: pointer;
+            padding-bottom: 4px;
+        }
+
+        .g-tab.active {
+            color: #fff;
+            border-bottom: 2px solid #ff2e7e;
+        }
+
+        .gifts-4col-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 9px;
-            margin: 12px 0 14px;
+            gap: 8px;
+            max-height: 230px;
+            overflow-y: auto;
+            margin-bottom: 12px;
         }
 
-        .gift-tile {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1.5px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
+        .g-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid transparent;
+            border-radius: 14px;
             padding: 8px 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             cursor: pointer;
             position: relative;
         }
 
-        .gift-tile.active {
-            border-color: var(--gold);
-            background: rgba(255, 184, 0, 0.18);
-            box-shadow: 0 0 14px rgba(255, 184, 0, 0.35);
+        .g-card.active {
+            border-color: #ff2e7e;
+            background: rgba(255, 46, 126, 0.14);
         }
 
-        .ready-badge {
+        .cached-dot {
             position: absolute;
-            top: 4px;
+            top: 5px;
             left: 5px;
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: #22c55e;
         }
 
-        .gold-cta-btn {
-            width: 100%;
-            background: var(--gold-grad);
-            color: #1a0f00;
-            border: none;
+        /* شریتی خوارەوەی سندوقی دیاری (باڵانس + 1 / 7 / 77 / 777 + Send) */
+        .gift-drawer-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .combo-selector {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2px;
+        }
+
+        .combo-opt {
+            font-size: 11px;
+            font-weight: 900;
+            padding: 5px 10px;
             border-radius: 16px;
-            padding: 11px;
-            font-size: 14px;
+            cursor: pointer;
+            color: #cbd5e1;
+        }
+
+        .combo-opt.active {
+            background: rgba(255, 255, 255, 0.18);
+            color: #fff;
+        }
+
+        .tiktok-send-btn {
+            background: var(--pink-grad);
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            padding: 7px 20px;
+            font-size: 13px;
             font-weight: 900;
             cursor: pointer;
         }
 
-        .emoji-popup {
-            position: absolute;
-            bottom: 66px;
-            left: 14px;
-            background: rgba(20, 9, 48, 0.96);
-            border: 1px solid var(--gold);
-            border-radius: 30px;
-            padding: 6px 12px;
-            display: none;
-            gap: 10px;
-            z-index: 25;
-        }
-
-        .emoji-popup.open { display: flex; }
-
-        .center-popup {
+        /* مۆداڵی دەرچوون */
+        .leave-modal {
             position: absolute;
             inset: 0;
             background: rgba(0, 0, 0, 0.78);
-            z-index: 40;
+            z-index: 45;
             display: none;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
 
-        .center-popup.open { display: flex; }
+        .leave-modal.open { display: flex; }
 
-        .popup-card {
+        .leave-card {
             width: 100%;
-            max-width: 340px;
-            background: #170b38;
+            max-width: 330px;
+            background: #160c36;
             border: 1.5px solid var(--gold);
-            border-radius: 24px;
-            padding: 20px;
+            border-radius: 22px;
+            padding: 18px;
             text-align: center;
         }
     </style>
@@ -664,130 +810,180 @@
 <body>
 
 <div class="app-shell">
-    <div class="royal-stage-bg"></div>
-    <div class="royal-arch-decor"></div>
+    <div class="room-bg-layer"></div>
     <div id="pixi-layer"></div>
 
-    <!-- شانۆی ڤیدیۆی دیارییەکان (بە خێرایی 0.0 چرکە) -->
-    <div id="gift-video-stage"></div>
+    <!-- شانۆی دیاریی بێ چوارچێوە (Frameless Hologram Video) -->
+    <div id="frameless-gift-stage"></div>
+
+    <!-- بانەری نێرەری دیاری -->
+    <div class="gift-combo-toast" id="giftComboToast">
+        <img id="toastSenderPic" src="images.png/controller.png" alt="">
+        <div>
+            <div id="toastSenderName" style="font-size:11.5px; font-weight:900;">یاریزان</div>
+            <div id="toastGiftDesc" style="font-size:10px; color:#ffe680;">دیاری نارد</div>
+        </div>
+        <div id="toastComboCount" style="font-size:20px; font-weight:900; color:#ffe066; font-style:italic;">x1</div>
+    </div>
 
     <!-- ١. بەشی سەرەوە -->
     <div>
-        <div class="top-header">
-            <div class="host-pill">
-                <img id="topHostAvatar" src="images.png/controller.png" alt="">
+        <div class="top-bar">
+            <div class="room-identity">
+                <img id="roomHostAvatar" src="images.png/controller.png" alt="">
                 <div style="overflow:hidden;">
-                    <div class="host-pill-title">دیوەخانی شاهانەی کوردی 👑</div>
-                    <div class="host-pill-sub"><span class="live-dot"></span><span>ID: 7701</span> • <span>HD Voice</span></div>
+                    <div class="room-title-txt" id="roomTitleDisplay">BAHDINAN 👑❤️ یاری کوردی</div>
+                    <div class="room-id-txt" id="roomIdDisplay">ID: 7701</div>
                 </div>
             </div>
 
-            <div class="top-actions">
-                <div class="viewer-badge">
-                    <i class="fa-solid fa-users" style="color:var(--gold);"></i>
-                    <span id="onlineViewers">28</span>
-                </div>
-                <button class="icon-circle" id="speakerBtn" onclick="toggleSpeakerMute()" title="دەنگی ژوور">
+            <div class="top-right-btns">
+                <button class="mini-circle-btn" id="speakerToggleBtn" onclick="toggleRoomSpeaker()" title="دەنگی ژوور">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
-                <button class="icon-circle" onclick="document.getElementById('leavePopup').classList.add('open')" title="دەرچوون">
+                <button class="mini-circle-btn" onclick="window.location.href='rooms.html'" title="ژوورەکانی تر">
+                    <i class="fa-solid fa-compress"></i>
+                </button>
+                <button class="mini-circle-btn" onclick="document.getElementById('leaveModal').classList.add('open')" title="داخستن">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
         </div>
 
-        <!-- شریتی جزدان و PK -->
-        <div class="second-bar">
-            <div class="wallet-pills">
-                <div class="w-pill" onclick="if(window.YariWallet) YariWallet.openStore('gold')">
-                    🪙 <span data-wallet="gold" style="color:#ffd000;">7,000</span>
+        <!-- باجەکانی Diamond, Level, Wallet -->
+        <div class="badges-row">
+            <div class="rank-badges">
+                <span class="r-pill r-diamond">💎 Diamond 12</span>
+                <span class="r-pill r-lvl">Lv.98</span>
+                <span class="r-pill r-club" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')">
+                    💎 <span data-wallet="diamonds">40</span> +
+                </span>
+                <span class="r-pill r-lvl" onclick="if(window.YariWallet) YariWallet.openStore('gold')">
+                    🪙 <span data-wallet="gold">7,000</span> +
+                </span>
+            </div>
+            <span class="r-pill r-gifts" onclick="openGiftDrawer()">🎁 دیارییەکان 1</span>
+        </div>
+
+        <!-- ٢. گۆڕەپانی ١٨ مایکەکە (تیمی سوور دژی تیمی شین) -->
+        <div class="pk-arena-container">
+            <div class="pk-score-header">
+                <span style="color:#fecdd3;">🔥 <span id="redTeamScore">28678</span></span>
+                <div class="pk-timer-pill" onclick="resetPKTimer()">
+                    <span>⚔️</span>
+                    <span id="pkClockDisplay">07:37</span>
                 </div>
-                <div class="w-pill" style="border-color:rgba(56,189,248,0.45);" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')">
-                    💎 <span data-wallet="diamonds" style="color:#38bdf8;">40</span>
+                <span style="color:#bfdbfe;"><span id="blueTeamScore">54449</span> ❄️</span>
+            </div>
+
+            <div class="pk-sub-bar">
+                <span style="color:#fda4af;">LV3 • +20%</span>
+                <span style="color:#fde047;">تیمی سوور 🆚 تیمی شین</span>
+                <span style="color:#93c5fd;">+20% • LV3</span>
+            </div>
+
+            <!-- تۆڕی ١٨ مایکەکە (٣ ڕیز × ٦ ستوون) -->
+            <div class="mics-18-grid" id="mics18Grid">
+                <div class="entrance-pill" id="entranceBanner">✨ @ياریزان هاتە ژوورەوە</div>
+            </div>
+
+            <div class="pk-upgrade-footer">
+                <div class="upg-pill">
+                    <span style="color:#fda4af;">Upgrade Lv4</span>
+                    <span style="color:#fde047;">+30%</span>
+                </div>
+                <div class="upg-pill">
+                    <span style="color:#93c5fd;">Upgrade Lv4</span>
+                    <span style="color:#fde047;">+30%</span>
                 </div>
             </div>
-            <button class="pk-btn" onclick="togglePKMode()">⚔️ PK ڕکابەری</button>
         </div>
 
-        <!-- شریتی PK -->
-        <div class="pk-box" id="pkBox">
-            <div class="pk-scores">
-                <span style="color:#f87171;">تیمی سوور: <span id="redScore">0</span></span>
-                <span style="color:#fde047;">PK LIVE</span>
-                <span style="color:#60a5fa;">تیمی شین: <span id="blueScore">0</span></span>
+        <!-- ٣. شریتی بینەرەکان (Audience Strip) -->
+        <div class="audience-bar">
+            <div class="audience-avatars">
+                <img src="images.png/controller.png" class="aud-pic" alt="">
+                <img src="images.png/gamer-hero.png" class="aud-pic" alt="">
+                <img src="images.png/chess.png" class="aud-pic" alt="">
+                <img src="images.png/ludo.png" class="aud-pic" alt="">
+                <img src="images.png/domino.jpg" class="aud-pic" alt="">
             </div>
-            <div class="pk-bar">
-                <div class="pk-red" id="redBarFill"></div>
-            </div>
-        </div>
-
-        <!-- ٢. تۆڕی ١٦ مایکەکە -->
-        <div class="mics-wrapper">
-            <div class="host-seat-row" id="hostSeatBox"></div>
-            <div class="guests-seat-grid" id="guestSeatsBox"></div>
-        </div>
-    </div>
-
-    <!-- ٣. چاتی زیندوو -->
-    <div class="chat-zone">
-        <div class="chat-stream" id="chatStream">
-            <div class="welcome-box">
-                <i class="fa-solid fa-crown"></i>
-                بەخێربێن بۆ دیوەخانی شاهانەی <b>یاری کوردی</b>! دەنگی ژوور بە کوالێتی HD کار دەکات.
+            <div class="aud-count-pill">
+                <i class="fa-solid fa-eye" style="color:var(--gold);"></i>
+                <span id="viewersTotal">161</span>
             </div>
         </div>
     </div>
 
-    <!-- لیستی ئیمۆجی سەر مایک -->
-    <div class="emoji-popup" id="emojiPopup">
-        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('❤️')">❤️</span>
-        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('😂')">😂</span>
-        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('👏')">👏</span>
-        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('🔥')">🔥</span>
-        <span style="font-size:22px; cursor:pointer;" onclick="triggerSeatEmoji('👑')">👑</span>
+    <!-- ٤. چاتی لایڤ -->
+    <div class="chat-area">
+        <div class="chat-list" id="liveChatList">
+            <div class="chat-bubble" style="border:1px solid rgba(255,184,0,0.35); color:#fde68a;">
+                👑 بەخێربێن بۆ ژووری دەنگیی <b>یاری کوردی</b>! دەنگ و دیارییەکان بە کوالێتیی 120FPS کار دەکەن.
+            </div>
+        </div>
     </div>
 
-    <!-- ٤. شریتی خوارەوە -->
-    <div class="bottom-bar">
-        <div class="input-pill">
-            <input type="text" id="chatMsgInput" placeholder="نامەیەک بنووسە..." onkeypress="if(event.key==='Enter') sendRoomChat()">
-            <button class="send-btn" onclick="sendRoomChat()"><i class="fa-solid fa-paper-plane"></i></button>
+    <!-- ٥. شریتی خوارەوە -->
+    <div class="bottom-controls">
+        <div class="chat-input-box">
+            <input type="text" id="roomChatInput" placeholder="شتێک بنووسە..." onkeypress="if(event.key==='Enter') postChatMessage()">
+            <button class="send-chat-btn" onclick="postChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
         </div>
-        <button class="action-btn" id="myMicBtn" onclick="toggleHDMicrophone()" title="مایکرۆفۆن">
+        <button class="ctrl-circle" id="micToggleBtn" onclick="toggleVoiceMic()" title="مایکرۆفۆن">
             <i class="fa-solid fa-microphone-slash"></i>
         </button>
-        <button class="action-btn" onclick="document.getElementById('emojiPopup').classList.toggle('open')" title="ئیمۆجی">
-            😊
+        <button class="ctrl-circle" onclick="sendQuickHeart()" title="دڵ">
+            ❤️
         </button>
-        <button class="action-btn gift-main" onclick="openGiftSheet()" title="سندوقی دیاری">
+        <button class="ctrl-circle gift-btn" onclick="openGiftDrawer()" title="سندوقی دیاری">
             <i class="fa-solid fa-gift"></i>
         </button>
     </div>
 
-    <!-- سندوقی دیارییەکان -->
-    <div class="sheet-overlay" id="giftSheet" onclick="if(event.target===this) this.classList.remove('open')">
-        <div class="sheet-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="font-size:15px; font-weight:900; color:var(--gold);">🎁 سندوقی دیارییە شاهانەکان</div>
-                <div style="font-size:11.5px;">
-                    بۆ: <select id="giftTargetSeat" style="background:#1e1145; color:#ffd000; border:1px solid #ffb800; border-radius:8px; padding:2px 8px;"></select>
-                </div>
+    <!-- ٦. سندوقی دیارییەکان (TikTok Multi-Recipient Gift Drawer) -->
+    <div class="gift-drawer-overlay" id="giftDrawerOverlay" onclick="if(event.target===this) this.classList.remove('open')">
+        <div class="gift-drawer">
+            <!-- هەڵبژاردنی وەرگرەکان (All یان تاک) -->
+            <div class="recipient-strip" id="recipientStrip"></div>
+
+            <!-- تابەکان -->
+            <div class="gift-tabs-row">
+                <div class="g-tab active" id="tabHot" onclick="switchGiftCategory('all')">HOT 🔥</div>
+                <div class="g-tab" id="tabRoyal" onclick="switchGiftCategory('royal')">Royal VIP 👑</div>
             </div>
-            <div class="gift-items-grid" id="giftItemsGrid"></div>
-            <button class="gold-cta-btn" onclick="sendChosenGift()">ناردنی دیاری ✨</button>
+
+            <!-- تۆڕی دیارییەکان -->
+            <div class="gifts-4col-grid" id="gifts4ColGrid"></div>
+
+            <!-- شریتی ناردن و کۆمبۆ (1 / 7 / 77 / 777) -->
+            <div class="gift-drawer-footer">
+                <div style="font-size:12px; font-weight:900; color:#fde047; display:flex; align-items:center; gap:5px; cursor:pointer;" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')">
+                    💎 <span data-wallet="diamonds">40</span> <span>›</span>
+                </div>
+
+                <div class="combo-selector">
+                    <div class="combo-opt active" onclick="setGiftCombo(1, this)">1</div>
+                    <div class="combo-opt" onclick="setGiftCombo(7, this)">7</div>
+                    <div class="combo-opt" onclick="setGiftCombo(77, this)">77</div>
+                    <div class="combo-opt" onclick="setGiftCombo(777, this)">777</div>
+                </div>
+
+                <button class="tiktok-send-btn" onclick="executeSendGift()">Send</button>
+            </div>
         </div>
     </div>
 
-    <!-- مۆداڵی Keep / Leave -->
-    <div class="center-popup" id="leavePopup">
-        <div class="popup-card">
-            <div style="font-size:17px; font-weight:900; color:var(--gold); margin-bottom:8px;">دەرچوون لە ژووری دەنگی</div>
-            <p style="font-size:12.5px; color:#d8b4fe; margin-bottom:16px;">دەتەوێت ژوورەکە بچووک بکەیتەوە (Keep) یان بە تەواوی دەربچیت؟</p>
-            <div style="display:flex; gap:10px;">
-                <button class="gold-cta-btn" onclick="keepRoomMinimized()">مانەوە (Keep)</button>
-                <button onclick="window.location.href='index.html'" style="width:100%; background:rgba(239,68,68,0.2); border:1px solid #ef4444; color:#fca5a5; border-radius:16px; font-weight:900; cursor:pointer;">دەرچوون (Leave)</button>
+    <!-- مۆداڵی دەرچوون -->
+    <div class="leave-modal" id="leaveModal">
+        <div class="leave-card">
+            <div style="font-size:16px; font-weight:900; color:var(--gold); margin-bottom:8px;">دەرچوون لە ژوور</div>
+            <p style="font-size:12px; color:#d8b4fe; margin-bottom:14px;">دەتەوێت بگەڕێیتەوە بۆ لیستی ژوورەکان یان پەڕەی سەرەکی؟</p>
+            <div style="display:flex; gap:8px;">
+                <button onclick="window.location.href='rooms.html'" style="flex:1; background:var(--gold-grad); color:#1a0f00; border:none; border-radius:14px; padding:10px; font-weight:900; cursor:pointer;">لیستی ژوورەکان</button>
+                <button onclick="window.location.href='index.html'" style="flex:1; background:rgba(239,68,68,0.22); border:1px solid #ef4444; color:#fca5a5; border-radius:14px; padding:10px; font-weight:900; cursor:pointer;">سەرەکی</button>
             </div>
-            <button onclick="document.getElementById('leavePopup').classList.remove('open')" style="margin-top:12px; background:none; border:none; color:#a49ec8; font-size:12px; cursor:pointer;">پاشگەزبوونەوە</button>
+            <button onclick="document.getElementById('leaveModal').classList.remove('open')" style="margin-top:10px; background:none; border:none; color:#94a3b8; font-size:12px; cursor:pointer;">پاشگەزبوونەوە</button>
         </div>
     </div>
 </div>
@@ -800,320 +996,369 @@
 <script src="admin-engine.js"></script>
 
 <script>
-    const currentPlayer = {
-        uid: localStorage.getItem('yk_player_uid') || 'user_' + Math.floor(Math.random() * 90000),
+    const me = {
+        uid: localStorage.getItem('yk_player_uid') || 'user_' + Math.floor(10000 + Math.random() * 90000),
         name: localStorage.getItem('yk_player_name') || 'یاریزان',
         avatar: localStorage.getItem('yk_player_avatar') || 'images.png/controller.png'
     };
 
-    document.getElementById('topHostAvatar').src = currentPlayer.avatar;
-    const urlRoomId = new URLSearchParams(window.location.search).get('roomId');
-if (urlRoomId) {
-    const allRooms = JSON.parse(localStorage.getItem('yk_permanent_rooms') || '[]');
-    const activeRoom = allRooms.find(r => r.id === urlRoomId);
-    if (activeRoom) {
-        document.querySelector('.host-pill-title').innerText = activeRoom.title;
-        document.querySelector('.host-pill-sub').innerHTML = `<span class="live-dot"></span><span>ID: ${activeRoom.displayId}</span> • <span>${activeRoom.category}</span>`;
-        if (activeRoom.avatar) document.getElementById('topHostAvatar').src = activeRoom.avatar;
-    }
-}
+    document.getElementById('roomHostAvatar').src = me.avatar;
 
-    let roomAudioMuted = false;
+    // بارکردنی زانیاریی ژوور ئەگەر لە rooms.htmlـەوە هاتبێت
+    const params = new URLSearchParams(window.location.search);
+    const activeRoomId = params.get('roomId');
+    if (activeRoomId) {
+        const savedRooms = JSON.parse(localStorage.getItem('yk_permanent_rooms') || '[]');
+        const found = savedRooms.find(r => r.id === activeRoomId);
+        if (found) {
+            document.getElementById('roomTitleDisplay').innerText = found.title;
+            document.getElementById('roomIdDisplay').innerText = `ID: ${found.displayId}`;
+            if (found.avatar) document.getElementById('roomHostAvatar').src = found.avatar;
+        }
+    }
+
+    let roomMuted = false;
+    let redTeamTotal = 28678;
+    let blueTeamTotal = 54449;
 
     // ١. مەکینەی 120FPS PixiJS
     let pixiApp = null;
-    const fxParticles = [];
+    const sparks = [];
 
-    function startPixiEngine() {
-        const host = document.getElementById('pixi-layer');
+    function initPixi120() {
+        const container = document.getElementById('pixi-layer');
         pixiApp = new PIXI.Application({
-            resizeTo: host,
+            resizeTo: container,
             backgroundAlpha: 0,
             antialias: true,
             resolution: window.devicePixelRatio || 1,
             autoDensity: true
         });
         pixiApp.ticker.maxFPS = 120;
-        host.appendChild(pixiApp.view);
-
-        for (let i = 0; i < 20; i++) {
-            addSparkle(
-                Math.random() * pixiApp.screen.width,
-                Math.random() * pixiApp.screen.height,
-                (Math.random() - 0.5) * 0.3,
-                -0.18 - Math.random() * 0.3,
-                0xffd000,
-                1.8 + Math.random() * 2,
-                true
-            );
-        }
+        container.appendChild(pixiApp.view);
 
         pixiApp.ticker.add((delta) => {
-            for (let i = fxParticles.length - 1; i >= 0; i--) {
-                const p = fxParticles[i];
+            for (let i = sparks.length - 1; i >= 0; i--) {
+                const p = sparks[i];
                 p.g.x += p.vx * delta;
                 p.g.y += p.vy * delta;
-                if (p.ambient) {
-                    if (p.g.y < -10) p.g.y = pixiApp.screen.height + 10;
-                } else {
-                    p.life -= 0.018 * delta;
-                    p.g.alpha = Math.max(0, p.life);
-                    if (p.life <= 0) {
-                        pixiApp.stage.removeChild(p.g);
-                        fxParticles.splice(i, 1);
-                    }
+                p.life -= 0.018 * delta;
+                p.g.alpha = Math.max(0, p.life);
+                if (p.life <= 0) {
+                    pixiApp.stage.removeChild(p.g);
+                    sparks.splice(i, 1);
                 }
             }
         });
     }
 
-    function addSparkle(x, y, vx, vy, color, r, ambient = false) {
-        if (!pixiApp) return;
-        const g = new PIXI.Graphics();
-        g.beginFill(color, ambient ? 0.45 : 0.95);
-        g.drawCircle(0, 0, r);
-        g.endFill();
-        g.x = x;
-        g.y = y;
-        pixiApp.stage.addChild(g);
-        fxParticles.push({ g, vx, vy, life: 1, ambient });
-    }
-
-    function burst120FPS(color = 0xffd000) {
+    function spawnParticles(color = 0xffd000, count = 45) {
         if (!pixiApp) return;
         const cx = pixiApp.screen.width / 2;
-        const cy = pixiApp.screen.height * 0.42;
-        for (let i = 0; i < 55; i++) {
-            const a = Math.random() * Math.PI * 2;
-            const s = 1.5 + Math.random() * 4.8;
-            addSparkle(cx, cy, Math.cos(a) * s, Math.sin(a) * s, i % 2 === 0 ? color : 0xffffff, 2.8 + Math.random() * 3, false);
+        const cy = pixiApp.screen.height * 0.55;
+        for (let i = 0; i < count; i++) {
+            const g = new PIXI.Graphics();
+            g.beginFill(i % 2 === 0 ? color : 0xffffff, 0.9);
+            g.drawCircle(0, 0, 2.5 + Math.random() * 3);
+            g.endFill();
+            g.x = cx + (Math.random() - 0.5) * 120;
+            g.y = cy + (Math.random() - 0.5) * 80;
+            pixiApp.stage.addChild(g);
+            const ang = Math.random() * Math.PI * 2;
+            const spd = 1.5 + Math.random() * 4.5;
+            sparks.push({ g, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1.5, life: 1 });
         }
     }
 
-    // ٢. سیستمی ١٦ مایکەکە
-    const roomSeats = Array.from({ length: 16 }, (_, i) => ({
-        index: i,
-        occupied: i === 0,
-        uid: i === 0 ? currentPlayer.uid : null,
-        name: i === 0 ? currentPlayer.name : `مایک ${i}`,
-        avatar: i === 0 ? currentPlayer.avatar : null,
-        muted: i !== 0,
-        speaking: false,
-        score: 0
-    }));
+    // ٢. سیستمی ١٨ مایکەکە (٣ ڕیز × ٦ ستوون: ستوونی 1-3 تیمی سوور، ستوونی 4-6 تیمی شین)
+    const seats18 = Array.from({ length: 18 }, (_, idx) => {
+        const col = idx % 6;
+        const team = col < 3 ? 'red' : 'blue';
+        return {
+            index: idx,
+            number: idx + 1,
+            team: team,
+            occupied: idx === 0,
+            uid: idx === 0 ? me.uid : null,
+            name: idx === 0 ? me.name : `${idx + 1}`,
+            avatar: idx === 0 ? me.avatar : null,
+            level: idx === 0 ? 98 : 0,
+            muted: idx !== 0,
+            speaking: false,
+            support: 0
+        };
+    });
 
-    let myCurrentSeat = 0;
+    let mySeatIndex = 0;
 
-    function drawSeats() {
-        const hostContainer = document.getElementById('hostSeatBox');
-        const guestsContainer = document.getElementById('guestSeatsBox');
-        hostContainer.innerHTML = '';
-        guestsContainer.innerHTML = '';
+    function render18Seats() {
+        const grid = document.getElementById('mics18Grid');
+        const banner = document.getElementById('entranceBanner');
+        grid.innerHTML = '';
+        if (banner) grid.appendChild(banner);
 
-        roomSeats.forEach((s) => {
-            const slot = document.createElement('div');
-            slot.className = `mic-slot ${s.index === 0 ? 'host' : ''} ${s.speaking ? 'speaking' : ''}`;
-            slot.id = `mic-slot-${s.index}`;
-            slot.onclick = () => onSeatClick(s.index);
+        seats18.forEach(s => {
+            const cell = document.createElement('div');
+            cell.className = `seat-cell ${s.index === 0 ? 'host-seat' : ''} ${s.team}-team ${s.speaking ? 'speaking' : ''}`;
+            cell.id = `seat-cell-${s.index}`;
+            cell.onclick = () => handleSeatTap(s.index);
 
-            const content = s.occupied
+            const innerAvatar = s.occupied
                 ? `<img src="${s.avatar || 'images.png/controller.png'}" alt="">`
-                : `<i class="fa-solid fa-plus" style="color:rgba(255,215,100,0.55); font-size:13px;"></i>`;
+                : `<i class="fa-solid fa-microphone" style="color:rgba(255,255,255,0.28); font-size:12px;"></i>`;
 
-            const micIcon = s.occupied
-                ? `<div class="mic-mute-dot"><i class="fa-solid ${s.muted ? 'fa-microphone-slash' : 'fa-microphone'}" style="color:${s.muted ? '#f87171' : '#34d399'};"></i></div>`
+            const lvlBadge = s.occupied
+                ? `<span class="seat-lvl-tag">${s.index === 0 ? '👑' : s.level || 45}</span>`
                 : '';
 
-            slot.innerHTML = `
-                ${s.index === 0 ? '<div class="crown-top"><i class="fa-solid fa-crown"></i></div>' : ''}
-                <div class="mic-ring">${content}${micIcon}</div>
-                <div class="mic-username">${s.occupied ? s.name : s.index}</div>
-                <div class="mic-points">💎 ${s.score}</div>
-            `;
+            const micStatus = s.occupied
+                ? `<div class="seat-mic-badge"><i class="fa-solid ${s.muted ? 'fa-microphone-slash' : 'fa-microphone'}" style="color:${s.muted ? '#fb7185' : '#4ade80'};"></i></div>`
+                : '';
 
-            if (s.index === 0) hostContainer.appendChild(slot);
-            else guestsContainer.appendChild(slot);
+            cell.innerHTML = `
+                <div class="seat-avatar-wrap">${innerAvatar}${lvlBadge}${micStatus}</div>
+                <div class="seat-name-lbl">${s.occupied ? s.name : s.number}</div>
+                <div class="seat-support-pill">💎 ${s.support > 0 ? s.support : 'support'}</div>
+            `;
+            grid.appendChild(cell);
         });
     }
 
-    function onSeatClick(idx) {
-        const s = roomSeats[idx];
-        if (!s.occupied) {
-            if (myCurrentSeat !== null) {
-                roomSeats[myCurrentSeat].occupied = false;
-                roomSeats[myCurrentSeat].uid = null;
-                roomSeats[myCurrentSeat].speaking = false;
+    function handleSeatTap(idx) {
+        const seat = seats18[idx];
+        if (!seat.occupied) {
+            if (mySeatIndex !== null) {
+                seats18[mySeatIndex].occupied = false;
+                seats18[mySeatIndex].uid = null;
+                seats18[mySeatIndex].speaking = false;
             }
-            s.occupied = true;
-            s.uid = currentPlayer.uid;
-            s.name = currentPlayer.name;
-            s.avatar = currentPlayer.avatar;
-            s.muted = !isMicOn;
-            myCurrentSeat = idx;
-            drawSeats();
-            addSystemLog(`${currentPlayer.name} سەرکەوتە سەر مایکی ${idx}`);
+            seat.occupied = true;
+            seat.uid = me.uid;
+            seat.name = me.name;
+            seat.avatar = me.avatar;
+            seat.level = 98;
+            seat.muted = !micEnabled;
+            mySeatIndex = idx;
+            render18Seats();
+            triggerEntranceToast(me.name);
         } else {
-            openGiftSheet(idx);
+            selectedRecipients = [idx];
+            sendToAllMode = false;
+            openGiftDrawer();
         }
+    }
+
+    function triggerEntranceToast(username) {
+        const el = document.getElementById('entranceBanner');
+        el.innerText = `✨ @${username} هاتە ژوورەوە`;
+        el.style.display = 'flex';
+        setTimeout(() => { el.style.display = 'none'; }, 3200);
     }
 
     // ٣. مایکرۆفۆنی HD
-    let isMicOn = false;
-    let localAudioStream = null;
-    let sharedAudioCtx = null;
+    let micEnabled = false;
+    let micStream = null;
+    let audioCtx = null;
 
-    async function toggleHDMicrophone() {
-        const btn = document.getElementById('myMicBtn');
-        if (!isMicOn) {
+    async function toggleVoiceMic() {
+        const btn = document.getElementById('micToggleBtn');
+        if (!micEnabled) {
             try {
-                localAudioStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    }
+                micStream = await navigator.mediaDevices.getUserMedia({
+                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
                 });
-                isMicOn = true;
-                btn.classList.add('mic-live');
+                micEnabled = true;
+                btn.classList.add('mic-active');
                 btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-                if (myCurrentSeat !== null) {
-                    roomSeats[myCurrentSeat].muted = false;
-                    drawSeats();
+                if (mySeatIndex !== null) {
+                    seats18[mySeatIndex].muted = false;
+                    render18Seats();
                 }
-                monitorMicActivity(localAudioStream);
-            } catch (err) {
-                alert('تکایە لە وێبگەڕەکەتدا ڕێگە بە مایکرۆفۆن بدە.');
+                trackVoiceVolume(micStream);
+            } catch (e) {
+                alert('تکایە ڕێگە بە مایکرۆفۆن بدە لە وێبگەڕەکەتدا.');
             }
         } else {
-            isMicOn = false;
-            if (localAudioStream) {
-                localAudioStream.getTracks().forEach(t => t.stop());
-                localAudioStream = null;
+            micEnabled = false;
+            if (micStream) {
+                micStream.getTracks().forEach(t => t.stop());
+                micStream = null;
             }
-            btn.classList.remove('mic-live');
+            btn.classList.remove('mic-active');
             btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-            if (myCurrentSeat !== null) {
-                roomSeats[myCurrentSeat].muted = true;
-                roomSeats[myCurrentSeat].speaking = false;
-                drawSeats();
+            if (mySeatIndex !== null) {
+                seats18[mySeatIndex].muted = true;
+                seats18[mySeatIndex].speaking = false;
+                render18Seats();
             }
         }
     }
 
-    function monitorMicActivity(stream) {
-        if (!sharedAudioCtx) sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
-        const source = sharedAudioCtx.createMediaStreamSource(stream);
-        const analyser = sharedAudioCtx.createAnalyser();
+    function trackVoiceVolume(stream) {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const src = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
         analyser.fftSize = 256;
-        source.connect(analyser);
-        const freqData = new Uint8Array(analyser.frequencyBinCount);
+        src.connect(analyser);
+        const data = new Uint8Array(analyser.frequencyBinCount);
 
-        function loop() {
-            if (!isMicOn) return;
-            analyser.getByteFrequencyData(freqData);
-            let total = 0;
-            for (let i = 0; i < freqData.length; i++) total += freqData[i];
-            const level = total / freqData.length;
-            if (myCurrentSeat !== null) {
-                const talking = level > 16;
-                if (roomSeats[myCurrentSeat].speaking !== talking) {
-                    roomSeats[myCurrentSeat].speaking = talking;
-                    const el = document.getElementById(`mic-slot-${myCurrentSeat}`);
-                    if (el) el.classList.toggle('speaking', talking);
+        function tick() {
+            if (!micEnabled) return;
+            analyser.getByteFrequencyData(data);
+            let sum = 0;
+            for (let i = 0; i < data.length; i++) sum += data[i];
+            const avg = sum / data.length;
+            if (mySeatIndex !== null) {
+                const isTalking = avg > 15;
+                if (seats18[mySeatIndex].speaking !== isTalking) {
+                    seats18[mySeatIndex].speaking = isTalking;
+                    const cell = document.getElementById(`seat-cell-${mySeatIndex}`);
+                    if (cell) cell.classList.toggle('speaking', isTalking);
                 }
             }
-            requestAnimationFrame(loop);
+            requestAnimationFrame(tick);
         }
-        loop();
+        tick();
     }
 
-    function toggleSpeakerMute() {
-        roomAudioMuted = !roomAudioMuted;
-        document.getElementById('speakerBtn').innerHTML = roomAudioMuted
-            ? '<i class="fa-solid fa-volume-xmark" style="color:#f87171;"></i>'
+    function toggleRoomSpeaker() {
+        roomMuted = !roomMuted;
+        document.getElementById('speakerToggleBtn').innerHTML = roomMuted
+            ? '<i class="fa-solid fa-volume-xmark" style="color:#fb7185;"></i>'
             : '<i class="fa-solid fa-volume-high"></i>';
     }
 
-    // ٤. سیستمی پێشوەختە بارکردنی ڤیدیۆکان لە ڕامدا (Instant Zero-Lag Preloader)
-    const ROOM_GIFTS = [
-        { id: 'tea', name: 'چای کوردی', icon: '🍵', currency: 'gold', price: 500, duration: 2.5, video: '' },
-        { id: 'rose', name: 'گوڵی سوور', icon: '🌹', currency: 'gold', price: 1500, duration: 2.5, video: '' },
-        { id: 'tom_car', name: 'ئۆتۆمبێلی تۆم', icon: '🚗', currency: 'diamonds', price: 100, duration: 3.8, video: 'images.png/tom-car.mp4' },
-        { id: 'baby_lion', name: 'بەچکە شێر', icon: '🦁', currency: 'diamonds', price: 400, duration: 4.7, video: 'images.png/baby-lion.mp4' },
-        { id: 'red_wolf', name: 'گورگی مانگی سوور', icon: '🐺', currency: 'diamonds', price: 800, duration: 6.0, video: 'images.png/red-wolf.mp4' },
-        { id: 'panther', name: 'پڵنگی ئاگرین', icon: '🐆', currency: 'diamonds', price: 1200, duration: 6.8, video: 'images.png/panther.mp4' },
-        { id: 'snow_wolf', name: 'گورگی بەفرین', icon: '❄️', currency: 'diamonds', price: 1800, duration: 8.0, video: 'images.png/snow-wolf.mp4' },
-        { id: 'lambo', name: 'لامبۆرگینی زێڕین', icon: '🏎️', currency: 'diamonds', price: 3000, duration: 8.0, video: 'images.png/lambo.mp4' },
-        { id: 'maybach', name: 'مارسیدس مایباخ', icon: '🚘', currency: 'diamonds', price: 5000, duration: 9.9, video: 'images.png/maybach.mp4' },
-        { id: 'royal_lions', name: 'شێرەکانی شاهانە', icon: '👑', currency: 'diamonds', price: 16000, duration: 10.1, video: 'images.png/royal-lions.mp4' }
+    // ٤. دیارییەکان + پێشوەختە بارکردن لە ڕامدا + ناردنی بێ چوارچێوە
+    const GIFTS_CATALOG = [
+        { id: 'tea', name: 'چای کوردی', icon: '🍵', cat: 'all', currency: 'gold', price: 500, duration: 2.5, video: '' },
+        { id: 'rose', name: 'گوڵی سوور', icon: '🌹', cat: 'all', currency: 'gold', price: 1500, duration: 2.5, video: '' },
+        { id: 'tom_car', name: 'ئۆتۆمبێلی تۆم', icon: '🚗', cat: 'all', currency: 'diamonds', price: 100, duration: 3.8, video: 'images.png/tom-car.mp4' },
+        { id: 'baby_lion', name: 'بەچکە شێر', icon: '🦁', cat: 'all', currency: 'diamonds', price: 400, duration: 4.7, video: 'images.png/baby-lion.mp4' },
+        { id: 'red_wolf', name: 'گورگی مانگی سوور', icon: '🐺', cat: 'all', currency: 'diamonds', price: 800, duration: 6.0, video: 'images.png/red-wolf.mp4' },
+        { id: 'panther', name: 'پڵنگی ئاگرین', icon: '🐆', cat: 'royal', currency: 'diamonds', price: 1200, duration: 6.8, video: 'images.png/panther.mp4' },
+        { id: 'snow_wolf', name: 'گورگی بەفرین', icon: '❄️', cat: 'royal', currency: 'diamonds', price: 1800, duration: 8.0, video: 'images.png/snow-wolf.mp4' },
+        { id: 'lambo', name: 'لامبۆرگینی زێڕین', icon: '🏎️', cat: 'royal', currency: 'diamonds', price: 3000, duration: 8.0, video: 'images.png/lambo.mp4' },
+        { id: 'maybach', name: 'مارسیدس مایباخ', icon: '🚘', cat: 'royal', currency: 'diamonds', price: 5000, duration: 9.9, video: 'images.png/maybach.mp4' },
+        { id: 'royal_lions', name: 'شێرەکانی شاهانە', icon: '👑', cat: 'royal', currency: 'diamonds', price: 16000, duration: 10.1, video: 'images.png/royal-lions.mp4' }
     ];
 
-    const preloadedVideoBlobs = {};
+    const videoBlobCache = {};
 
-    function preloadAllVideosInBackground() {
-        const all = getAllGifts();
-        all.forEach(g => {
-            if (!g.video || preloadedVideoBlobs[g.video]) return;
+    function getFullGiftList() {
+        const extra = JSON.parse(localStorage.getItem('yk_admin_extra_gifts') || '[]');
+        return [...GIFTS_CATALOG, ...extra];
+    }
+
+    function preloadGiftVideos() {
+        getFullGiftList().forEach(g => {
+            if (!g.video || videoBlobCache[g.video]) return;
             fetch(g.video)
-                .then(res => res.ok ? res.blob() : null)
-                .then(blob => {
-                    if (blob) {
-                        preloadedVideoBlobs[g.video] = URL.createObjectURL(blob);
-                    }
-                })
+                .then(r => r.ok ? r.blob() : null)
+                .then(b => { if (b) videoBlobCache[g.video] = URL.createObjectURL(b); })
                 .catch(() => {});
         });
     }
 
-    function getAllGifts() {
-        const extra = JSON.parse(localStorage.getItem('yk_admin_extra_gifts') || '[]');
-        return [...ROOM_GIFTS, ...extra];
+    let selectedGiftId = 'tom_car';
+    let giftCategory = 'all';
+    let giftComboMultiplier = 1;
+    let sendToAllMode = false;
+    let selectedRecipients = [0];
+
+    function openGiftDrawer() {
+        renderRecipientsBar();
+        renderGiftsGrid();
+        document.getElementById('giftDrawerOverlay').classList.add('open');
     }
 
-    let chosenGiftId = 'tom_car';
+    function renderRecipientsBar() {
+        const strip = document.getElementById('recipientStrip');
+        const activeSeats = seats18.filter(s => s.occupied);
 
-    function openGiftSheet(targetSeatIdx = 0) {
-        const select = document.getElementById('giftTargetSeat');
-        select.innerHTML = '';
-        roomSeats.filter(s => s.occupied).forEach(s => {
-            const opt = document.createElement('option');
-            opt.value = s.index;
-            opt.text = `${s.name} (${s.index === 0 ? 'سەرۆک' : 'مایک ' + s.index})`;
-            if (s.index === targetSeatIdx) opt.selected = true;
-            select.appendChild(opt);
-        });
+        strip.innerHTML = `
+            <span style="font-size:11px; color:#94a3b8; white-space:nowrap;">وەرگر:</span>
+            <button class="rec-all-btn ${sendToAllMode ? 'selected' : ''}" onclick="toggleSelectAllRecipients()">هەمووان (All)</button>
+        `;
 
-        const grid = document.getElementById('giftItemsGrid');
-        grid.innerHTML = '';
-        getAllGifts().forEach(g => {
-            const div = document.createElement('div');
-            div.className = `gift-tile ${g.id === chosenGiftId ? 'active' : ''}`;
-            div.onclick = () => {
-                chosenGiftId = g.id;
-                openGiftSheet(parseInt(select.value, 10));
+        activeSeats.forEach(s => {
+            const isSel = sendToAllMode || selectedRecipients.includes(s.index);
+            const chip = document.createElement('div');
+            chip.className = `rec-user-chip ${isSel ? 'selected' : ''}`;
+            chip.onclick = () => {
+                sendToAllMode = false;
+                selectedRecipients = [s.index];
+                renderRecipientsBar();
             };
-            const isCached = g.video && preloadedVideoBlobs[g.video];
-            div.innerHTML = `
-                ${isCached ? '<span class="ready-badge" title="ئامادەیە"></span>' : ''}
-                <div style="font-size:28px;">${g.icon}</div>
-                <div style="font-size:10.5px; font-weight:800; text-align:center;">${g.name}</div>
-                <div style="font-size:10px; font-weight:900; color:#ffe066;">${g.currency === 'gold' ? '🪙' : '💎'} ${g.price.toLocaleString()}</div>
+            chip.innerHTML = `
+                <img src="${s.avatar || 'images.png/controller.png'}" alt="">
+                <span class="rec-seat-num">${s.number}</span>
             `;
-            grid.appendChild(div);
+            strip.appendChild(chip);
         });
-
-        document.getElementById('giftSheet').classList.add('open');
     }
 
-    function sendChosenGift() {
-        const gift = getAllGifts().find(g => g.id === chosenGiftId);
+    function toggleSelectAllRecipients() {
+        sendToAllMode = !sendToAllMode;
+        if (sendToAllMode) {
+            selectedRecipients = seats18.filter(s => s.occupied).map(s => s.index);
+        } else {
+            selectedRecipients = [0];
+        }
+        renderRecipientsBar();
+    }
+
+    function switchGiftCategory(cat) {
+        giftCategory = cat;
+        document.getElementById('tabHot').classList.toggle('active', cat === 'all');
+        document.getElementById('tabRoyal').classList.toggle('active', cat === 'royal');
+        renderGiftsGrid();
+    }
+
+    function renderGiftsGrid() {
+        const grid = document.getElementById('gifts4ColGrid');
+        grid.innerHTML = '';
+        const list = getFullGiftList().filter(g => giftCategory === 'all' || g.cat === 'royal');
+
+        list.forEach(g => {
+            const card = document.createElement('div');
+            card.className = `g-card ${g.id === selectedGiftId ? 'active' : ''}`;
+            card.onclick = () => {
+                selectedGiftId = g.id;
+                renderGiftsGrid();
+            };
+            const cached = g.video && videoBlobCache[g.video];
+            card.innerHTML = `
+                ${cached ? '<span class="cached-dot"></span>' : ''}
+                <div style="font-size:26px;">${g.icon}</div>
+                <div style="font-size:10px; font-weight:800; text-align:center;">${g.name}</div>
+                <div style="font-size:9.5px; font-weight:900; color:#fde047;">${g.currency === 'gold' ? '🪙' : '💎'} ${g.price.toLocaleString()}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function setGiftCombo(num, el) {
+        giftComboMultiplier = num;
+        document.querySelectorAll('.combo-opt').forEach(o => o.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function executeSendGift() {
+        const gift = getFullGiftList().find(g => g.id === selectedGiftId);
         if (!gift) return;
+
+        const targets = sendToAllMode
+            ? seats18.filter(s => s.occupied)
+            : seats18.filter(s => selectedRecipients.includes(s.index));
+
+        const countTargets = Math.max(1, targets.length);
+        const totalCost = gift.price * giftComboMultiplier * countTargets;
 
         if (window.YariWallet) {
             const ok = gift.currency === 'gold'
-                ? YariWallet.spendGold(gift.price)
-                : YariWallet.spendDiamonds(gift.price);
+                ? YariWallet.spendGold(totalCost)
+                : YariWallet.spendDiamonds(totalCost);
             if (!ok) {
                 alert(gift.currency === 'gold' ? 'گۆڵدی پێویستت نییە!' : 'ئەڵماسی پێویستت نییە!');
                 YariWallet.openStore(gift.currency);
@@ -1121,150 +1366,110 @@ if (urlRoomId) {
             }
         }
 
-        const seatIdx = parseInt(document.getElementById('giftTargetSeat').value || '0', 10);
-        const target = roomSeats[seatIdx];
-        if (target) {
-            target.score += gift.price;
-            drawSeats();
-        }
+        const perSeatGain = gift.price * giftComboMultiplier;
+        targets.forEach(t => {
+            t.support += perSeatGain;
+            if (t.team === 'red') redTeamTotal += perSeatGain;
+            else blueTeamTotal += perSeatGain;
+        });
 
-        if (isPKOn) {
-            if (seatIdx % 2 === 0) redTeamPts += gift.price;
-            else blueTeamPts += gift.price;
-            refreshPKUI();
-        }
+        document.getElementById('redTeamScore').innerText = redTeamTotal;
+        document.getElementById('blueTeamScore').innerText = blueTeamTotal;
+        render18Seats();
 
-        document.getElementById('giftSheet').classList.remove('open');
-        playInstantGift(gift, target ? target.name : 'سەرۆک');
+        const targetLabel = sendToAllMode ? 'هەموو مایکەکان' : (targets[0] ? targets[0].name : 'سەرۆک');
+        document.getElementById('giftDrawerOverlay').classList.remove('open');
+        playFramelessHologramGift(gift, targetLabel, giftComboMultiplier);
     }
 
-    let activeGiftTimer = null;
+    let holoTimer = null;
 
-    function playInstantGift(gift, receiverName) {
-        addSystemLog(`🎁 ${currentPlayer.name} دیاری (${gift.name})ـی نارد بۆ ${receiverName}!`);
-        burst120FPS(gift.currency === 'gold' ? 0xffd000 : 0x38bdf8);
+    function playFramelessHologramGift(gift, receiverLabel, combo) {
+        appendChatLine(`🎁 <b>${me.name}</b> دیاری (${gift.name} x${combo})ـی نارد بۆ <b>${receiverLabel}</b>!`, true);
 
-        const stage = document.getElementById('gift-video-stage');
+        const toast = document.getElementById('giftComboToast');
+        document.getElementById('toastSenderPic').src = me.avatar;
+        document.getElementById('toastSenderName').innerText = me.name;
+        document.getElementById('toastGiftDesc').innerText = `${gift.icon} ${gift.name} ➔ ${receiverLabel}`;
+        document.getElementById('toastComboCount').innerText = `x${combo}`;
+        toast.style.display = 'flex';
+
+        spawnParticles(gift.currency === 'gold' ? 0xffd000 : 0x38bdf8, 55);
+
+        const stage = document.getElementById('frameless-gift-stage');
         stage.innerHTML = '';
 
-        const senderPill = `
-            <div class="gift-sender-pill">
-                <img src="${currentPlayer.avatar}" alt="">
-                <div>
-                    <div style="font-size:12px; font-weight:900; color:#fff;">${currentPlayer.name}</div>
-                    <div style="font-size:11px; color:#ffe066;">${gift.icon} ${gift.name} ➔ ${receiverName}</div>
-                </div>
-                <div style="font-size:20px; font-weight:900; color:#ffe066; font-style:italic;">x1</div>
-            </div>
-        `;
-
         if (gift.video) {
-            const box = document.createElement('div');
-            box.className = 'gift-media-box';
-
             const vid = document.createElement('video');
-            vid.src = preloadedVideoBlobs[gift.video] || gift.video;
-            vid.preload = 'auto';
+            vid.className = 'frameless-video';
+            vid.src = videoBlobCache[gift.video] || gift.video;
             vid.autoplay = true;
             vid.playsInline = true;
-            vid.muted = roomAudioMuted;
+            vid.muted = roomMuted;
             vid.volume = 0.95;
+            stage.appendChild(vid);
 
-            box.appendChild(vid);
-            stage.appendChild(box);
-            stage.insertAdjacentHTML('beforeend', senderPill);
-
-            // تەنها کاتێک شاشەکە پیشان دەدات کە یەکەم فرەیمی ڤیدیۆکە ئامادە بێت (بێ چوارچێوەی ڕەشی بەتاڵ)
-            const showStage = () => {
+            const reveal = () => {
                 stage.style.display = 'flex';
                 vid.play().catch(() => {});
             };
 
-            if (vid.readyState >= 2) {
-                showStage();
-            } else {
-                vid.onloadeddata = showStage;
-            }
+            if (vid.readyState >= 2) reveal();
+            else vid.onloadeddata = reveal;
         } else {
-            stage.innerHTML = `
-                <div style="font-size:115px; filter:drop-shadow(0 0 35px rgba(255,184,0,0.95)); animation: popGift 0.3s ease;">${gift.icon}</div>
-                ${senderPill}
-            `;
+            stage.innerHTML = `<div style="font-size:120px; filter:drop-shadow(0 0 35px rgba(255,184,0,0.95));">${gift.icon}</div>`;
             stage.style.display = 'flex';
         }
 
-        clearTimeout(activeGiftTimer);
-        activeGiftTimer = setTimeout(() => {
+        clearTimeout(holoTimer);
+        holoTimer = setTimeout(() => {
             stage.style.display = 'none';
             stage.innerHTML = '';
+            toast.style.display = 'none';
         }, (gift.duration || 4) * 1000);
     }
 
-    // ٥. ئیمۆجی، چات، و PK
-    function triggerSeatEmoji(emoji) {
-        document.getElementById('emojiPopup').classList.remove('open');
-        const idx = myCurrentSeat !== null ? myCurrentSeat : 0;
-        const slot = document.getElementById(`mic-slot-${idx}`);
-        if (!slot) return;
-        const el = document.createElement('div');
-        el.className = 'seat-emoji-float';
-        el.innerText = emoji;
-        slot.appendChild(el);
-        setTimeout(() => el.remove(), 1700);
-    }
-
-    function sendRoomChat() {
-        const inp = document.getElementById('chatMsgInput');
-        const txt = inp.value.trim();
-        if (!txt) return;
+    // ٥. چات و تایمەری PK
+    function postChatMessage() {
+        const inp = document.getElementById('roomChatInput');
+        const msg = inp.value.trim();
+        if (!msg) return;
         inp.value = '';
-
-        const stream = document.getElementById('chatStream');
-        const row = document.createElement('div');
-        row.className = 'chat-row';
-        row.innerHTML = `<span class="lvl-pill">Lv.45</span><b style="color:#ffe066; margin-left:4px;">${currentPlayer.name}:</b><span>${txt}</span>`;
-        stream.appendChild(row);
-        stream.scrollTop = stream.scrollHeight;
+        appendChatLine(`<span class="lvl-badge">Lv.98</span><b style="color:#ffe680;">${me.name}:</b> ${msg}`);
     }
 
-    function addSystemLog(text) {
-        const stream = document.getElementById('chatStream');
-        const row = document.createElement('div');
-        row.className = 'chat-row';
-        row.style.borderColor = 'rgba(255,184,0,0.4)';
-        row.innerHTML = `<span style="color:#ffd000; font-weight:800;">${text}</span>`;
-        stream.appendChild(row);
-        stream.scrollTop = stream.scrollHeight;
+    function sendQuickHeart() {
+        spawnParticles(0xff2e7e, 25);
+        appendChatLine(`<span class="lvl-badge">Lv.98</span><b style="color:#ffe680;">${me.name}:</b> ❤️❤️❤️`);
     }
 
-    let isPKOn = false, redTeamPts = 0, blueTeamPts = 0;
-
-    function togglePKMode() {
-        isPKOn = !isPKOn;
-        redTeamPts = 0;
-        blueTeamPts = 0;
-        document.getElementById('pkBox').classList.toggle('active', isPKOn);
-        refreshPKUI();
-        if (isPKOn) addSystemLog('⚔️ ڕکابەریی PK دەستی پێکرد!');
+    function appendChatLine(html, isSystem = false) {
+        const list = document.getElementById('liveChatList');
+        const div = document.createElement('div');
+        div.className = 'chat-bubble';
+        if (isSystem) div.style.border = '1px solid rgba(255,184,0,0.4)';
+        div.innerHTML = html;
+        list.appendChild(div);
+        list.scrollTop = list.scrollHeight;
     }
 
-    function refreshPKUI() {
-        document.getElementById('redScore').innerText = redTeamPts;
-        document.getElementById('blueScore').innerText = blueTeamPts;
-        const sum = redTeamPts + blueTeamPts;
-        const pct = sum === 0 ? 50 : Math.min(90, Math.max(10, (redTeamPts / sum) * 100));
-        document.getElementById('redBarFill').style.width = pct + '%';
-    }
+    let pkSecondsLeft = 457; // 07:37
+    setInterval(() => {
+        if (pkSecondsLeft > 0) pkSecondsLeft--;
+        const m = String(Math.floor(pkSecondsLeft / 60)).padStart(2, '0');
+        const s = String(pkSecondsLeft % 60).padStart(2, '0');
+        document.getElementById('pkClockDisplay').innerText = `${m}:${s}`;
+    }, 1000);
 
-    function keepRoomMinimized() {
-        localStorage.setItem('yk_minimized_room', '1');
-        window.location.href = 'index.html';
+    function resetPKTimer() {
+        pkSecondsLeft = 457;
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        startPixiEngine();
-        drawSeats();
-        preloadAllVideosInBackground();
+        initPixi120();
+        render18Seats();
+        preloadGiftVideos();
+        triggerEntranceToast(me.name);
     });
 </script>
 </body>
