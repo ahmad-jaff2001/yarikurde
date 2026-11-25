@@ -271,6 +271,7 @@
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="online-engine.js"></script>
 <script src="wallet-engine.js"></script>
@@ -306,44 +307,46 @@
         return local;
     }
 
-    function renderRoomsList(rooms) {
-        const container = document.getElementById('roomsListContainer');
-        document.getElementById('roomsCount').innerText = rooms.length;
-        container.innerHTML = '';
+   function renderRoomsList(rooms) {
+     const container = document.getElementById('roomsListContainer');
+     const sorted = [...rooms].sort((a, b) => (b.level || 1) - (a.level || 1) || (b.onlineCount || 0) - (a.onlineCount || 0));
+     document.getElementById('roomsCount').innerText = sorted.length;
+     container.innerHTML = '';
 
-        // پشکنین ئایا یاریزانەکە خۆی ژووری هەیە
-        const myRoom = rooms.find(r => r.ownerUid === me.uid);
-        const topBtn = document.getElementById('createOrMyRoomBtn');
-        if (myRoom) {
-            topBtn.innerText = 'چوونە ژوورەکەم 🎙️';
-            topBtn.onclick = (e) => {
-                e.stopPropagation();
-                enterRoom(myRoom.id);
-            };
-        }
+     const myRoom = sorted.find(r => r.ownerUid === me.uid);
+     const topBtn = document.getElementById('createOrMyRoomBtn');
+     if (myRoom) {
+         topBtn.innerText = 'چوونە ژوورەکەم 🎙️';
+         topBtn.onclick = (e) => {
+             e.stopPropagation();
+             enterRoom(myRoom.id);
+         };
+     }
 
-        rooms.forEach(room => {
-            const card = document.createElement('div');
-            card.className = 'room-item-card';
-            card.onclick = () => enterRoom(room.id);
-            card.innerHTML = `
-                <img src="${room.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="room-cover" alt="">
-                <div class="room-info">
-                    <div class="room-name">${room.title}</div>
-                    <div class="room-owner">سەرۆک: <b>${room.ownerName}</b> • ID: ${room.displayId}</div>
-                    <div class="room-tags">
-                        <span class="tag-pill">${room.category || 'گفتوگۆ'}</span>
-                        ${room.ownerUid === me.uid ? '<span class="tag-pill" style="background:rgba(56,189,248,0.2); color:#38bdf8; border-color:#38bdf8;">ژوورەکەی من</span>' : ''}
-                    </div>
-                </div>
-                <div class="live-wave">
-                    <i class="fa-solid fa-signal"></i>
-                    <span>${room.onlineCount || 12}</span>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
+     sorted.forEach(room => {
+         const lvl = room.level || 1;
+         const card = document.createElement('div');
+         card.className = 'room-item-card';
+         card.onclick = () => enterRoom(room.id);
+         card.innerHTML = `
+             <img src="${room.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="room-cover" alt="">
+             <div class="room-info">
+                 <div class="room-name">${room.title}</div>
+                 <div class="room-owner">سەرۆک: <b>${room.ownerName}</b> • ID: ${room.displayId}</div>
+                 <div class="room-tags">
+                     <span class="tag-pill" style="background:linear-gradient(135deg,#ffd000,#ff8800); color:#1a0f00;">🏆 Lv.${lvl}</span>
+                     <span class="tag-pill">${room.category || 'گفتوگۆ'}</span>
+                     ${room.ownerUid === me.uid ? '<span class="tag-pill" style="background:rgba(56,189,248,0.2); color:#38bdf8; border-color:#38bdf8;">ژوورەکەی من</span>' : ''}
+                 </div>
+             </div>
+             <div class="live-wave">
+                 <i class="fa-solid fa-user-group"></i>
+                 <span>${room.onlineCount || 1}</span>
+             </div>
+         `;
+         container.appendChild(card);
+     });
+ }
 
     function openCreateRoomModal() {
         const rooms = getSavedRooms();
@@ -399,6 +402,9 @@
     }
 
     function syncRoomsFromFirebase() {
+        if (window.firebase && firebase.auth && !firebase.auth().currentUser) {
+         firebase.auth().signInAnonymously().catch(() => {});
+     }
         const localRooms = getSavedRooms();
         renderRoomsList(localRooms);
 
