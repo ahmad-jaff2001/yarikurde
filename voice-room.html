@@ -56,7 +56,6 @@
             z-index: 0;
             background:
                 linear-gradient(180deg, rgba(12, 5, 28, 0.55) 0%, rgba(10, 4, 24, 0.32) 45%, rgba(5, 2, 14, 0.92) 100%),
-                url('images.png/diwaxan-bg.jpg') center center / cover no-repeat,
                 url('images.png/diwaxan-bg.png') center center / cover no-repeat,
                 radial-gradient(circle at top, #2e1065, #050211);
         }
@@ -1541,9 +1540,8 @@
         if (roomDbRef) roomDbRef.child(`presence/${me.uid}`).remove();
     });
 
-   // =========================================================================
-    // ٤. پەیوەندیی ڕاستەوخۆ بە Firebase (چاوەڕێی پشتڕاستکردنەوەی هەژمار دەکات)
-    // =========================================================================
+  let serverConnected = false;
+
     function connectRoomToServer() {
         if (!window.firebase || !firebase.apps.length) {
             initialServerLoadDone = true;
@@ -1555,8 +1553,9 @@
                 if (window.YariAuth) YariAuth.openAuthModal();
                 return;
             }
+            if (serverConnected) return;
+            serverConnected = true;
 
-            // پاراستنی زانیارییەکانی یاریزان لەناو ژوورەکەدا
             me.uid = user.uid;
             me.name = localStorage.getItem('yk_player_name') || user.displayName || 'یاریزان';
             me.avatar = localStorage.getItem('yk_player_avatar') || user.photoURL || 'images.png/controller.png';
@@ -1584,19 +1583,17 @@
                 updateRoomStatsUI();
             });
 
-            // بەڕێوەبردنی میوانەکان و بەستنەوەی دەنگی مۆبایلەکان
             roomDbRef.child('presence').on('value', snap => {
                 const val = snap.val() || {};
                 const activeUids = new Set(Object.keys(val));
                 onlineUsersList = Object.values(val);
-                
+
                 const count = Math.max(1, onlineUsersList.length);
                 renderRealAudience(onlineUsersList);
                 listCountRef.set(count);
                 if (count <= 1) listCountRef.onDisconnect().set(0);
                 else listCountRef.onDisconnect().cancel();
 
-                // خاوێنکردنەوەی کورسی مایک ئەگەر کەسێک دەرچوو
                 let cleaned = false;
                 seats18.forEach((s, i) => {
                     if (s.occupied && s.uid && !activeUids.has(s.uid)) {
@@ -1607,18 +1604,22 @@
                 });
                 if (cleaned) render18Seats();
 
-                // بڕینی هێڵی دەنگی ئەو کەسانەی لە ژوور دەرچوون
-                Object.keys(peerConnections).forEach(remoteUid => {
-                    if (!activeUids.has(remoteUid)) {
-                        try { peerConnections[remoteUid].close(); } catch (e) {}
-                        delete peerConnections[remoteUid];
-                        const audioEl = document.getElementById(`remote-audio-${remoteUid}`);
+                Object.keys(txConnections).forEach(uid => {
+                    if (!activeUids.has(uid)) {
+                        try { txConnections[uid].close(); } catch (e) {}
+                        delete txConnections[uid];
+                    }
+                });
+                Object.keys(rxConnections).forEach(uid => {
+                    if (!activeUids.has(uid)) {
+                        try { rxConnections[uid].close(); } catch (e) {}
+                        delete rxConnections[uid];
+                        const audioEl = document.getElementById(`remote-audio-${uid}`);
                         if (audioEl) audioEl.remove();
                     }
                 });
 
-                // بەستنەوەی دەنگ بۆ میوانە نوێیەکان
-                if (micEnabled && micStream) syncVoiceWithPeers();
+                if (micEnabled && micStream) broadcastMyVoiceToAll();
             });
 
             roomDbRef.child('seats').on('value', snap => {
@@ -1694,22 +1695,63 @@
     }
 
     // =========================================================================
-    // ٥. مەکینەی دەنگی ڕاستەوخۆی پڕۆفیشناڵ (WebRTC Perfect Negotiation + HD Audio)
+    // ٥. مەکینەی دەنگی HD و چارەسەری تەواوی ئایفۆن و سەفاری
     // =========================================================================
     let micEnabled = false, micStream = null, roomMuted = false;
-    let voiceAudioCtx = null, voiceAnalyserTimer = null;
-    const peerConnections = {};
-    
-    // خێراترین سێرڤەرەکانی STUN بۆ عێراق و جیهان
+    let voiceAudioCtx = null, voiceAnalyserTimer = null, lastSpeakingSent = false;
+    const txConnections = {};
+    const rxConnections = {};
+    const handledOfferTs = {};
+
     const rtcConfig = {
         iceServers: [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:stun1.l.google.com:19302' },
-            { urls: 'stun:stun.cloudflare.com:3478' }
-        ]
+            { urls: 'stun:stun.cloudflare.com:3478' },
+            { urls: 'turn:a.relay.metered.ca:80', username: 'e8dd65b92f6dde431467e46c', credential: 'uWdWNmkhvyqTEAcO' },
+            { urls: 'turn:a.relay.metered.ca:443?transport=tcp', username: 'e8dd65b92f6dde431467e46c', credential: 'uWdWNmkhvyqTEAcO' }
+        ],
+        iceCandidatePoolSize: 8
     };
 
-    // چارەسەری بلۆکبوونی دەنگ لە مۆبایلەکان (iOS و ئەندرۆید)
+    function isInAppBrowser() {
+        return /FBAN|FBAV|Instagram|Telegram|Snapchat|WhatsApp|Line|MicroMessenger/i.test(navigator.userAgent || '');
+    }
+
+    function showMicHelpModal(type) {
+        const old = document.getElementById('ykMicHelpModal');
+        if (old) old.remove();
+        const isInApp = type === 'inapp';
+        const modal = document.createElement('div');
+        modal.id = 'ykMicHelpModal';
+        modal.style.cssText = `position:fixed; inset:0; background:rgba(4,2,14,0.92); backdrop-filter:blur(10px); z-index:999999; display:flex; align-items:center; justify-content:center; padding:18px; direction:rtl; font-family:'Vazirmatn',sans-serif; color:#fff;`;
+        modal.innerHTML = `
+            <div style="width:100%; max-width:370px; background:#160b38; border:2px solid #ffb800; border-radius:24px; padding:20px; text-align:center;">
+                <div style="font-size:34px; margin-bottom:6px;">${isInApp ? '🧭' : '🎙️'}</div>
+                <div style="font-size:17px; font-weight:900; color:#ffd000; margin-bottom:8px;">
+                    ${isInApp ? 'لە وێبگەڕی Safari بیکەرەوە!' : 'چۆن مایک بکەیتەوە لە ئایفۆن؟'}
+                </div>
+                <div style="font-size:12.5px; color:#e9d5ff; line-height:1.8; text-align:right; background:rgba(0,0,0,0.45); padding:12px; border-radius:16px; margin-bottom:14px;">
+                    ${isInApp ? `
+                        ئەپڵ ڕێگە نادات لە ناو بەرنامەکانی تر مایک بکرێتەوە:<br>
+                        ١. کلیک لە ئایکۆنی <b>Safari (🧭)</b> یان <b>(•••)</b> بکە.<br>
+                        ٢. <b>Open in Safari</b> هەڵبژێرە.
+                    ` : `
+                        ١. لە تەنیشت ناونیشانی سەرەوە کلیک لە <b>AA</b> یان <b>ڕێکخستن</b> بکە.<br>
+                        ٢. بچۆ <b>Website Settings</b>.<br>
+                        ٣. بەشی <b>Microphone</b> بگۆڕە بۆ <b>Allow</b>.<br>
+                        ٤. دوگمەی خوارەوە دابگرە:
+                    `}
+                </div>
+                <button onclick="window.location.reload()" style="width:100%; background:linear-gradient(135deg,#ffd000,#ff8800); color:#1a0f00; border:none; border-radius:14px; padding:11px; font-weight:900; font-size:13.5px; cursor:pointer; margin-bottom:8px;">
+                    🔄 نوێکردنەوەی پەڕە (Reload)
+                </button>
+                <button onclick="document.getElementById('ykMicHelpModal').remove()" style="background:none; border:none; color:#94a3b8; font-size:12px; cursor:pointer;">داخستن</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
     function unlockAllRemoteAudio() {
         if (voiceAudioCtx && voiceAudioCtx.state === 'suspended') {
             voiceAudioCtx.resume().catch(() => {});
@@ -1720,121 +1762,152 @@
             if (a.paused) a.play().catch(() => {});
         });
     }
+    document.addEventListener('touchstart', unlockAllRemoteAudio, { passive: true });
     document.addEventListener('click', unlockAllRemoteAudio);
-    document.addEventListener('touchstart', unlockAllRemoteAudio);
 
-    function createPeer(remoteUid) {
-        if (peerConnections[remoteUid]) {
-            return peerConnections[remoteUid];
+    async function requestMicrophoneStream() {
+        if (isInAppBrowser() || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            showMicHelpModal('inapp');
+            return null;
         }
-
-        const pc = new RTCPeerConnection(rtcConfig);
-        peerConnections[remoteUid] = pc;
-
-        // ئەگەر مایکمان کراوە بێت، ڕاستەوخۆ دەنگەکەی پێ دەدەین
-        if (micEnabled && micStream) {
-            micStream.getAudioTracks().forEach(t => pc.addTrack(t, micStream));
-        } else {
-            // ئەگەر مایک داخراو بێت، تەنها وەرگری دەنگ ئامادە دەکەین
-            pc.addTransceiver('audio', { direction: 'recvonly' });
+        try {
+            return await navigator.mediaDevices.getUserMedia({
+                audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+            });
+        } catch (err) {
+            if (err.name === 'OverconstrainedError' || err.name === 'ConstraintNotSatisfiedError') {
+                return await navigator.mediaDevices.getUserMedia({ audio: true });
+            }
+            throw err;
         }
-
-        // وەرگرتنی دەنگی هاوڕێکەت و لێدانی
-        pc.ontrack = (e) => {
-            const stream = e.streams[0] || new MediaStream([e.track]);
-            let audioEl = document.getElementById(`remote-audio-${remoteUid}`);
-            if (!audioEl) {
-                audioEl = document.createElement('audio');
-                audioEl.id = `remote-audio-${remoteUid}`;
-                audioEl.autoplay = true;
-                audioEl.playsInline = true;
-                audioEl.style.display = 'none';
-                document.body.appendChild(audioEl);
-            }
-            audioEl.srcObject = stream;
-            audioEl.muted = roomMuted;
-            audioEl.play().catch(() => {});
-        };
-
-        // ناردنی ICE Candidate (دۆزینەوەی باشترین هێڵی پەیوەندی)
-        pc.onicecandidate = (e) => {
-            if (e.candidate && roomDbRef) {
-                roomDbRef.child(`rtcSignals/${remoteUid}/${me.uid}/candidates`).push(e.candidate.toJSON());
-            }
-        };
-
-        return pc;
     }
 
-    // گوێگرتن بۆ زەنگی تەلەفۆن (Offer) لە یاریزانەکانی ترەوە
+    async function broadcastMyVoiceToAll() {
+        if (!roomDbRef || !micEnabled || !micStream || !me.uid) return;
+
+        for (const u of onlineUsersList) {
+            if (!u.uid || u.uid === me.uid) continue;
+
+            const existing = txConnections[u.uid];
+            if (existing && (existing.connectionState === 'connected' || existing.connectionState === 'connecting')) continue;
+            if (existing) { try { existing.close(); } catch (e) {} }
+
+            const pc = new RTCPeerConnection(rtcConfig);
+            txConnections[u.uid] = pc;
+
+            micStream.getAudioTracks().forEach(track => pc.addTrack(track, micStream));
+
+            const sigRef = roomDbRef.child(`rtcSignals/${u.uid}/tx_${me.uid}`);
+            sigRef.onDisconnect().remove();
+            await sigRef.remove();
+
+            const calleeIceQueue = [];
+            sigRef.child('calleeCandidates').on('child_added', cSnap => {
+                const cand = cSnap.val();
+                if (!cand) return;
+                if (pc.remoteDescription) pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+                else calleeIceQueue.push(cand);
+            });
+
+            pc.onicecandidate = (e) => {
+                if (e.candidate) sigRef.child('callerCandidates').push(e.candidate.toJSON());
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            await sigRef.set({ fromUid: me.uid, offer: { type: offer.type, sdp: offer.sdp }, ts: Date.now() });
+
+            sigRef.child('answer').on('value', async aSnap => {
+                const ans = aSnap.val();
+                if (ans && !pc.remoteDescription) {
+                    try {
+                        await pc.setRemoteDescription(new RTCSessionDescription(ans));
+                        while (calleeIceQueue.length) {
+                            await pc.addIceCandidate(new RTCIceCandidate(calleeIceQueue.shift())).catch(() => {});
+                        }
+                    } catch (err) {}
+                }
+            });
+        }
+    }
+
     function initWebRTCReceiver() {
-        if (!roomDbRef) return;
+        if (!roomDbRef || !me.uid) return;
         const myInbox = roomDbRef.child(`rtcSignals/${me.uid}`);
-        myInbox.remove(); 
+        myInbox.remove();
         myInbox.onDisconnect().remove();
 
-        myInbox.on('child_added', async (snap) => {
-            const fromUid = snap.key;
+        const handleOfferSnap = async (snap) => {
             const data = snap.val();
-            if (!data || !data.offer) return;
+            if (!data || !data.offer || !data.fromUid) return;
+            if (handledOfferTs[data.fromUid] === data.ts) return;
+            handledOfferTs[data.fromUid] = data.ts;
 
-            const pc = createPeer(fromUid);
+            const fromUid = data.fromUid;
+            if (rxConnections[fromUid]) { try { rxConnections[fromUid].close(); } catch (e) {} }
 
-            // وەرگرتنی کانیدەیتەکانی بەرامبەر
-            snap.ref.child('candidates').on('child_added', cSnap => {
-                if (cSnap.val() && pc.remoteDescription) {
-                    pc.addIceCandidate(new RTCIceCandidate(cSnap.val())).catch(() => {});
+            const pc = new RTCPeerConnection(rtcConfig);
+            rxConnections[fromUid] = pc;
+
+            pc.ontrack = (e) => {
+                const stream = e.streams[0] || new MediaStream([e.track]);
+                let audioEl = document.getElementById(`remote-audio-${fromUid}`);
+                if (!audioEl) {
+                    audioEl = document.createElement('audio');
+                    audioEl.id = `remote-audio-${fromUid}`;
+                    audioEl.autoplay = true;
+                    audioEl.playsInline = true;
+                    audioEl.setAttribute('playsinline', '');
+                    audioEl.style.display = 'none';
+                    document.body.appendChild(audioEl);
                 }
+                audioEl.srcObject = stream;
+                audioEl.muted = roomMuted;
+                audioEl.volume = 1.0;
+                audioEl.play().catch(() => {
+                    appendChatLine(`<span onclick="unlockAllRemoteAudio()" style="color:#4ade80; text-decoration:underline; cursor:pointer;">🔊 کلیک لێرە بکە بۆ بیستنی دەنگی هاوڕێکەت!</span>`, true);
+                });
+            };
+
+            const callerIceQueue = [];
+            pc.onicecandidate = (e) => {
+                if (e.candidate) snap.ref.child('calleeCandidates').push(e.candidate.toJSON());
+            };
+
+            snap.ref.child('callerCandidates').on('child_added', cSnap => {
+                const cand = cSnap.val();
+                if (!cand) return;
+                if (pc.remoteDescription) pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+                else callerIceQueue.push(cand);
             });
 
             try {
                 await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+                while (callerIceQueue.length) {
+                    await pc.addIceCandidate(new RTCIceCandidate(callerIceQueue.shift())).catch(() => {});
+                }
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
-                
-                // ناردنی وەڵام (Answer)
-                await roomDbRef.child(`rtcSignals/${fromUid}/${me.uid}/answer`).set({ 
-                    type: answer.type, 
-                    sdp: answer.sdp 
-                });
-            } catch (err) {
-                console.error("هەڵە لە وەڵامدانەوەی پەیوەندی:", err);
-            }
+                await snap.ref.child('answer').set({ type: answer.type, sdp: answer.sdp });
+            } catch (err) {}
+        };
+
+        myInbox.on('child_added', handleOfferSnap);
+        myInbox.on('child_changed', handleOfferSnap);
+        myInbox.on('child_removed', (snap) => {
+            const fromUid = snap.key.replace('tx_', '');
+            if (rxConnections[fromUid]) { try { rxConnections[fromUid].close(); } catch (e) {} delete rxConnections[fromUid]; }
+            const audioEl = document.getElementById(`remote-audio-${fromUid}`);
+            if (audioEl) audioEl.remove();
         });
     }
 
-    // دروستکردنی پەیوەندی بێ پێکدادان (تەنها کەسێک کە UIDەکەی گەورەترە تەلەفۆنەکە دەکات)
-    async function syncVoiceWithPeers() {
-        if (!roomDbRef || !micEnabled || !micStream) return;
-
-        for (const u of onlineUsersList) {
-            if (u.uid === me.uid) continue;
-
-            // مەرجی زێڕین: تەنها ئەو کاتە تەلەفۆن بکە ئەگەر ئایدییەکەت لەو گەورەتر بێت (بۆ ئەوەی پێکدادان دروست نەبێت)
-            if (me.uid > u.uid) {
-                const pc = createPeer(u.uid);
-                
-                // ئەگەر پەیوەندییەکە پێشتر بەسترا بێت وازی لێ بێنە
-                if (pc.connectionState === 'connected') continue;
-
-                const sigRef = roomDbRef.child(`rtcSignals/${u.uid}/${me.uid}`);
-                await sigRef.remove();
-
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-
-                await sigRef.set({ offer: { type: offer.type, sdp: offer.sdp } });
-
-                sigRef.child('answer').on('value', async aSnap => {
-                    const ans = aSnap.val();
-                    if (ans && !pc.currentRemoteDescription) {
-                        try {
-                            await pc.setRemoteDescription(new RTCSessionDescription(ans));
-                        } catch (err) {}
-                    }
-                });
-            }
-        }
+    function stopBroadcastingMyVoice() {
+        Object.keys(txConnections).forEach(uid => {
+            try { txConnections[uid].close(); } catch (e) {}
+            delete txConnections[uid];
+            if (roomDbRef) roomDbRef.child(`rtcSignals/${uid}/tx_${me.uid}`).remove().catch(() => {});
+        });
     }
 
     function startMicWaveMonitor(stream) {
@@ -1849,49 +1922,43 @@
             voiceAnalyserTimer = setInterval(() => {
                 analyser.getByteFrequencyData(dataArr);
                 const avg = dataArr.reduce((a, b) => a + b, 0) / dataArr.length;
+                const speakingNow = avg > 12;
                 if (mySeatIndex !== null) {
                     const cell = document.getElementById(`seat-cell-${mySeatIndex}`);
-                    if (cell) cell.classList.toggle('speaking', avg > 12);
+                    if (cell) cell.classList.toggle('speaking', speakingNow);
+                    if (roomDbRef && speakingNow !== lastSpeakingSent) {
+                        lastSpeakingSent = speakingNow;
+                        roomDbRef.child(`seats/${mySeatIndex}/speaking`).set(speakingNow).catch(() => {});
+                    }
                 }
-            }, 150);
+            }, 300);
         } catch (e) {}
     }
 
     function stopMicWaveMonitor() {
         if (voiceAnalyserTimer) { clearInterval(voiceAnalyserTimer); voiceAnalyserTimer = null; }
         if (voiceAudioCtx) { try { voiceAudioCtx.close(); } catch (e) {} voiceAudioCtx = null; }
+        lastSpeakingSent = false;
         if (mySeatIndex !== null) {
             const cell = document.getElementById(`seat-cell-${mySeatIndex}`);
             if (cell) cell.classList.remove('speaking');
+            if (roomDbRef) roomDbRef.child(`seats/${mySeatIndex}/speaking`).set(false).catch(() => {});
         }
     }
 
-    // داگیرساندن و کوژاندنەوەی مایک بە نەرمی (بێ پچڕانی هێڵەکە)
     async function toggleVoiceMic() {
         unlockAllRemoteAudio();
         const btn = document.getElementById('micToggleBtn');
-        
+
         if (!micEnabled) {
             try {
-                // هێنانە ناوەوەی مایک بە کوالێتی بەرز
-                micStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000 } 
-                });
+                const stream = await requestMicrophoneStream();
+                if (!stream) return;
+
+                micStream = stream;
                 micEnabled = true;
                 btn.classList.add('mic-active');
                 btn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-                
-                const audioTrack = micStream.getAudioTracks()[0];
-
-                // ناردنی دەنگەکە بۆ ناو ئەو پەیوەندییانەی کە پێشتر هەبوون
-                Object.values(peerConnections).forEach(pc => {
-                    const sender = pc.getSenders().find(s => s.track && s.track.kind === 'audio');
-                    if (sender) {
-                        sender.replaceTrack(audioTrack);
-                    } else {
-                        pc.addTrack(audioTrack, micStream);
-                    }
-                });
 
                 const maxMics = getActiveTier(roomStats.level).mics;
                 if (mySeatIndex === null) {
@@ -1902,27 +1969,29 @@
                     render18Seats();
                     if (roomDbRef) roomDbRef.child(`seats/${mySeatIndex}/muted`).set(false);
                 }
-                
+
                 startMicWaveMonitor(micStream);
-                syncVoiceWithPeers();
+                await broadcastMyVoiceToAll();
+
+                if (onlineUsersList.length <= 1) {
+                    appendChatLine('🎙️ مایکەکەت کراوەیە! ئێستا تەنها خۆت لە ژووریت؛ هەر هاوڕێیەکت بێتە ژوورەوە ڕاستەوخۆ دەنگت دەبیستێت.', true);
+                }
             } catch (e) {
-                alert('تکایە لە وێبگەڕەکەتدا ڕێگە بە مایکرۆفۆن بدە.');
+                showMicHelpModal('denied');
             }
         } else {
             micEnabled = false;
             stopMicWaveMonitor();
-            
-            // کوژاندنەوەی مایکەکەی خۆت بەبێ پچڕاندنی تەلەفۆنەکە لەگەڵ هاوڕێکانت
-            Object.values(peerConnections).forEach(pc => {
-                const sender = pc.getSenders().find(s => s.track && s.track.kind === 'audio');
-                if (sender) sender.replaceTrack(null);
-            });
+            stopBroadcastingMyVoice();
 
-            if (micStream) { micStream.getTracks().forEach(t => t.stop()); micStream = null; }
-            
+            if (micStream) {
+                micStream.getTracks().forEach(t => t.stop());
+                micStream = null;
+            }
+
             btn.classList.remove('mic-active');
             btn.innerHTML = '<i class="fa-solid fa-microphone-slash"></i>';
-            
+
             if (mySeatIndex !== null) {
                 seats18[mySeatIndex].muted = true;
                 render18Seats();
@@ -1937,22 +2006,6 @@
             a.muted = roomMuted;
             if (!roomMuted) a.play().catch(() => {});
         });
-        document.getElementById('speakerToggleBtn').innerHTML = roomMuted
-            ? '<i class="fa-solid fa-volume-xmark" style="color:#fb7185;"></i>'
-            : '<i class="fa-solid fa-volume-high"></i>';
-    }
-
-    function toggleRoomSpeaker() {
-        roomMuted = !roomMuted;
-        document.querySelectorAll('audio[id^="remote-audio-"]').forEach(a => { a.muted = roomMuted; });
-        document.getElementById('speakerToggleBtn').innerHTML = roomMuted
-            ? '<i class="fa-solid fa-volume-xmark" style="color:#fb7185;"></i>'
-            : '<i class="fa-solid fa-volume-high"></i>';
-    }
-
-    function toggleRoomSpeaker() {
-        roomMuted = !roomMuted;
-        document.querySelectorAll('audio[id^="remote-audio-"]').forEach(a => { a.muted = roomMuted; });
         document.getElementById('speakerToggleBtn').innerHTML = roomMuted
             ? '<i class="fa-solid fa-volume-xmark" style="color:#fb7185;"></i>'
             : '<i class="fa-solid fa-volume-high"></i>';
