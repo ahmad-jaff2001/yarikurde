@@ -2121,6 +2121,20 @@
                 // زیادکردنی ئەڵماس لە سێرڤەر بۆ جزدانی وەرگر
                 if (t.uid && t.uid !== me.uid) {
                     firebase.database().ref(`players/${t.uid}/wallet/diamonds`).transaction(cur => (cur ?? 40) + diamondsForRecipient);
+                    if (t.uid) {
+                    const recGiftRef = firebase.database().ref(`players/${t.uid}/receivedGifts/${gift.id}`);
+                    recGiftRef.transaction(cur => {
+                        const prevCount = (cur && cur.count) ? cur.count : 0;
+                        return {
+                            id: gift.id,
+                            name: gift.name,
+                            img: gift.img || '',
+                            video: gift.video || '',
+                            count: prevCount + giftComboMultiplier,
+                            updatedAt: Date.now()
+                        };
+                    });
+                }
                     firebase.database().ref(`players/${t.uid}/giftNotifications`).push({
                         fromName: me.name,
                         diamonds: diamondsForRecipient,
