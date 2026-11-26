@@ -1,5 +1,5 @@
 // =============================================================================
-// YARI KURDI - ROYAL SETTINGS, SECURITY & MULTI-LANGUAGE ENGINE
+// YARI KURDI - ROYAL SETTINGS, SECURITY & MULTI-LANGUAGE ENGINE (SCROLL VIEW)
 // Languages: Kurdish Sorani, Kurdish Badini, English
 // =============================================================================
 
@@ -9,10 +9,6 @@
             dir: 'rtl',
             langCode: 'ku',
             settingsTitle: '⚙️ ڕێکخستنەکانی یاری کوردی',
-            tabAccount: 'هەژمار و پاراستن',
-            tabGeneral: 'گشتی و زمان',
-            tabPrivacy: 'تایبەتمەندی',
-            tabSupport: 'پشتگیری',
             langSectionTitle: '🌐 زمانی بەرنامە (Language)',
             langDesc: 'زمانی دڵخوازت هەڵبژێرە بۆ هەموو بەشەکانی یاری کوردی:',
             audioSectionTitle: '🔊 دەنگ و جووڵە',
@@ -38,7 +34,6 @@
             stealthModeLabel: 'شاردنەوەی دۆخی ئۆنڵاین',
             blockedTitle: '🚫 یاریزانە بلۆککراوەکان',
             noBlockedText: 'هیچ یاریزانێک بلۆک نەکراوە.',
-            unblockBtn: 'لادانی بلۆک',
             toolsTitle: '🛠️ ئامراز و پشتگیری',
             clearCacheBtn: '🧹 خاوێنکردنەوەی کاش و خێراکردن',
             supportPlaceholder: 'کێشە یان پێشنیارەکەت لێرە بنووسە بۆ ئادمین...',
@@ -54,10 +49,6 @@
             dir: 'rtl',
             langCode: 'ku',
             settingsTitle: '⚙️ ڕێکخستنێن یاری کوردی',
-            tabAccount: 'هەژمار و پاراستن',
-            tabGeneral: 'گشتی و زمان',
-            tabPrivacy: 'تایبەتمەندی',
-            tabSupport: 'پشتەڤانی',
             langSectionTitle: '🌐 زمانێ بەرنامەی (Language)',
             langDesc: 'زمانێ خۆ یێ دڵخواز هەلبژێرە بۆ هەمی پشکێن یاری کوردی:',
             audioSectionTitle: '🔊 دەنگ و لڤین',
@@ -83,7 +74,6 @@
             stealthModeLabel: 'ڤەشارتنا ڕەوشا ئۆنڵاین',
             blockedTitle: '🚫 یاریزانێن بلۆککری',
             noBlockedText: 'چ یاریزان نەهاتینە بلۆککرن.',
-            unblockBtn: 'لادانا بلۆکی',
             toolsTitle: '🛠️ ئامراز و پشتەڤانی',
             clearCacheBtn: '🧹 پاقژکرنا کاشی و بلەزکرن',
             supportPlaceholder: 'ئاریشە یان پێشنیارا خۆ ل ڤێرێ بنڤیسە بۆ ئادمینی...',
@@ -99,10 +89,6 @@
             dir: 'ltr',
             langCode: 'en',
             settingsTitle: '⚙️ Yari Kurdi Settings',
-            tabAccount: 'Account & Security',
-            tabGeneral: 'General & Language',
-            tabPrivacy: 'Privacy',
-            tabSupport: 'Support',
             langSectionTitle: '🌐 App Language',
             langDesc: 'Choose your preferred language across Yari Kurdi:',
             audioSectionTitle: '🔊 Audio & Haptics',
@@ -128,7 +114,6 @@
             stealthModeLabel: 'Hide Online Status (Stealth)',
             blockedTitle: '🚫 Blocked Players',
             noBlockedText: 'No blocked players.',
-            unblockBtn: 'Unblock',
             toolsTitle: '🛠️ Tools & Support',
             clearCacheBtn: '🧹 Clear Cache & Boost Speed',
             supportPlaceholder: 'Describe your issue or suggestion for the admin team...',
@@ -149,8 +134,7 @@
         vibrate: localStorage.getItem('yk_vibrate_enabled') !== 'false',
         allowFriends: true,
         allowInvites: true,
-        stealthMode: false,
-        activeTab: 'account'
+        stealthMode: false
     };
 
     function t(key) {
@@ -182,7 +166,6 @@
         document.documentElement.dir = pack.dir;
         document.documentElement.lang = pack.langCode;
 
-        // نوێکردنەوەی ناوی دوگمەکانی شریتی خوارەوە
         const navLabels = [
             { keys: ['سەرەکی', 'Home'], val: pack.navHome },
             { keys: ['یارییەکان', 'یاری', 'Games'], val: pack.navGames },
@@ -337,7 +320,7 @@
             }
             #ykSettingsOverlay.open { display: flex; }
             .yk-set-card {
-                width: 100%; max-width: 440px; max-height: 88dvh;
+                width: 100%; max-width: 440px; max-height: 86dvh;
                 background: linear-gradient(180deg, #1a0d40 0%, #0b0520 100%);
                 border: 2px solid #ffb800; border-radius: 26px;
                 display: flex; flex-direction: column; overflow: hidden;
@@ -345,33 +328,23 @@
             }
             .yk-set-header {
                 display: flex; align-items: center; justify-content: space-between;
-                padding: 15px 18px; background: rgba(255, 184, 0, 0.1);
+                padding: 15px 18px; background: rgba(255, 184, 0, 0.12);
                 border-bottom: 1px solid rgba(255, 184, 0, 0.28);
+                flex-shrink: 0;
             }
             .yk-set-title { font-size: 16.5px; font-weight: 900; color: #ffd000; }
             .yk-set-close {
                 width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
                 background: rgba(255,255,255,0.08); color: #fff; font-size: 15px; cursor: pointer;
             }
-            .yk-set-tabs {
-                display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;
-                padding: 10px 12px; background: rgba(0, 0, 0, 0.35);
-                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            }
-            .yk-set-tab {
-                padding: 8px 4px; border-radius: 12px; border: 1px solid transparent;
-                background: rgba(255, 255, 255, 0.05); color: #cbd5e1;
-                font-size: 11px; font-weight: 800; cursor: pointer; text-align: center;
-                transition: all 0.2s;
-            }
-            .yk-set-tab.active {
-                background: linear-gradient(135deg, #ffd000, #ff8800);
-                color: #1a0f00; font-weight: 900;
-            }
             .yk-set-body {
                 padding: 16px; overflow-y: auto; flex: 1;
-                display: flex; flex-direction: column; gap: 12px;
+                display: flex; flex-direction: column; gap: 14px;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
             }
+            .yk-set-body::-webkit-scrollbar { width: 5px; }
+            .yk-set-body::-webkit-scrollbar-thumb { background: rgba(255, 184, 0, 0.45); border-radius: 10px; }
             .yk-set-box {
                 background: rgba(255, 255, 255, 0.05);
                 border: 1px solid rgba(168, 85, 247, 0.35);
@@ -424,6 +397,7 @@
     function renderModalContent() {
         const overlay = document.getElementById('ykSettingsOverlay');
         if (!overlay) return;
+        const previousScroll = overlay.querySelector('.yk-set-body')?.scrollTop || 0;
         overlay.dir = t('dir');
 
         const user = (window.firebase && firebase.apps && firebase.apps.length) ? firebase.auth().currentUser : null;
@@ -433,121 +407,114 @@
         const email = (user && user.email) ? user.email : '---';
         const isVerified = user && user.emailVerified;
 
-        let bodyHtml = '';
-
-        if (state.activeTab === 'account') {
-            bodyHtml = `
-                <div class="yk-set-box">
-                    <div class="yk-set-box-title">${t('accInfoTitle')}</div>
-                    <div style="background:rgba(0,0,0,0.4); padding:10px 12px; border-radius:12px; font-size:12px; line-height:1.9;">
-                        <div style="color:${isGuest ? '#fbbf24' : '#4ade80'}; font-weight:900;">
-                            ${isGuest ? t('accStatusGuest') : t('accStatusSecure')}
-                        </div>
-                        <div><b>${t('idLabel')}</b> <span style="color:#ffd000;">${shortId}</span></div>
-                        <div><b>${t('emailLabel')}</b> <span style="color:#e9d5ff;">${email}</span></div>
-                        ${!isGuest && user.email ? `
-                            <div><b>Email Status:</b> <span style="color:${isVerified ? '#4ade80' : '#fb7185'};">${isVerified ? t('verifiedYes') : t('verifiedNo')}</span></div>
-                        ` : ''}
-                    </div>
-
-                    ${isGuest ? `
-                        <button class="yk-action-btn yk-btn-gold" onclick="YariSettings.close(); if(window.YariAuth) YariAuth.openAuthModal();">
-                            ${t('linkAccBtn')}
-                        </button>
-                    ` : `
-                        ${(!isVerified && user.email) ? `
-                            <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.verifyEmail()">
-                                ${t('verifyEmailBtn')}
-                            </button>
-                        ` : ''}
-                        <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.resetPassword()">
-                            ${t('changePassBtn')}
-                        </button>
-                    `}
-                </div>
-
-                <div class="yk-set-box" style="border-color:rgba(239,68,68,0.45);">
-                    <button class="yk-action-btn yk-btn-danger" style="margin-top:0;" onclick="YariSettings.logout()">
-                        ${t('logoutBtn')}
+        const allSectionsHtml = `
+            <!-- ١. زمان -->
+            <div class="yk-set-box">
+                <div class="yk-set-box-title">${t('langSectionTitle')}</div>
+                <div style="font-size:11.5px; color:#cbd5e1;">${t('langDesc')}</div>
+                <div class="yk-lang-grid">
+                    <button class="yk-lang-btn ${state.lang === 'sorani' ? 'active' : ''}" onclick="YariSettings.setLang('sorani')">
+                        کوردی<br><span style="font-size:10px; opacity:0.85;">(سۆرانی)</span>
+                    </button>
+                    <button class="yk-lang-btn ${state.lang === 'badini' ? 'active' : ''}" onclick="YariSettings.setLang('badini')">
+                        کوردی<br><span style="font-size:10px; opacity:0.85;">(بادینی)</span>
+                    </button>
+                    <button class="yk-lang-btn ${state.lang === 'english' ? 'active' : ''}" onclick="YariSettings.setLang('english')">
+                        English<br><span style="font-size:10px; opacity:0.85;">(Global)</span>
                     </button>
                 </div>
-            `;
-        } else if (state.activeTab === 'general') {
-            bodyHtml = `
-                <div class="yk-set-box">
-                    <div class="yk-set-box-title">${t('langSectionTitle')}</div>
-                    <div style="font-size:11.5px; color:#cbd5e1;">${t('langDesc')}</div>
-                    <div class="yk-lang-grid">
-                        <button class="yk-lang-btn ${state.lang === 'sorani' ? 'active' : ''}" onclick="YariSettings.setLang('sorani')">
-                            کوردی<br><span style="font-size:10px; opacity:0.85;">(سۆرانی)</span>
-                        </button>
-                        <button class="yk-lang-btn ${state.lang === 'badini' ? 'active' : ''}" onclick="YariSettings.setLang('badini')">
-                            کوردی<br><span style="font-size:10px; opacity:0.85;">(بادینی)</span>
-                        </button>
-                        <button class="yk-lang-btn ${state.lang === 'english' ? 'active' : ''}" onclick="YariSettings.setLang('english')">
-                            English<br><span style="font-size:10px; opacity:0.85;">(Global)</span>
-                        </button>
+            </div>
+
+            <!-- ٢. پاراستن و زانیاری هەژمار -->
+            <div class="yk-set-box">
+                <div class="yk-set-box-title">${t('accInfoTitle')}</div>
+                <div style="background:rgba(0,0,0,0.4); padding:10px 12px; border-radius:12px; font-size:12px; line-height:1.9;">
+                    <div style="color:${isGuest ? '#fbbf24' : '#4ade80'}; font-weight:900;">
+                        ${isGuest ? t('accStatusGuest') : t('accStatusSecure')}
                     </div>
+                    <div><b>${t('idLabel')}</b> <span style="color:#ffd000;">${shortId}</span></div>
+                    <div><b>${t('emailLabel')}</b> <span style="color:#e9d5ff;">${email}</span></div>
+                    ${!isGuest && user.email ? `
+                        <div><b>Email Status:</b> <span style="color:${isVerified ? '#4ade80' : '#fb7185'};">${isVerified ? t('verifiedYes') : t('verifiedNo')}</span></div>
+                    ` : ''}
                 </div>
 
-                <div class="yk-set-box">
-                    <div class="yk-set-box-title">${t('audioSectionTitle')}</div>
-                    <div class="yk-switch-row">
-                        <span>${t('sfxLabel')}</span>
-                        <div class="yk-toggle ${state.sfx ? 'on' : ''}" onclick="YariSettings.toggleLocal('sfx','yk_sfx_enabled')"></div>
-                    </div>
-                    <div class="yk-switch-row">
-                        <span>${t('bgmLabel')}</span>
-                        <div class="yk-toggle ${state.bgm ? 'on' : ''}" onclick="YariSettings.toggleLocal('bgm','yk_bgm_enabled')"></div>
-                    </div>
-                    <div class="yk-switch-row">
-                        <span>${t('vibrateLabel')}</span>
-                        <div class="yk-toggle ${state.vibrate ? 'on' : ''}" onclick="YariSettings.toggleLocal('vibrate','yk_vibrate_enabled')"></div>
-                    </div>
-                    <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.testSound()">
-                        ${t('testSoundBtn')}
+                ${isGuest ? `
+                    <button class="yk-action-btn yk-btn-gold" onclick="YariSettings.close(); if(window.YariAuth) YariAuth.openAuthModal();">
+                        ${t('linkAccBtn')}
                     </button>
-                </div>
-            `;
-        } else if (state.activeTab === 'privacy') {
-            bodyHtml = `
-                <div class="yk-set-box">
-                    <div class="yk-set-box-title">${t('privacyTitle')}</div>
-                    <div class="yk-switch-row">
-                        <span>${t('allowFriendsLabel')}</span>
-                        <div class="yk-toggle ${state.allowFriends ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowFriends')"></div>
-                    </div>
-                    <div class="yk-switch-row">
-                        <span>${t('allowInvitesLabel')}</span>
-                        <div class="yk-toggle ${state.allowInvites ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowInvites')"></div>
-                    </div>
-                    <div class="yk-switch-row">
-                        <span>${t('stealthModeLabel')}</span>
-                        <div class="yk-toggle ${state.stealthMode ? 'on' : ''}" onclick="YariSettings.togglePrivacy('stealthMode')"></div>
-                    </div>
-                </div>
+                ` : `
+                    ${(!isVerified && user.email) ? `
+                        <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.verifyEmail()">
+                            ${t('verifyEmailBtn')}
+                        </button>
+                    ` : ''}
+                    <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.resetPassword()">
+                        ${t('changePassBtn')}
+                    </button>
+                `}
+            </div>
 
-                <div class="yk-set-box">
-                    <div class="yk-set-box-title">${t('blockedTitle')}</div>
-                    <div style="font-size:12px; color:#94a3b8; text-align:center; padding:8px 0;">
-                        ${t('noBlockedText')}
-                    </div>
+            <!-- ٣. دەنگ و لەرزین -->
+            <div class="yk-set-box">
+                <div class="yk-set-box-title">${t('audioSectionTitle')}</div>
+                <div class="yk-switch-row">
+                    <span>${t('sfxLabel')}</span>
+                    <div class="yk-toggle ${state.sfx ? 'on' : ''}" onclick="YariSettings.toggleLocal('sfx','yk_sfx_enabled')"></div>
                 </div>
-            `;
-        } else if (state.activeTab === 'support') {
-            bodyHtml = `
-                <div class="yk-set-box">
-                    <div class="yk-set-box-title">${t('toolsTitle')}</div>
-                    <textarea id="ykSupportInput" rows="3" placeholder="${t('supportPlaceholder')}" style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:10px; color:#fff; font-size:12px; outline:none; resize:none;"></textarea>
-                    <button class="yk-action-btn yk-btn-gold" onclick="YariSettings.sendSupport()">
-                        ${t('sendSupportBtn')}
-                    </button>
-                    <button class="yk-action-btn yk-btn-purple" onclick="window.location.reload(true)">
-                        ${t('clearCacheBtn')}
-                    </button>
+                <div class="yk-switch-row">
+                    <span>${t('bgmLabel')}</span>
+                    <div class="yk-toggle ${state.bgm ? 'on' : ''}" onclick="YariSettings.toggleLocal('bgm','yk_bgm_enabled')"></div>
                 </div>
-            `;
-        }
+                <div class="yk-switch-row">
+                    <span>${t('vibrateLabel')}</span>
+                    <div class="yk-toggle ${state.vibrate ? 'on' : ''}" onclick="YariSettings.toggleLocal('vibrate','yk_vibrate_enabled')"></div>
+                </div>
+                <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.testSound()">
+                    ${t('testSoundBtn')}
+                </button>
+            </div>
+
+            <!-- ٤. تایبەتمەندی و بلۆک -->
+            <div class="yk-set-box">
+                <div class="yk-set-box-title">${t('privacyTitle')}</div>
+                <div class="yk-switch-row">
+                    <span>${t('allowFriendsLabel')}</span>
+                    <div class="yk-toggle ${state.allowFriends ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowFriends')"></div>
+                </div>
+                <div class="yk-switch-row">
+                    <span>${t('allowInvitesLabel')}</span>
+                    <div class="yk-toggle ${state.allowInvites ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowInvites')"></div>
+                </div>
+                <div class="yk-switch-row">
+                    <span>${t('stealthModeLabel')}</span>
+                    <div class="yk-toggle ${state.stealthMode ? 'on' : ''}" onclick="YariSettings.togglePrivacy('stealthMode')"></div>
+                </div>
+                <div style="margin-top:10px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.12);">
+                    <div style="font-size:12px; font-weight:900; color:#fda4af; margin-bottom:4px;">${t('blockedTitle')}</div>
+                    <div style="font-size:11.5px; color:#94a3b8;">${t('noBlockedText')}</div>
+                </div>
+            </div>
+
+            <!-- ٥. پشتگیری و خاوێنکردنەوە -->
+            <div class="yk-set-box">
+                <div class="yk-set-box-title">${t('toolsTitle')}</div>
+                <textarea id="ykSupportInput" rows="3" placeholder="${t('supportPlaceholder')}" style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:10px; color:#fff; font-size:12px; outline:none; resize:none;"></textarea>
+                <button class="yk-action-btn yk-btn-gold" onclick="YariSettings.sendSupport()">
+                    ${t('sendSupportBtn')}
+                </button>
+                <button class="yk-action-btn yk-btn-purple" onclick="window.location.reload(true)">
+                    ${t('clearCacheBtn')}
+                </button>
+            </div>
+
+            <!-- ٦. دەرچوون لە هەژمار -->
+            <div class="yk-set-box" style="border-color:rgba(239,68,68,0.45); margin-bottom:6px;">
+                <button class="yk-action-btn yk-btn-danger" style="margin-top:0;" onclick="YariSettings.logout()">
+                    ${t('logoutBtn')}
+                </button>
+            </div>
+        `;
 
         overlay.innerHTML = `
             <div class="yk-set-card" onclick="event.stopPropagation()">
@@ -555,19 +522,15 @@
                     <div class="yk-set-title">${t('settingsTitle')}</div>
                     <button class="yk-set-close" onclick="YariSettings.close()">✕</button>
                 </div>
-                <div class="yk-set-tabs">
-                    <button class="yk-set-tab ${state.activeTab === 'account' ? 'active' : ''}" onclick="YariSettings.setTab('account')">${t('tabAccount')}</button>
-                    <button class="yk-set-tab ${state.activeTab === 'general' ? 'active' : ''}" onclick="YariSettings.setTab('general')">${t('tabGeneral')}</button>
-                    <button class="yk-set-tab ${state.activeTab === 'privacy' ? 'active' : ''}" onclick="YariSettings.setTab('privacy')">${t('tabPrivacy')}</button>
-                    <button class="yk-set-tab ${state.activeTab === 'support' ? 'active' : ''}" onclick="YariSettings.setTab('support')">${t('tabSupport')}</button>
-                </div>
-                <div class="yk-set-body">${bodyHtml}</div>
+                <div class="yk-set-body">${allSectionsHtml}</div>
             </div>
         `;
+
+        const newBody = overlay.querySelector('.yk-set-body');
+        if (newBody) newBody.scrollTop = previousScroll;
     }
 
-    function open(defaultTab) {
-        if (defaultTab) state.activeTab = defaultTab;
+    function open() {
         injectStyles();
         let overlay = document.getElementById('ykSettingsOverlay');
         if (!overlay) {
@@ -585,12 +548,6 @@
         if (overlay) overlay.classList.remove('open');
     }
 
-    function setTab(tab) {
-        state.activeTab = tab;
-        renderModalContent();
-    }
-
-    // بەستنەوەی خۆکار بە دوگمەی ڕێکخستنی شریتی خوارەوەی شاشەکە
     function autoBindBottomSettingsButton() {
         const candidates = document.querySelectorAll('button, a, div');
         candidates.forEach(el => {
@@ -610,7 +567,6 @@
     window.YariSettings = {
         open,
         close,
-        setTab,
         setLang: setLanguage,
         toggleLocal: toggleLocalSetting,
         togglePrivacy: togglePrivacySetting,
