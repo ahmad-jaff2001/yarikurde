@@ -871,66 +871,69 @@
             margin-bottom: 10px;
             outline: none;
         }
-        /* شریت و پەنجەرەی زیندووی سەرەوەی ژوور */
+       /* شریت و پەنجەرەی شاهانەی ژوور (بێ ئیمۆجی - دیزاینی VIP) */
         .yk-room-top-pills {
             display: flex;
             align-items: center;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 4px;
+            gap: 6px;
+            margin-top: 5px;
         }
         .yk-r-pill {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 2px 8px;
-            border-radius: 10px;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: 8px;
             font-size: 10.5px;
             font-weight: 800;
-            background: rgba(15, 10, 36, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            color: #f8fafc;
+            background: rgba(13, 9, 28, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #e2e8f0;
             cursor: pointer;
+            transition: border-color 0.2s;
         }
-        .yk-r-pill.live-dot::before {
-            content: '';
-            width: 7px;
-            height: 7px;
+        .yk-r-pill:hover { border-color: rgba(255, 184, 0, 0.45); }
+        .yk-live-dot {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            background: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
+            display: inline-block;
         }
         .yk-join-mini-btn {
-            padding: 2px 10px;
-            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 8px;
             border: none;
             font-size: 10.5px;
             font-weight: 900;
             cursor: pointer;
-            background: linear-gradient(135deg, #ffd000, #ff8800);
-            color: #1a0f00;
-            box-shadow: 0 2px 8px rgba(255, 184, 0, 0.4);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #0f0700;
         }
         .yk-join-mini-btn.joined {
-            background: rgba(16, 185, 129, 0.22);
-            border: 1px solid #10b981;
+            background: rgba(16, 185, 129, 0.14);
+            border: 1px solid rgba(16, 185, 129, 0.45);
             color: #34d399;
-            box-shadow: none;
         }
 
         #ykRoomHubOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(4, 2, 14, 0.88);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(3, 2, 10, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 999995;
             display: none;
             align-items: flex-end;
             justify-content: center;
             direction: rtl;
             font-family: 'Vazirmatn', sans-serif;
-            color: #fff;
+            color: #f8fafc;
         }
         @media (min-width: 520px) {
             #ykRoomHubOverlay { align-items: center; padding: 16px; }
@@ -939,35 +942,35 @@
 
         .yk-rhub-sheet {
             width: 100%;
-            max-width: 450px;
-            max-height: 88dvh;
-            background: #0e0924;
-            border-top: 2px solid #ffb800;
-            border-radius: 26px 26px 0 0;
+            max-width: 440px;
+            max-height: 86dvh;
+            background: #0c081c;
+            border-top: 1.5px solid rgba(245, 158, 11, 0.55);
+            border-radius: 24px 24px 0 0;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.95);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
         }
         @media (min-width: 520px) {
-            .yk-rhub-sheet { border: 2px solid #ffb800; border-radius: 24px; }
+            .yk-rhub-sheet { border: 1.5px solid rgba(245, 158, 11, 0.55); border-radius: 22px; }
         }
         .yk-rhub-top {
-            padding: 16px 18px;
-            background: linear-gradient(180deg, #1d1245 0%, #0e0924 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 18px 18px 14px;
+            background: linear-gradient(180deg, #161033 0%, #0c081c 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
         }
         .yk-rhub-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
-            margin-top: 12px;
+            margin-top: 14px;
         }
         .yk-rhub-stat-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 184, 0, 0.22);
-            border-radius: 14px;
-            padding: 8px 6px;
+            background: #130e2b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 9px 6px;
             text-align: center;
         }
         .yk-rhub-tabs {
@@ -975,22 +978,24 @@
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
             padding: 10px 14px;
-            background: #090517;
+            background: #080514;
             border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         .yk-rhub-tab {
             padding: 8px 4px;
-            border-radius: 12px;
-            border: 1px solid transparent;
-            background: #161033;
-            color: #cbd5e1;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: #130e2b;
+            color: #94a3b8;
             font-size: 11.5px;
             font-weight: 800;
             cursor: pointer;
+            transition: all 0.2s;
         }
         .yk-rhub-tab.active {
-            background: linear-gradient(135deg, #ffd000, #ff8800);
-            color: #1a0f00;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-color: #fbbf24;
+            color: #0f0700;
             font-weight: 900;
         }
         .yk-rhub-body {
@@ -1001,17 +1006,20 @@
             flex-direction: column;
             gap: 8px;
         }
+        .yk-rhub-body::-webkit-scrollbar { width: 4px; }
+        .yk-rhub-body::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.35); border-radius: 8px; }
         .yk-member-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #161033;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 9px 12px;
-            border-radius: 15px;
+            background: #130e2b;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 10px 13px;
+            border-radius: 13px;
             cursor: pointer;
+            transition: background 0.18s;
         }
-        .yk-member-row:active { background: #21184a; }
+        .yk-member-row:hover { background: #1a133b; }
     </style>
 </head>
 <body>
@@ -1381,16 +1389,24 @@
         roomDbRef.child('stats/xp').transaction(cur => (cur || 0) + xpEarned);
     }, 60000);
 
-   // =========================================================================
-    // سیستمی زیندووی پڕۆفایلی ژوور، جۆینکردن، ئەندامان و ئاست (بێ ژمارەی ساختە)
+  // =========================================================================
+    // سیستمی زیندووی پڕۆفایلی ژوور، جۆینکردن، ئەندامان و ئاست (دیزاینی VIP)
     // =========================================================================
     let roomMembersMap = {};
     let activeRoomHubTab = 'members';
 
+    function cleanBrokenChars(str) {
+        return (str || '').replace(/[\uFFFD▯□]+/g, '').trim();
+    }
+
     function getSafeRoomTitle() {
-        if (typeof roomMeta !== 'undefined' && roomMeta.title) return roomMeta.title;
-        const h = document.querySelector('.room-title, h1, h2');
-        return h ? h.innerText.trim() : 'دیوەخانی یاری کوردی';
+        let raw = '';
+        if (typeof roomMeta !== 'undefined' && roomMeta.title) raw = roomMeta.title;
+        else {
+            const h = document.querySelector('.room-title, h1, h2');
+            raw = h ? h.innerText : '';
+        }
+        return cleanBrokenChars(raw) || 'دیوەخانی شاهانە';
     }
 
     function getSafeRoomDisplayId() {
@@ -1408,6 +1424,12 @@
         const idEl = document.getElementById('roomIdDisplay');
         if (!idEl || document.getElementById('ykRoomTopPills')) return;
 
+        // پاککردنەوەی هەر چوارگۆشەیەکی تێکچوو لە ناوی سەرەوەی ژوورەکە
+        const titleEl = idEl.previousElementSibling;
+        if (titleEl && titleEl.innerText) {
+            titleEl.innerText = cleanBrokenChars(titleEl.innerText) || 'دیوەخانی شاهانە';
+        }
+
         const headerContainer = idEl.parentElement;
         if (headerContainer) {
             headerContainer.style.cursor = 'pointer';
@@ -1421,17 +1443,20 @@
         strip.id = 'ykRoomTopPills';
         strip.className = 'yk-room-top-pills';
         strip.innerHTML = `
-            <span class="yk-r-pill live-dot" onclick="event.stopPropagation(); openRoomHubModal('online')" title="ئەوانەی ئێستا لە ژووردان">
-                ئێستا: <b id="ykTopLiveCount" style="color:#4ade80;">1</b>
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('online')">
+                <span class="yk-live-dot"></span>
+                ئێستا: <b id="ykTopLiveCount" style="color:#34d399;">1</b>
             </span>
-            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('members')" title="کۆی ئەندامانی ژوور">
-                👥 ئەندام: <b id="ykTopMemberCount" style="color:#ffd000;">0</b>
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('members')">
+                <i class="fa-solid fa-users" style="color:#fbbf24; font-size:10px;"></i>
+                ئەندام: <b id="ykTopMemberCount" style="color:#fbbf24;">0</b>
             </span>
-            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('level')" title="ئاستی ژوور">
-                ⓘ زانیاری
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('level')">
+                <i class="fa-solid fa-circle-info" style="color:#38bdf8; font-size:10px;"></i>
+                زانیاری
             </span>
             <button id="ykTopJoinBtn" class="yk-join-mini-btn" onclick="event.stopPropagation(); toggleJoinCurrentRoom()">
-                + جۆین
+                <i class="fa-solid fa-plus"></i> جۆین
             </button>
         `;
         idEl.insertAdjacentElement('afterend', strip);
@@ -1451,7 +1476,9 @@
         if (memEl) memEl.innerText = memberCount.toLocaleString();
         if (joinBtn) {
             joinBtn.classList.toggle('joined', isMember);
-            joinBtn.innerText = isMember ? '✅ ئەندامیت' : '+ جۆین';
+            joinBtn.innerHTML = isMember
+                ? '<i class="fa-solid fa-check"></i> ئەندامیت'
+                : '<i class="fa-solid fa-plus"></i> جۆین';
         }
 
         const overlay = document.getElementById('ykRoomHubOverlay');
@@ -1480,7 +1507,7 @@
             if (!confirm('دەتەوێت لە ئەندامێتیی ئەم ژوورە دەربچیت؟')) return;
             await roomDbRef.child(`members/${me.uid}`).remove();
             await firebase.database().ref(`players/${me.uid}/joinedRooms/${activeRoomId}`).remove().catch(() => {});
-            appendChatLine(`👋 <b>${me.name}</b> لە ئەندامێتیی ژوورەکە دەرچوو.`, true);
+            appendChatLine(`<i class="fa-solid fa-arrow-right-from-bracket" style="color:#fb7185;"></i> <b>${me.name}</b> لە ئەندامێتیی ژوورەکە دەرچوو.`, true);
         } else {
             const memberPayload = {
                 uid: me.uid,
@@ -1498,7 +1525,6 @@
                 joinedAt: Date.now()
             }).catch(() => {});
 
-            // زیادکردنی ٣٠ XP بۆ ژوورەکە تەنها یەک جار بۆ هەر ئەندامێکی نوێ
             const xpFlagRef = roomDbRef.child(`memberXpAwarded/${me.uid}`);
             xpFlagRef.once('value', s => {
                 if (!s.exists()) {
@@ -1507,8 +1533,8 @@
                 }
             });
 
-            spawnParticles(0xffd000, 30);
-            appendChatLine(`🎉 <b>${me.name}</b> جۆینی ژوورەکەی کرد و بوو بە ئەندام!`, true);
+            spawnParticles(0xffd000, 25);
+            appendChatLine(`<i class="fa-solid fa-crown" style="color:#fbbf24;"></i> <b>${me.name}</b> جۆینی ژوورەکەی کرد و بوو بە ئەندام.`, true);
         }
     }
 
@@ -1549,9 +1575,10 @@
         if (activeRoomHubTab === 'members') {
             if (membersArr.length === 0) {
                 bodyHtml = `
-                    <div style="text-align:center; padding:26px 12px; color:#94a3b8; font-size:13px;">
+                    <div style="text-align:center; padding:28px 14px; color:#94a3b8; font-size:12.5px; line-height:1.8;">
+                        <i class="fa-solid fa-users-slash" style="font-size:24px; color:#64748b; margin-bottom:8px; display:block;"></i>
                         هێشتا هیچ کەسێک جۆینی ئەم ژوورەی نەکردووە.<br>
-                        تۆ یەکەم کەس بە و دوگمەی <b>جۆینکردنی ژوور</b> دابگرە! 👑
+                        تۆ یەکەم کەس بە و دوگمەی <b>جۆینکردنی ژوور</b> دابگرە.
                     </div>
                 `;
             } else {
@@ -1559,19 +1586,19 @@
                     const isOnlineNow = onlineUidSet.has(m.uid);
                     return `
                         <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${m.uid}',name:'${(m.name||'یاریزان').replace(/'/g,'')}',avatar:'${m.avatar||'images.png/controller.png'}',level:${m.level||1}})">
-                            <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:11px;">
                                 <div style="position:relative;">
-                                    <img src="${m.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid ${isOnlineNow ? '#22c55e' : '#ffb800'};">
-                                    <span style="position:absolute; bottom:0; right:0; width:11px; height:11px; border-radius:50%; background:${isOnlineNow ? '#22c55e' : '#64748b'}; border:2px solid #0e0924;"></span>
+                                    <img src="${m.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:1.5px solid ${isOnlineNow ? '#10b981' : 'rgba(245,158,11,0.6)'};">
+                                    <span style="position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:${isOnlineNow ? '#10b981' : '#64748b'}; border:2px solid #0c081c;"></span>
                                 </div>
                                 <div>
-                                    <div style="font-size:13.5px; font-weight:900; color:#fff;">${m.name || 'یاریزان'}</div>
-                                    <div style="font-size:11px; color:${isOnlineNow ? '#4ade80' : '#94a3b8'};">
-                                        ${isOnlineNow ? '🟢 ئێستا لە ناو ژووردایە' : '⚪ ئەندامی ژوور'} • Lv.${m.level || 1}
+                                    <div style="font-size:13.5px; font-weight:900; color:#f8fafc;">${m.name || 'یاریزان'}</div>
+                                    <div style="font-size:11px; color:${isOnlineNow ? '#34d399' : '#94a3b8'}; margin-top:2px;">
+                                        ${isOnlineNow ? 'ئێستا لە ناو ژووردایە' : 'ئەندامی ژوور'} • Lv.${m.level || 1}
                                     </div>
                                 </div>
                             </div>
-                            <span style="font-size:11px; color:#ffd000; font-weight:800;">پڕۆفایل ❮</span>
+                            <i class="fa-solid fa-chevron-left" style="color:#64748b; font-size:12px;"></i>
                         </div>
                     `;
                 }).join('');
@@ -1581,44 +1608,56 @@
                 const alsoMember = !!roomMembersMap[u.uid];
                 return `
                     <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${u.uid}',name:'${(u.name||'یاریزان').replace(/'/g,'')}',avatar:'${u.avatar||'images.png/controller.png'}',level:${u.level||1}})">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #22c55e;">
+                        <div style="display:flex; align-items:center; gap:11px;">
+                            <div style="position:relative;">
+                                <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:1.5px solid #10b981;">
+                                <span style="position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:#10b981; border:2px solid #0c081c;"></span>
+                            </div>
                             <div>
-                                <div style="font-size:13.5px; font-weight:900; color:#fff;">${u.name || 'یاریزان'}</div>
-                                <div style="font-size:11px; color:#4ade80;">
-                                    🟢 ئێستا لە ژووردایە ${alsoMember ? '• 🏅 ئەندامە' : ''}
+                                <div style="font-size:13.5px; font-weight:900; color:#f8fafc;">${u.name || 'یاریزان'}</div>
+                                <div style="font-size:11px; color:#34d399; margin-top:2px;">
+                                    لە ژووردایە ${alsoMember ? '• <span style="color:#fbbf24;">ئەندامە</span>' : ''}
                                 </div>
                             </div>
                         </div>
-                        <span style="font-size:11px; color:#ffd000; font-weight:800;">پڕۆفایل ❮</span>
+                        <i class="fa-solid fa-chevron-left" style="color:#64748b; font-size:12px;"></i>
                     </div>
                 `;
             }).join('');
         } else {
             bodyHtml = `
-                <div style="background:rgba(255,184,0,0.1); border:1px solid rgba(255,184,0,0.35); border-radius:16px; padding:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                        <span style="font-size:14px; font-weight:900; color:#ffd000;">🏆 ئاستی ژوور: Lv.${roomStats.level} / 99</span>
-                        <span style="font-size:11px; font-weight:900; color:#38bdf8;">${tier.mics} مایک کراوەیە</span>
+                <div style="background:#130e2b; border:1px solid rgba(245,158,11,0.3); border-radius:14px; padding:13px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:13.5px; font-weight:900; color:#fbbf24; display:flex; align-items:center; gap:6px;">
+                            <i class="fa-solid fa-trophy"></i> ئاستی ژوور: Lv.${roomStats.level} / 99
+                        </span>
+                        <span style="font-size:11px; font-weight:800; color:#38bdf8; background:rgba(56,189,248,0.12); padding:2px 8px; border-radius:6px;">
+                            ${tier.mics} مایک
+                        </span>
                     </div>
-                    <div style="width:100%; height:10px; background:rgba(0,0,0,0.55); border-radius:8px; overflow:hidden; margin-bottom:6px;">
-                        <div style="width:${pct}%; height:100%; background:linear-gradient(90deg,#ffd000,#ff8800);"></div>
+                    <div style="width:100%; height:8px; background:rgba(0,0,0,0.6); border-radius:6px; overflow:hidden; margin-bottom:7px;">
+                        <div style="width:${pct}%; height:100%; background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
                     </div>
-                    <div style="font-size:11px; color:#e2e8f0;">
-                        XP: <b>${roomStats.xp.toLocaleString()}</b> / ${nextLvlXP.toLocaleString()} • نازناو: <b>${tier.title}</b>
+                    <div style="font-size:11px; color:#cbd5e1;">
+                        XP: <b>${roomStats.xp.toLocaleString()}</b> / ${nextLvlXP.toLocaleString()} • نازناو: <b style="color:#fbbf24;">${tier.title}</b>
                     </div>
                 </div>
                 ${LEVEL_MILESTONES.map(m => {
                     const unlocked = roomStats.level >= m.level;
                     return `
-                        <div class="yk-member-row" style="cursor:default; border-color:${unlocked ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'};">
-                            <div>
-                                <div style="font-size:12.5px; font-weight:900; color:${unlocked ? '#4ade80' : '#fff'};">
-                                    ${unlocked ? '✅' : '🔒'} Lv.${m.level} — ${m.title}
+                        <div class="yk-member-row" style="cursor:default; border-color:${unlocked ? 'rgba(16,185,129,0.32)' : 'rgba(255,255,255,0.06)'};">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="width:32px; height:32px; border-radius:9px; background:${unlocked ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)'}; color:${unlocked ? '#34d399' : '#64748b'}; display:flex; align-items:center; justify-content:center; font-size:13px;">
+                                    <i class="fa-solid ${unlocked ? 'fa-circle-check' : 'fa-lock'}"></i>
                                 </div>
-                                <div style="font-size:11px; color:#94a3b8;">${m.perk}</div>
+                                <div>
+                                    <div style="font-size:12.5px; font-weight:900; color:${unlocked ? '#f8fafc' : '#94a3b8'};">
+                                        Lv.${m.level} — ${m.title}
+                                    </div>
+                                    <div style="font-size:11px; color:#64748b;">${m.perk}</div>
+                                </div>
                             </div>
-                            <span style="font-size:10.5px; color:#fde047; font-weight:900;">${getXPForLevel(m.level).toLocaleString()} XP</span>
+                            <span style="font-size:10.5px; color:#fbbf24; font-weight:800;">${getXPForLevel(m.level).toLocaleString()} XP</span>
                         </div>
                     `;
                 }).join('')}
@@ -1629,33 +1668,43 @@
             <div class="yk-rhub-sheet" onclick="event.stopPropagation()">
                 <div class="yk-rhub-top">
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${getSafeRoomAvatar()}" onerror="this.src='images.png/controller.png'" style="width:50px; height:50px; border-radius:16px; border:2px solid #ffb800; object-fit:cover;">
+                        <div style="display:flex; align-items:center; gap:11px;">
+                            <img src="${getSafeRoomAvatar()}" onerror="this.src='images.png/controller.png'" style="width:48px; height:48px; border-radius:14px; border:1.5px solid rgba(245,158,11,0.65); object-fit:cover;">
                             <div>
-                                <div style="font-size:16px; font-weight:900; color:#fff;">${getSafeRoomTitle()}</div>
-                                <div style="font-size:11.5px; color:#fde047;">ID: ${getSafeRoomDisplayId()} • ${tier.title}</div>
+                                <div style="font-size:16px; font-weight:900; color:#fff; display:flex; align-items:center; gap:6px;">
+                                    ${getSafeRoomTitle()} <i class="fa-solid fa-crown" style="color:#fbbf24; font-size:13px;"></i>
+                                </div>
+                                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">ID: ${getSafeRoomDisplayId()} • ${tier.title}</div>
                             </div>
                         </div>
-                        <button onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open')" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.18); background:#1d1542; color:#fff; cursor:pointer;">✕</button>
+                        <button onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open')" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.14); background:#181238; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
                     </div>
 
                     <div class="yk-rhub-stats">
                         <div class="yk-rhub-stat-box">
-                            <div style="font-size:10.5px; color:#94a3b8;">ئێستا لە ژوور</div>
-                            <div style="font-size:16px; font-weight:900; color:#4ade80;">🟢 ${liveCount}</div>
+                            <div style="font-size:10px; color:#94a3b8; margin-bottom:2px;">ئێستا لە ژوور</div>
+                            <div style="font-size:15px; font-weight:900; color:#34d399; display:flex; align-items:center; justify-content:center; gap:5px;">
+                                <span class="yk-live-dot"></span> ${liveCount}
+                            </div>
                         </div>
                         <div class="yk-rhub-stat-box">
-                            <div style="font-size:10.5px; color:#94a3b8;">ئەندامانی ژوور</div>
-                            <div style="font-size:16px; font-weight:900; color:#ffd000;">👥 ${memberCount}</div>
+                            <div style="font-size:10px; color:#94a3b8; margin-bottom:2px;">ئەندامانی ژوور</div>
+                            <div style="font-size:15px; font-weight:900; color:#fbbf24; display:flex; align-items:center; justify-content:center; gap:5px;">
+                                <i class="fa-solid fa-users" style="font-size:12px;"></i> ${memberCount}
+                            </div>
                         </div>
                         <div class="yk-rhub-stat-box">
-                            <div style="font-size:10.5px; color:#94a3b8;">ئاستی ژوور</div>
-                            <div style="font-size:16px; font-weight:900; color:#38bdf8;">Lv.${roomStats.level}</div>
+                            <div style="font-size:10px; color:#94a3b8; margin-bottom:2px;">ئاستی ژوور</div>
+                            <div style="font-size:15px; font-weight:900; color:#38bdf8;">Lv.${roomStats.level}</div>
                         </div>
                     </div>
 
-                    <button onclick="toggleJoinCurrentRoom()" style="width:100%; margin-top:12px; padding:11px; border-radius:14px; border:${isMember ? '1.5px solid #10b981' : 'none'}; background:${isMember ? 'rgba(16,185,129,0.18)' : 'linear-gradient(135deg,#ffd000,#ff8800)'}; color:${isMember ? '#34d399' : '#1a0f00'}; font-size:13.5px; font-weight:900; cursor:pointer;">
-                        ${isMember ? '✅ تۆ ئەندامی ئەم ژوورەیت (کلیک بکە بۆ دەرچوون)' : '➕ جۆینکردنی ژوور (ببە بە ئەندام)'}
+                    <button onclick="toggleJoinCurrentRoom()" style="width:100%; margin-top:12px; padding:11px; border-radius:12px; border:${isMember ? '1px solid rgba(16,185,129,0.45)' : 'none'}; background:${isMember ? 'rgba(16,185,129,0.14)' : 'linear-gradient(135deg,#f59e0b,#d97706)'}; color:${isMember ? '#34d399' : '#0f0700'}; font-size:13px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
+                        ${isMember
+                            ? '<i class="fa-solid fa-circle-check"></i> ئەندامی ئەم ژوورەیت (دەرچوون)'
+                            : '<i class="fa-solid fa-user-plus"></i> جۆینکردنی ژوور (ببە بە ئەندام)'}
                     </button>
                 </div>
 
