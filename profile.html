@@ -348,11 +348,13 @@
     <div class="profile-wrapper">
         <div class="cover-section">
             <a href="javascript:history.back()" class="close-btn"><i class="fa-solid fa-arrow-right"></i></a>
-            <div class="avatar-container">
+            <div class="avatar-container" id="avatarBox" onclick="triggerAvatarUpload()" style="cursor:pointer;" title="گۆڕینی وێنەی پڕۆفایل">
                 <img id="profAvatar" src="images.png/controller.png" onerror="this.src='images.png/controller.png'" alt="Avatar" class="avatar-img">
+                <div id="editAvatarBtn" style="position:absolute; bottom:2px; right:2px; width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,#ffd000,#ff8800); border:2px solid #120d29; color:#1a0f00; display:flex; align-items:center; justify-content:center; font-size:13px; box-shadow:0 3px 10px rgba(0,0,0,0.7);">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+                <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarFileChange(event)">
             </div>
-        </div>
-
         <div class="personal-info">
             <div class="p-name">
                 <span id="profName">یاریزان</span>
@@ -382,7 +384,10 @@
                 </div>
             </div>
             
-            <div class="p-bio" id="profBio">بەخێربێن بۆ پڕۆفایلەکەم لە یاری کوردی 👑</div>
+          <div class="p-bio" id="profBio" onclick="editBio()" style="cursor:pointer;" title="گۆڕینی بایۆ">
+    <span id="profBioText">بەخێربێن بۆ پڕۆفایلەکەم لە یاری کوردی 👑</span>
+    <i id="editBioBtn" class="fa-solid fa-pen" style="font-size:11px; margin-right:6px; color:var(--gold);"></i>
+</div>
         </div>
 
         <!-- لیڤڵی ڕاستەقینەی ئەکاونت -->
@@ -495,44 +500,117 @@
                 }
             }
         }
+function editBio() {
+    const myUid = localStorage.getItem('yk_player_uid');
+    if (queryUid && queryUid !== myUid) return;
+    const currentBio = document.getElementById('profBioText').innerText;
+    const newBio = prompt('بایۆی نوێ بنووسە (Bio):', currentBio);
+    if (newBio !== null && newBio.trim().length > 0) {
+        const cleanBio = newBio.trim().substring(0, 120);
+        localStorage.setItem('yk_player_bio', cleanBio);
+        document.getElementById('profBioText').innerText = cleanBio;
+        if (window.firebase && myUid) {
+            firebase.database().ref(`players/${myUid}`).update({ bio: cleanBio });
+        }
+    }
+}
+function getCurrentMyUid() {
+            return localStorage.getItem('yk_player_uid')
+                || (window.firebase && firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : '');
+        }
 
+        function editBio() {
+            const myUid = getCurrentMyUid();
+            if (queryUid && queryUid !== myUid) return;
+            const currentBio = document.getElementById('profBioText').innerText;
+            const newBio = prompt('بایۆی نوێ بنووسە (Bio):', currentBio);
+            if (newBio !== null && newBio.trim().length > 0) {
+                const cleanBio = newBio.trim().substring(0, 120);
+                localStorage.setItem('yk_player_bio', cleanBio);
+                document.getElementById('profBioText').innerText = cleanBio;
+                if (window.firebase && myUid) {
+                    firebase.database().ref(`players/${myUid}`).update({ bio: cleanBio });
+                }
+            }
+        }
+
+        function triggerAvatarUpload() {
+            const myUid = getCurrentMyUid();
+            if (queryUid && queryUid !== myUid) return;
+            const inp = document.getElementById('avatarFileInput');
+            if (inp) inp.click();
+        }
+
+        function handleAvatarFileChange(event) {
+            const file = event.target.files && event.target.files[0];
+            const myUid = getCurrentMyUid();
+            if (!file || !myUid) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement('canvas');
+                    const size = 220;
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+
+                    // بڕینی چوارگۆشەی ناوەڕاست تا وێنەکە تێکنەچێت
+                    const minSide = Math.min(img.width, img.height);
+                    const sx = (img.width - minSide) / 2;
+                    const sy = (img.height - minSide) / 2;
+                    ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+
+                    const compressedAvatar = canvas.toDataURL('image/jpeg', 0.82);
+                    document.getElementById('profAvatar').src = compressedAvatar;
+                    localStorage.setItem('yk_player_avatar', compressedAvatar);
+
+                    if (window.firebase && firebase.apps.length) {
+                        firebase.database().ref(`players/${myUid}`).update({ avatar: compressedAvatar });
+                    }
+                    alert('وێنەی پڕۆفایلەکەت بە سەرکەوتوویی گۆڕدرا ✅');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
         function renderReceivedGifts(giftsObj) {
-            const container = document.getElementById('profGiftsContainer');
-            const totalLbl = document.getElementById('profGiftsTotalCount');
-            const items = giftsObj ? Object.values(giftsObj).filter(g => g && g.count > 0) : [];
+            const grid = document.getElementById('receivedGiftsGrid') || document.querySelector('.gifts-grid');
+            const totalBadge = document.getElementById('totalGiftsBadge');
+            if (!grid) return;
 
-            if (items.length === 0) {
-                totalLbl.innerText = '0 دیاری';
-                container.innerHTML = `
-                    <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:12px; padding:12px 0;">
-                        هێشتا هیچ دیارییەک وەرنەگیراوە 🎁
-                    </div>
-                `;
+            const list = giftsObj ? Object.values(giftsObj) : [];
+            const totalCount = list.reduce((sum, item) => sum + (Number(item.count || item.qty) || 1), 0);
+            if (totalBadge) totalBadge.innerText = totalCount;
+
+            if (list.length === 0) {
+                grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; font-size:12px; padding:16px;">0</div>`;
                 return;
             }
 
-            const totalSum = items.reduce((acc, g) => acc + (g.count || 0), 0);
-            totalLbl.innerText = `${totalSum.toLocaleString()} دیاری`;
-            document.getElementById('profVipStatus').innerHTML = totalSum >= 20
-                ? '<i class="fa-solid fa-crown"></i> VIP ڕۆیاڵ'
-                : '<i class="fa-solid fa-star"></i> ئەستێرەی دیوەخان';
+            grid.innerHTML = list.map(g => {
+                const count = Number(g.count || g.qty) || 1;
+                const rawSrc = String(g.media || g.icon || g.img || g.image || '').trim();
+                const safeSrc = rawSrc.replace(/"/g, '"');
+                const isVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(rawSrc);
+                const isImage = !isVideo && (rawSrc.includes('/') || rawSrc.includes('.') || rawSrc.startsWith('data:'));
 
-            container.innerHTML = items.sort((a, b) => (b.count || 0) - (a.count || 0)).map(g => {
-                const fallbackVid = g.video
-                    ? `this.outerHTML='<video src="${g.video}#t=1.2" muted playsinline class="gift-real-media"></video>'`
-                    : `this.src='images.png/controller.png'`;
-
-                const mediaHtml = g.img
-                    ? `<img src="${g.img}" onerror="${fallbackVid}" class="gift-real-media" alt="${g.name}">`
-                    : (g.video
-                        ? `<video src="${g.video}#t=1.2" muted playsinline class="gift-real-media"></video>`
-                        : `<img src="images.png/controller.png" class="gift-real-media" alt="">`);
+                let mediaHtml = '';
+                if (isVideo) {
+                    mediaHtml = `<video src="${safeSrc}" autoplay loop muted playsinline style="width:68px; height:68px; border-radius:14px; object-fit:cover; display:block;"></video>`;
+                } else if (isImage) {
+                    mediaHtml = `<img src="${safeSrc}" onerror="this.src='images.png/controller.png'" style="width:68px; height:68px; border-radius:14px; object-fit:cover; display:block;" alt="">`;
+                } else {
+                    mediaHtml = `<div style="width:68px; height:68px; border-radius:14px; background:rgba(255,184,0,0.12); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-gift" style="font-size:30px; color:#ffd000;"></i></div>`;
+                }
 
                 return `
-                    <div class="gift-box">
+                    <div style="background:rgba(15,9,36,0.85); border:1px solid rgba(255,184,0,0.35); border-radius:16px; padding:10px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;">
                         ${mediaHtml}
-                        <div class="gift-real-name">${g.name || 'دیاری'}</div>
-                        <div class="gift-count">x${g.count}</div>
+                        <div style="min-width:38px; padding:2px 10px; border-radius:10px; background:linear-gradient(135deg,#ffd000,#ff8800); color:#140a00; font-size:12.5px; font-weight:900; text-align:center;">
+                            ${count}
+                        </div>
                     </div>
                 `;
             }).join('');
