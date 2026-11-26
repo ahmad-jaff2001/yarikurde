@@ -51,6 +51,7 @@
             background: linear-gradient(to bottom, transparent, var(--bg-dark)), url('images.png/background.png') center/cover;
             border-bottom: 1.5px solid rgba(255, 184, 0, 0.3);
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            margin-bottom: 45px;
         }
 
         .close-btn {
@@ -97,9 +98,8 @@
         }
 
         .personal-info {
-            margin-top: 64px;
             text-align: center;
-            padding: 0 20px;
+            padding: 10px 20px 0;
         }
 
         .p-name {
@@ -180,58 +180,77 @@
             font-weight: 900;
         }
 
-        .level-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-top: 6px;
+        /* دیزاینی نوێی بەشی ئاست (Level VIP) */
+        .yk-vip-level-card {
+            background: radial-gradient(circle at top left, #1d0f3f 0%, #0d061f 100%);
+            border: 1.5px solid rgba(255, 184, 0, 0.4);
+            border-radius: 22px;
+            padding: 18px 22px;
+            margin: 16px;
+            box-shadow: 0 12px 35px rgba(0,0,0,0.7), inset 0 0 20px rgba(168, 85, 247, 0.15);
+            position: relative;
+            z-index: 10;
         }
-
-        .level-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #a855f7, #6366f1);
-            border: 2px solid #e9d5ff;
-            color: #fff;
-            border-radius: 10px;
+        .yk-vlc-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .yk-vlc-title {
+            font-size: 15px;
             font-weight: 900;
-            font-size: 16px;
-            transform: rotate(45deg);
+            color: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 9px;
         }
-        
-        .level-icon span { transform: rotate(-45deg); }
-
-        .progress-container {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            height: 22px;
-            border-radius: 11px;
+        .yk-vlc-badge {
+            background: linear-gradient(135deg, #ffd000, #ff8800);
+            color: #140a00;
+            font-size: 15px;
+            font-weight: 900;
+            padding: 5px 16px;
+            border-radius: 14px;
+            box-shadow: 0 5px 15px rgba(255, 184, 0, 0.4);
+        }
+        .yk-vlc-progress-container {
+            width: 100%;
+            height: 26px;
+            background: #05020f;
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 13px;
             position: relative;
             overflow: hidden;
+            box-shadow: inset 0 3px 8px rgba(0,0,0,0.8);
         }
-
-        .progress-bar {
+        .yk-vlc-progress-bar {
             height: 100%;
-            background: var(--gold-gradient);
-            width: 0%;
+            background: linear-gradient(90deg, #f59e0b, #ffd000);
             border-radius: 11px;
-            transition: width 0.35s ease;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(255, 184, 0, 0.6);
+            position: relative;
         }
-
-        .progress-text {
+        .yk-vlc-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            border-radius: 11px;
+        }
+        .yk-vlc-xp-text {
             position: absolute;
             inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 11.5px;
+            font-size: 12.5px;
             font-weight: 900;
             color: #fff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            text-shadow: 0 1px 4px #000;
+            letter-spacing: 0.5px;
+            direction: ltr;
         }
 
         .stats-grid {
@@ -341,27 +360,6 @@
         .vr-name { font-size: 14px; font-weight: 900; color: var(--text-main); }
         .vr-live { font-size: 11.5px; font-weight: 800; color: #34d399; display: flex; align-items: center; gap: 6px; margin-top: 2px; }
         .vr-enter { font-size: 18px; color: #10b981; }
-        /* چارەسەری کێشەی تێکچوونی باکگراوند و وێنەی پڕۆفایل */
-        .profile-header {
-            height: auto !important;
-            min-height: 240px !important;
-            padding-bottom: 55px !important;
-            margin-bottom: 45px !important;
-        }
-        .profile-avatar-wrap {
-            position: absolute !important;
-            bottom: -40px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            z-index: 10 !important;
-        }
-        .bio-section, .profile-bio {
-            margin-top: 20px !important;
-            position: relative;
-            z-index: 5;
-            width: 100%;
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -376,6 +374,8 @@
                 </div>
                 <input type="file" id="avatarFileInput" accept="image/*" style="display:none;" onchange="handleAvatarFileChange(event)">
             </div>
+        </div>
+
         <div class="personal-info">
             <div class="p-name">
                 <span id="profName">یاریزان</span>
@@ -405,21 +405,23 @@
                 </div>
             </div>
             
-          <div class="p-bio" id="profBio" onclick="editBio()" style="cursor:pointer;" title="گۆڕینی بایۆ">
-    <span id="profBioText">بەخێربێن بۆ پڕۆفایلەکەم لە یاری کوردی 👑</span>
-    <i id="editBioBtn" class="fa-solid fa-pen" style="font-size:11px; margin-right:6px; color:var(--gold);"></i>
-</div>
+            <div class="p-bio" id="profBio" onclick="editBio()" style="cursor:pointer;" title="گۆڕینی بایۆ">
+                <span id="profBioText">بەخێربێن بۆ پڕۆفایلەکەم لە یاری کوردی 👑</span>
+                <i id="editBioBtn" class="fa-solid fa-pen" style="font-size:11px; margin-right:6px; color:var(--gold);"></i>
+            </div>
         </div>
 
-        <!-- لیڤڵی ڕاستەقینەی ئەکاونت -->
-        <div class="section-card">
-            <div class="level-row">
-                <span style="font-size:14px; font-weight:900; color: var(--gold);">Level</span>
-                <div class="level-icon"><span id="profLevelNum">1</span></div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="profLevelBar" style="width: 0%;"></div>
-                    <div class="progress-text" id="profLevelXP">0 / 500</div>
+        <!-- بەشی ئاستی یاریزان (دیزاینی نوێی VIP) -->
+        <div class="yk-vip-level-card">
+            <div class="yk-vlc-header">
+                <div class="yk-vlc-title">
+                    <i class="fa-solid fa-star" style="color:#ffd000;"></i> ئاستی یاریزان
                 </div>
+                <div class="yk-vlc-badge">Lv.<span id="profLevelNum">1</span></div>
+            </div>
+            <div class="yk-vlc-progress-container">
+                <div class="yk-vlc-progress-bar" id="profLevelBar" style="width: 0%;"></div>
+                <div class="yk-vlc-xp-text" id="profLevelXP">0 / 500</div>
             </div>
         </div>
 
@@ -465,7 +467,7 @@
                 <div class="row-value" id="profGiftsTotalCount">0 دیاری</div>
             </div>
             
-            <div class="gifts-container" id="profGiftsContainer">
+            <div class="gifts-container" id="receivedGiftsGrid">
                 <div style="grid-column:1/-1; text-align:center; color:var(--text-muted); font-size:12px; padding:12px 0;">
                     هێشتا هیچ دیارییەک وەرنەگیراوە 🎁
                 </div>
@@ -521,21 +523,8 @@
                 }
             }
         }
-function editBio() {
-    const myUid = localStorage.getItem('yk_player_uid');
-    if (queryUid && queryUid !== myUid) return;
-    const currentBio = document.getElementById('profBioText').innerText;
-    const newBio = prompt('بایۆی نوێ بنووسە (Bio):', currentBio);
-    if (newBio !== null && newBio.trim().length > 0) {
-        const cleanBio = newBio.trim().substring(0, 120);
-        localStorage.setItem('yk_player_bio', cleanBio);
-        document.getElementById('profBioText').innerText = cleanBio;
-        if (window.firebase && myUid) {
-            firebase.database().ref(`players/${myUid}`).update({ bio: cleanBio });
-        }
-    }
-}
-function getCurrentMyUid() {
+
+        function getCurrentMyUid() {
             return localStorage.getItem('yk_player_uid')
                 || (window.firebase && firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : '');
         }
@@ -577,7 +566,6 @@ function getCurrentMyUid() {
                     canvas.height = size;
                     const ctx = canvas.getContext('2d');
 
-                    // بڕینی چوارگۆشەی ناوەڕاست تا وێنەکە تێکنەچێت
                     const minSide = Math.min(img.width, img.height);
                     const sx = (img.width - minSide) / 2;
                     const sy = (img.height - minSide) / 2;
@@ -596,14 +584,15 @@ function getCurrentMyUid() {
             };
             reader.readAsDataURL(file);
         }
+
         function renderReceivedGifts(giftsObj) {
-            const grid = document.getElementById('receivedGiftsGrid') || document.querySelector('.gifts-grid');
-            const totalBadge = document.getElementById('totalGiftsBadge');
+            const grid = document.getElementById('receivedGiftsGrid');
+            const totalBadge = document.getElementById('profGiftsTotalCount');
             if (!grid) return;
 
             const list = giftsObj ? Object.values(giftsObj) : [];
             const totalCount = list.reduce((sum, item) => sum + (Number(item.count || item.qty) || 1), 0);
-            if (totalBadge) totalBadge.innerText = totalCount;
+            if (totalBadge) totalBadge.innerText = totalCount + ' دیاری';
 
             if (list.length === 0) {
                 grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:#94a3b8; font-size:12px; padding:16px;">0</div>`;
@@ -655,9 +644,9 @@ function getCurrentMyUid() {
 
                 document.getElementById('profName').innerText = pName;
                 document.getElementById('profAvatar').src = pAvatar;
-                if (data.bio) document.getElementById('profBio').innerText = data.bio;
+                if (data.bio) document.getElementById('profBioText').innerText = data.bio;
 
-                // ئاست و XPـی ڕاستەقینە (بێ ژمارەی ساختە)
+                // ئاست و XPـی ڕاستەقینە
                 const xp = data.xp || 0;
                 const lvl = Math.max(1, Math.floor(xp / 500) + 1);
                 const nextXp = lvl * 500;
@@ -666,7 +655,7 @@ function getCurrentMyUid() {
                 document.getElementById('profLevelBar').style.width = `${Math.min(100, Math.round((curXpInLvl / 500) * 100))}%`;
                 document.getElementById('profLevelXP').innerText = `${xp.toLocaleString()} / ${nextXp.toLocaleString()}`;
 
-                // ئاماری یارییەکان (لە 0 دەست پێدەکات)
+                // ئاماری یارییەکان
                 const played = data.gamesPlayed || 0;
                 const wins = data.gamesWon || 0;
                 const winRate = played > 0 ? ((wins / played) * 100).toFixed(1) + '%' : '0%';
