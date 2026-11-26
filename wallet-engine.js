@@ -7,22 +7,44 @@
         { id: 'd400', type: 'diamonds', amount: 400, label: '400', tag: 'HOT', usd: '$0.99', iqd: '1,500 دینار' },
         { id: 'd1800', type: 'diamonds', amount: 1800, label: '1,800', tag: '', usd: '$3.99', iqd: '6,000 دینار' },
         { id: 'd5000', type: 'diamonds', amount: 5000, label: '5,000', tag: '', usd: '$9.99', iqd: '15,000 دینار' },
-        { id: 'd16k', type: 'diamonds', amount: 16000, label: '16.0K', tag: 'Popular', usd: '$29.99', iqd: '45,000 دینار' },
+        { id: 'd16k', type: 'diamonds', amount: 16000, label: '16K', tag: 'Popular', usd: '$29.99', iqd: '45,000 دینار' },
         { id: 'd53k', type: 'diamonds', amount: 53700, label: '53.7K', tag: '', usd: '$99.99', iqd: '150,000 دینار' },
-        { id: 'd217k', type: 'diamonds', amount: 217000, label: '217.0K', tag: 'BEST', usd: '$399.99', iqd: '600,000 دینار' }
+        { id: 'd217k', type: 'diamonds', amount: 217000, label: '217K', tag: 'BEST', usd: '$399.99', iqd: '600,000 دینار' }
     ];
 
     const GOLD_PACKAGES = [
-        { id: 'g33k', type: 'gold', amount: 33000, label: '33.0K', tag: '', usd: '$0.99', iqd: '1,500 دینار' },
-        { id: 'g130k', type: 'gold', amount: 130000, label: '130.0K', tag: '', usd: '$2.99', iqd: '4,500 دینار' },
-        { id: 'g670k', type: 'gold', amount: 670000, label: '670.0K', tag: 'Popular', usd: '$8.99', iqd: '13,500 دینار' },
+        { id: 'g33k', type: 'gold', amount: 33000, label: '33K', tag: '', usd: '$0.99', iqd: '1,500 دینار' },
+        { id: 'g130k', type: 'gold', amount: 130000, label: '130K', tag: '', usd: '$2.99', iqd: '4,500 دینار' },
+        { id: 'g670k', type: 'gold', amount: 670000, label: '670K', tag: 'Popular', usd: '$8.99', iqd: '13,500 دینار' },
         { id: 'g2m', type: 'gold', amount: 2700000, label: '2.7M', tag: '', usd: '$18.99', iqd: '28,500 دینار' },
         { id: 'g7m', type: 'gold', amount: 7700000, label: '7.7M', tag: '', usd: '$39.99', iqd: '60,000 دینار' },
-        { id: 'g17m', type: 'gold', amount: 17000000, label: '17.0M', tag: 'BEST', usd: '$69.99', iqd: '105,000 دینار' }
+        { id: 'g17m', type: 'gold', amount: 17000000, label: '17M', tag: 'BEST', usd: '$69.99', iqd: '105,000 دینار' }
     ];
 
     let selectedPkg = null;
     let selectedMethod = 'card';
+    let boundServerUid = '';
+    let syncTimerStarted = false;
+
+    // فەنکشنی کورتکردنەوەی ژمارە: هەتا 9,999 ئاساییە، لە 10,000 بەرەو سەرەوە دەبێتە 10K و 1M و 1B
+    function formatCompactNumber(num) {
+        num = Math.floor(Number(num) || 0);
+        if (num < 10000) return num.toLocaleString();
+        if (num >= 1000000000) {
+            return (Math.floor(num / 100000000) / 10).toString().replace(/\.0$/, '') + 'B';
+        }
+        if (num >= 1000000) {
+            return (Math.floor(num / 100000) / 10).toString().replace(/\.0$/, '') + 'M';
+        }
+        return (Math.floor(num / 100) / 10).toString().replace(/\.0$/, '') + 'K';
+    }
+
+    window.formatCompactNumber = formatCompactNumber;
+
+    function getActiveUid() {
+        return localStorage.getItem('yk_player_uid') ||
+            (window.firebase && firebase.auth && firebase.auth().currentUser ? firebase.auth().currentUser.uid : '');
+    }
 
     function getWallet() {
         let gold = localStorage.getItem('yk_wallet_gold');
@@ -50,8 +72,8 @@
     }
 
     function saveWallet(gold, diamonds) {
-        gold = Math.max(0, Math.floor(gold));
-        diamonds = Math.max(0, Math.floor(diamonds));
+        gold = Math.max(0, Math.floor(Number(gold) || 0));
+        diamonds = Math.max(0, Math.floor(Number(diamonds) || 0));
 
         localStorage.setItem('yk_wallet_gold', gold);
         localStorage.setItem('yk_wallet_diamonds', diamonds);
@@ -60,13 +82,13 @@
         localStorage.setItem('playerGold', gold);
         localStorage.setItem('playerDiamonds', diamonds);
 
-        const uid = localStorage.getItem('yk_player_uid');
-        if (window.firebase && firebase.apps.length && uid) {
+        const uid = getActiveUid();
+        if (window.firebase && firebase.apps && firebase.apps.length && uid) {
             firebase.database().ref(`players/${uid}/wallet`).update({
                 gold: gold,
                 diamonds: diamonds,
                 updatedAt: Date.now()
-            });
+            }).catch(() => {});
         }
 
         updateWalletUI();
@@ -108,8 +130,8 @@
 
     function updateWalletUI() {
         const w = getWallet();
-        const goldFormatted = w.gold.toLocaleString();
-        const diaFormatted = w.diamonds.toLocaleString();
+        const goldFormatted = formatCompactNumber(w.gold);
+        const diaFormatted = formatCompactNumber(w.diamonds);
 
         // نوێکردنەوەی هەموو شوێنە ئەگەرییەکانی گۆڵد و ئەڵماس لە پەڕەکەدا
         document.querySelectorAll('[data-wallet="gold"], #goldAmount, #userGold, #profileGold, .gold-count').forEach(el => {
@@ -121,33 +143,44 @@
 
         const modalGold = document.getElementById('yk-modal-gold');
         const modalDia = document.getElementById('yk-modal-diamonds');
-        if (modalGold) modalGold.innerText = goldFormatted;
-        if (modalDia) modalDia.innerText = diaFormatted;
+        if (modalGold && modalGold.innerText !== goldFormatted) modalGold.innerText = goldFormatted;
+        if (modalDia && modalDia.innerText !== diaFormatted) modalDia.innerText = diaFormatted;
+    }
+
+    function attachFirebaseWalletListener() {
+        const uid = getActiveUid();
+        if (!uid || boundServerUid === uid) return;
+        if (!window.firebase || !firebase.apps || !firebase.apps.length) return;
+
+        boundServerUid = uid;
+        const db = firebase.database();
+
+        db.ref(`players/${uid}/wallet`).on('value', (snap) => {
+            const data = snap.val();
+            if (data && (typeof data.gold === 'number' || typeof data.diamonds === 'number')) {
+                if (typeof data.gold === 'number') localStorage.setItem('yk_wallet_gold', data.gold);
+                if (typeof data.diamonds === 'number') localStorage.setItem('yk_wallet_diamonds', data.diamonds);
+                updateWalletUI();
+            } else {
+                const w = getWallet();
+                saveWallet(w.gold, w.diamonds);
+            }
+        });
     }
 
     function syncFromServer() {
-        const uid = localStorage.getItem('yk_player_uid');
-        if (window.firebase && firebase.apps.length && uid) {
-            firebase.database().ref(`players/${uid}/wallet`).on('value', (snap) => {
-                const data = snap.val();
-                if (data) {
-                    if (typeof data.gold === 'number') localStorage.setItem('yk_wallet_gold', data.gold);
-                    if (typeof data.diamonds === 'number') localStorage.setItem('yk_wallet_diamonds', data.diamonds);
-                    updateWalletUI();
-                } else {
-                    const w = getWallet();
-                    saveWallet(w.gold, w.diamonds);
-                }
-            });
-        }
+        attachFirebaseWalletListener();
         updateWalletUI();
         bindPlusButtons();
 
-        // چاودێریی بەردەوام تا هیچ کۆدێکی کۆن ژمارەکە نەگەڕێنێتەوە
-        setInterval(() => {
-            updateWalletUI();
-            bindPlusButtons();
-        }, 600);
+        if (!syncTimerStarted) {
+            syncTimerStarted = true;
+            setInterval(() => {
+                attachFirebaseWalletListener();
+                updateWalletUI();
+                bindPlusButtons();
+            }, 600);
+        }
     }
 
     function bindPlusButtons() {
@@ -182,7 +215,7 @@
         style.innerHTML = `
             #yk-store-overlay {
                 position: fixed; inset: 0; background: rgba(4, 2, 14, 0.85);
-                backdrop-filter: blur(10px); z-index: 9999; display: none;
+                backdrop-filter: blur(10px); z-index: 99999; display: none;
                 align-items: center; justify-content: center; padding: 14px;
                 direction: rtl; font-family: 'Vazirmatn', sans-serif;
             }
@@ -264,9 +297,9 @@
             <div class="yk-store-box">
                 <div class="yk-store-head">
                     <div>
-                        <div style="font-size:16px; font-weight:900; color:#ffd000;">👑 فرۆشگای یاری کوردی</div>
+                        <div style="font-size:16px; font-weight:900; color:#ffd000;"><i class="fa-solid fa-crown"></i> فرۆشگای یاری کوردی</div>
                         <div style="font-size:11px; color:#a49ec8; margin-top:2px;">
-                            باڵانس: 🪙 <b id="yk-modal-gold" style="color:#ffd000;">0</b> • 💎 <b id="yk-modal-diamonds" style="color:#38bdf8;">0</b>
+                            باڵانس: <i class="fa-solid fa-coins" style="color:#ffd000;"></i> <b id="yk-modal-gold" style="color:#ffd000;">0</b> • <i class="fa-solid fa-gem" style="color:#38bdf8;"></i> <b id="yk-modal-diamonds" style="color:#38bdf8;">0</b>
                         </div>
                     </div>
                     <button onclick="YariWallet.closeStore()" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:34px; height:34px; border-radius:50%; font-size:16px; cursor:pointer;">✕</button>
@@ -274,8 +307,8 @@
 
                 <div id="yk-store-step1">
                     <div class="yk-store-tabs">
-                        <button id="yk-tab-diamonds" class="yk-tab-btn active" onclick="YariWallet.switchStoreTab('diamonds')">💎 ئەڵماس</button>
-                        <button id="yk-tab-gold" class="yk-tab-btn" onclick="YariWallet.switchStoreTab('gold')">🪙 گۆڵد</button>
+                        <button id="yk-tab-diamonds" class="yk-tab-btn active" onclick="YariWallet.switchStoreTab('diamonds')"><i class="fa-solid fa-gem"></i> ئەڵماس</button>
+                        <button id="yk-tab-gold" class="yk-tab-btn" onclick="YariWallet.switchStoreTab('gold')"><i class="fa-solid fa-coins"></i> گۆڵد</button>
                     </div>
                     <div id="yk-store-content"></div>
                 </div>
@@ -324,8 +357,10 @@
                 ${list.map(p => `
                     <div class="yk-pkg-card" onclick="YariWallet.startCheckout('${p.id}')">
                         ${p.tag ? `<div class="yk-pkg-tag tag-${p.tag}">${p.tag}</div>` : ''}
-                        <div style="font-size:26px;">${p.type === 'diamonds' ? '💎' : '🪙'}</div>
-                        <div style="font-size:15px; font-weight:900; color:${p.type === 'diamonds' ? '#38bdf8' : '#ffd000'}; margin-top:2px;">${p.label}</div>
+                        <div style="font-size:24px; color:${p.type === 'diamonds' ? '#38bdf8' : '#ffd000'};">
+                            <i class="fa-solid ${p.type === 'diamonds' ? 'fa-gem' : 'fa-coins'}"></i>
+                        </div>
+                        <div style="font-size:15px; font-weight:900; color:${p.type === 'diamonds' ? '#38bdf8' : '#ffd000'}; margin-top:4px;">${p.label}</div>
                         <div style="font-size:10px; color:#a49ec8;">${p.iqd}</div>
                         <div class="yk-pkg-price-btn">${p.usd}</div>
                     </div>
@@ -352,11 +387,13 @@
         document.getElementById('yk-store-step1').style.display = 'none';
         document.getElementById('yk-store-step2').style.display = 'block';
 
-        const icon = selectedPkg.type === 'diamonds' ? '💎' : '🪙';
+        const iconHtml = selectedPkg.type === 'diamonds'
+            ? '<i class="fa-solid fa-gem" style="color:#38bdf8;"></i>'
+            : '<i class="fa-solid fa-coins" style="color:#ffd000;"></i>';
         const unitName = selectedPkg.type === 'diamonds' ? 'ئەڵماس' : 'گۆڵد';
         document.getElementById('yk-selected-summary').innerHTML = `
             <div>
-                <div style="font-size:14px; font-weight:900; color:${selectedPkg.type === 'diamonds' ? '#38bdf8' : '#ffd000'};">${icon} ${selectedPkg.label} ${unitName}</div>
+                <div style="font-size:14px; font-weight:900; color:${selectedPkg.type === 'diamonds' ? '#38bdf8' : '#ffd000'};">${iconHtml} ${selectedPkg.label} ${unitName}</div>
                 <div style="font-size:11px; color:#a49ec8;">پاکێجی هەڵبژێردراو</div>
             </div>
             <div style="text-align:left;">
@@ -404,7 +441,7 @@
 
     function submitPayment() {
         if (!selectedPkg) return;
-        const uid = localStorage.getItem('yk_player_uid') || 'guest_' + Date.now();
+        const uid = getActiveUid() || 'guest_' + Date.now();
         const playerName = localStorage.getItem('yk_player_name') || 'یاریزان';
 
         if (selectedMethod === 'card') {
@@ -464,19 +501,16 @@
             }
         }
     }
-window.formatCompactNumber = function (num) {
-        num = Number(num) || 0;
-        if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
-        if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
-        if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
-        return num.toString();
-    };
+
     window.YariWallet = {
         getWallet, addGold, spendGold, addDiamonds, spendDiamonds,
         exchangeDiamondsToGold, updateWalletUI, syncFromServer,
+        formatCompactNumber,
         openStore, closeStore, switchStoreTab, backToPackages,
         startCheckout, selectPayMethod, submitPayment
     };
+
+    window.addEventListener('yk-auth-ready', syncFromServer);
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', syncFromServer);
