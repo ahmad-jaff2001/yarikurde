@@ -871,6 +871,147 @@
             margin-bottom: 10px;
             outline: none;
         }
+        /* شریت و پەنجەرەی زیندووی سەرەوەی ژوور */
+        .yk-room-top-pills {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 4px;
+        }
+        .yk-r-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10.5px;
+            font-weight: 800;
+            background: rgba(15, 10, 36, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #f8fafc;
+            cursor: pointer;
+        }
+        .yk-r-pill.live-dot::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+        }
+        .yk-join-mini-btn {
+            padding: 2px 10px;
+            border-radius: 10px;
+            border: none;
+            font-size: 10.5px;
+            font-weight: 900;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ffd000, #ff8800);
+            color: #1a0f00;
+            box-shadow: 0 2px 8px rgba(255, 184, 0, 0.4);
+        }
+        .yk-join-mini-btn.joined {
+            background: rgba(16, 185, 129, 0.22);
+            border: 1px solid #10b981;
+            color: #34d399;
+            box-shadow: none;
+        }
+
+        #ykRoomHubOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 2, 14, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 999995;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            direction: rtl;
+            font-family: 'Vazirmatn', sans-serif;
+            color: #fff;
+        }
+        @media (min-width: 520px) {
+            #ykRoomHubOverlay { align-items: center; padding: 16px; }
+        }
+        #ykRoomHubOverlay.open { display: flex; }
+
+        .yk-rhub-sheet {
+            width: 100%;
+            max-width: 450px;
+            max-height: 88dvh;
+            background: #0e0924;
+            border-top: 2px solid #ffb800;
+            border-radius: 26px 26px 0 0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.95);
+        }
+        @media (min-width: 520px) {
+            .yk-rhub-sheet { border: 2px solid #ffb800; border-radius: 24px; }
+        }
+        .yk-rhub-top {
+            padding: 16px 18px;
+            background: linear-gradient(180deg, #1d1245 0%, #0e0924 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .yk-rhub-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .yk-rhub-stat-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 184, 0, 0.22);
+            border-radius: 14px;
+            padding: 8px 6px;
+            text-align: center;
+        }
+        .yk-rhub-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            padding: 10px 14px;
+            background: #090517;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .yk-rhub-tab {
+            padding: 8px 4px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            background: #161033;
+            color: #cbd5e1;
+            font-size: 11.5px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .yk-rhub-tab.active {
+            background: linear-gradient(135deg, #ffd000, #ff8800);
+            color: #1a0f00;
+            font-weight: 900;
+        }
+        .yk-rhub-body {
+            padding: 14px 16px 24px;
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .yk-member-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #161033;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 9px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+        .yk-member-row:active { background: #21184a; }
     </style>
 </head>
 <body>
@@ -1240,51 +1381,299 @@
         roomDbRef.child('stats/xp').transaction(cur => (cur || 0) + xpEarned);
     }, 60000);
 
-    function openRoomLevelModal() {
-        const box = document.getElementById('roomLevelDetailsBox');
-        const tier = getActiveTier(roomStats.level);
-        const memberTargets = [10, 20, 50, 100, 250, 500];
+   // =========================================================================
+    // سیستمی زیندووی پڕۆفایلی ژوور، جۆینکردن، ئەندامان و ئاست (بێ ژمارەی ساختە)
+    // =========================================================================
+    let roomMembersMap = {};
+    let activeRoomHubTab = 'members';
 
-        let html = `
-            <div style="background:rgba(255,184,0,0.12); border:1px solid var(--gold); border-radius:16px; padding:12px; margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <div style="font-size:15px; font-weight:900; color:var(--gold-bright);">🏆 ئاستی ژوور: Lv.${roomStats.level} / 99</div>
-                    <span style="background:var(--gold-grad); color:#1a0f00; font-size:10.5px; font-weight:900; padding:2px 9px; border-radius:10px;">${tier.mics} مایک کراوەیە</span>
-                </div>
-                <div style="font-size:11.5px; color:#e9d5ff; margin-top:6px; line-height:1.7;">
-                    • کۆی XP: <b>${roomStats.xp.toLocaleString()}</b> | ئەندامانی ژوور: <b>${roomStats.totalVisitors}</b><br>
-                    • چۆن بەرز دەبێتەوە؟ تەنها بە <b>دانیشتن لە ژوور (+٢ XP/خولەک)</b> و <b>جۆینکردنی ئەندامانی نوێ</b>!
-                </div>
-            </div>
-            <div style="font-size:12px; font-weight:900; color:#38bdf8; margin-bottom:6px;">👥 پاداشتی جۆینکردنی ئەندامان (Members):</div>
+    function getSafeRoomTitle() {
+        if (typeof roomMeta !== 'undefined' && roomMeta.title) return roomMeta.title;
+        const h = document.querySelector('.room-title, h1, h2');
+        return h ? h.innerText.trim() : 'دیوەخانی یاری کوردی';
+    }
+
+    function getSafeRoomDisplayId() {
+        if (typeof roomMeta !== 'undefined' && roomMeta.displayId) return roomMeta.displayId;
+        return activeRoomId;
+    }
+
+    function getSafeRoomAvatar() {
+        if (typeof roomMeta !== 'undefined' && roomMeta.avatar) return roomMeta.avatar;
+        const img = document.querySelector('header img, .room-avatar img');
+        return img ? img.src : 'images.png/controller.png';
+    }
+
+    function injectTopRoomLiveStrip() {
+        const idEl = document.getElementById('roomIdDisplay');
+        if (!idEl || document.getElementById('ykRoomTopPills')) return;
+
+        const headerContainer = idEl.parentElement;
+        if (headerContainer) {
+            headerContainer.style.cursor = 'pointer';
+            headerContainer.onclick = (e) => {
+                if (e.target.closest('button')) return;
+                openRoomHubModal('members');
+            };
+        }
+
+        const strip = document.createElement('div');
+        strip.id = 'ykRoomTopPills';
+        strip.className = 'yk-room-top-pills';
+        strip.innerHTML = `
+            <span class="yk-r-pill live-dot" onclick="event.stopPropagation(); openRoomHubModal('online')" title="ئەوانەی ئێستا لە ژووردان">
+                ئێستا: <b id="ykTopLiveCount" style="color:#4ade80;">1</b>
+            </span>
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('members')" title="کۆی ئەندامانی ژوور">
+                👥 ئەندام: <b id="ykTopMemberCount" style="color:#ffd000;">0</b>
+            </span>
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('level')" title="ئاستی ژوور">
+                ⓘ زانیاری
+            </span>
+            <button id="ykTopJoinBtn" class="yk-join-mini-btn" onclick="event.stopPropagation(); toggleJoinCurrentRoom()">
+                + جۆین
+            </button>
         `;
+        idEl.insertAdjacentElement('afterend', strip);
+        updateLiveRoomHeaderBadges();
+    }
 
-        memberTargets.forEach(mCount => {
-            const reached = roomStats.totalVisitors >= mCount;
-            html += `
-                <div class="quest-row" style="border-color:${reached ? '#22c55e' : 'rgba(56,189,248,0.35)'};">
-                    <div style="font-size:12px; font-weight:800;">${reached ? '✅' : '⏳'} گەیشتن بە ${mCount} ئەندامی ژوور (${Math.min(roomStats.totalVisitors, mCount)}/${mCount})</div>
-                    <span style="font-size:10.5px; color:#fde047; font-weight:900;">+${mCount * 30} XP</span>
-                </div>
-            `;
+    function updateLiveRoomHeaderBadges() {
+        const liveCount = Math.max(1, onlineUsersList.length);
+        const memberCount = Object.keys(roomMembersMap).length;
+        const isMember = !!(me.uid && roomMembersMap[me.uid]);
+
+        const liveEl = document.getElementById('ykTopLiveCount');
+        const memEl = document.getElementById('ykTopMemberCount');
+        const joinBtn = document.getElementById('ykTopJoinBtn');
+
+        if (liveEl) liveEl.innerText = liveCount.toLocaleString();
+        if (memEl) memEl.innerText = memberCount.toLocaleString();
+        if (joinBtn) {
+            joinBtn.classList.toggle('joined', isMember);
+            joinBtn.innerText = isMember ? '✅ ئەندامیت' : '+ جۆین';
+        }
+
+        const overlay = document.getElementById('ykRoomHubOverlay');
+        if (overlay && overlay.classList.contains('open')) {
+            renderRoomHubContent();
+        }
+    }
+
+    function initLiveRoomMembership() {
+        if (!roomDbRef || !activeRoomId) return;
+        injectTopRoomLiveStrip();
+
+        roomDbRef.child('members').on('value', snap => {
+            roomMembersMap = snap.val() || {};
+            const count = Object.keys(roomMembersMap).length;
+            firebase.database().ref(`voice_rooms_list/${activeRoomId}/membersCount`).set(count).catch(() => {});
+            updateLiveRoomHeaderBadges();
         });
+    }
 
-        html += `<div style="font-size:12px; font-weight:900; color:#fde047; margin:10px 0 6px;">🗺️ نەخشەی ئاستەکان (Lv.1 – Lv.99):</div>`;
-        LEVEL_MILESTONES.forEach(m => {
-            const unlocked = roomStats.level >= m.level;
-            html += `
-                <div class="quest-row" style="border-color:${unlocked ? '#22c55e' : 'rgba(255,184,0,0.22)'};">
-                    <div>
-                        <div style="font-size:12px; font-weight:900; color:${unlocked ? '#4ade80' : '#fff'};">${unlocked ? '✅' : '🔒'} Lv.${m.level} — ${m.title}</div>
-                        <div style="font-size:10.5px; color:#cbd5e1; margin-top:2px;">${m.perk}</div>
+    async function toggleJoinCurrentRoom() {
+        if (!roomDbRef || !me.uid) return;
+        const isMember = !!roomMembersMap[me.uid];
+
+        if (isMember) {
+            if (!confirm('دەتەوێت لە ئەندامێتیی ئەم ژوورە دەربچیت؟')) return;
+            await roomDbRef.child(`members/${me.uid}`).remove();
+            await firebase.database().ref(`players/${me.uid}/joinedRooms/${activeRoomId}`).remove().catch(() => {});
+            appendChatLine(`👋 <b>${me.name}</b> لە ئەندامێتیی ژوورەکە دەرچوو.`, true);
+        } else {
+            const memberPayload = {
+                uid: me.uid,
+                name: me.name,
+                avatar: me.avatar || 'images.png/controller.png',
+                level: me.level || 1,
+                joinedAt: Date.now()
+            };
+            await roomDbRef.child(`members/${me.uid}`).set(memberPayload);
+            await firebase.database().ref(`players/${me.uid}/joinedRooms/${activeRoomId}`).set({
+                roomId: activeRoomId,
+                title: getSafeRoomTitle(),
+                displayId: getSafeRoomDisplayId(),
+                avatar: getSafeRoomAvatar(),
+                joinedAt: Date.now()
+            }).catch(() => {});
+
+            // زیادکردنی ٣٠ XP بۆ ژوورەکە تەنها یەک جار بۆ هەر ئەندامێکی نوێ
+            const xpFlagRef = roomDbRef.child(`memberXpAwarded/${me.uid}`);
+            xpFlagRef.once('value', s => {
+                if (!s.exists()) {
+                    xpFlagRef.set(true);
+                    roomDbRef.child('stats/xp').transaction(cur => (cur || 0) + 30);
+                }
+            });
+
+            spawnParticles(0xffd000, 30);
+            appendChatLine(`🎉 <b>${me.name}</b> جۆینی ژوورەکەی کرد و بوو بە ئەندام!`, true);
+        }
+    }
+
+    function openRoomLevelModal() {
+        openRoomHubModal('level');
+    }
+
+    function openRoomHubModal(tab = 'members') {
+        activeRoomHubTab = tab;
+        let overlay = document.getElementById('ykRoomHubOverlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'ykRoomHubOverlay';
+            overlay.onclick = () => overlay.classList.remove('open');
+            document.body.appendChild(overlay);
+        }
+        renderRoomHubContent();
+        overlay.classList.add('open');
+    }
+
+    function renderRoomHubContent() {
+        const overlay = document.getElementById('ykRoomHubOverlay');
+        if (!overlay) return;
+
+        const liveCount = Math.max(1, onlineUsersList.length);
+        const membersArr = Object.values(roomMembersMap).sort((a, b) => (b.joinedAt || 0) - (a.joinedAt || 0));
+        const memberCount = membersArr.length;
+        const isMember = !!(me.uid && roomMembersMap[me.uid]);
+        const onlineUidSet = new Set(onlineUsersList.map(u => u.uid));
+
+        const tier = getActiveTier(roomStats.level);
+        const curLvlXP = getXPForLevel(roomStats.level);
+        const nextLvlXP = roomStats.level < 99 ? getXPForLevel(roomStats.level + 1) : curLvlXP;
+        const pct = roomStats.level >= 99 ? 100 : Math.min(100, Math.max(0, Math.floor(((roomStats.xp - curLvlXP) / Math.max(1, nextLvlXP - curLvlXP)) * 100)));
+
+        let bodyHtml = '';
+
+        if (activeRoomHubTab === 'members') {
+            if (membersArr.length === 0) {
+                bodyHtml = `
+                    <div style="text-align:center; padding:26px 12px; color:#94a3b8; font-size:13px;">
+                        هێشتا هیچ کەسێک جۆینی ئەم ژوورەی نەکردووە.<br>
+                        تۆ یەکەم کەس بە و دوگمەی <b>جۆینکردنی ژوور</b> دابگرە! 👑
                     </div>
-                    <span style="font-size:10px; color:#fde047; font-weight:900;">${getXPForLevel(m.level).toLocaleString()} XP</span>
+                `;
+            } else {
+                bodyHtml = membersArr.map(m => {
+                    const isOnlineNow = onlineUidSet.has(m.uid);
+                    return `
+                        <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${m.uid}',name:'${(m.name||'یاریزان').replace(/'/g,'')}',avatar:'${m.avatar||'images.png/controller.png'}',level:${m.level||1}})">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <div style="position:relative;">
+                                    <img src="${m.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid ${isOnlineNow ? '#22c55e' : '#ffb800'};">
+                                    <span style="position:absolute; bottom:0; right:0; width:11px; height:11px; border-radius:50%; background:${isOnlineNow ? '#22c55e' : '#64748b'}; border:2px solid #0e0924;"></span>
+                                </div>
+                                <div>
+                                    <div style="font-size:13.5px; font-weight:900; color:#fff;">${m.name || 'یاریزان'}</div>
+                                    <div style="font-size:11px; color:${isOnlineNow ? '#4ade80' : '#94a3b8'};">
+                                        ${isOnlineNow ? '🟢 ئێستا لە ناو ژووردایە' : '⚪ ئەندامی ژوور'} • Lv.${m.level || 1}
+                                    </div>
+                                </div>
+                            </div>
+                            <span style="font-size:11px; color:#ffd000; font-weight:800;">پڕۆفایل ❮</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } else if (activeRoomHubTab === 'online') {
+            bodyHtml = onlineUsersList.map(u => {
+                const alsoMember = !!roomMembersMap[u.uid];
+                return `
+                    <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${u.uid}',name:'${(u.name||'یاریزان').replace(/'/g,'')}',avatar:'${u.avatar||'images.png/controller.png'}',level:${u.level||1}})">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #22c55e;">
+                            <div>
+                                <div style="font-size:13.5px; font-weight:900; color:#fff;">${u.name || 'یاریزان'}</div>
+                                <div style="font-size:11px; color:#4ade80;">
+                                    🟢 ئێستا لە ژووردایە ${alsoMember ? '• 🏅 ئەندامە' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <span style="font-size:11px; color:#ffd000; font-weight:800;">پڕۆفایل ❮</span>
+                    </div>
+                `;
+            }).join('');
+        } else {
+            bodyHtml = `
+                <div style="background:rgba(255,184,0,0.1); border:1px solid rgba(255,184,0,0.35); border-radius:16px; padding:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:14px; font-weight:900; color:#ffd000;">🏆 ئاستی ژوور: Lv.${roomStats.level} / 99</span>
+                        <span style="font-size:11px; font-weight:900; color:#38bdf8;">${tier.mics} مایک کراوەیە</span>
+                    </div>
+                    <div style="width:100%; height:10px; background:rgba(0,0,0,0.55); border-radius:8px; overflow:hidden; margin-bottom:6px;">
+                        <div style="width:${pct}%; height:100%; background:linear-gradient(90deg,#ffd000,#ff8800);"></div>
+                    </div>
+                    <div style="font-size:11px; color:#e2e8f0;">
+                        XP: <b>${roomStats.xp.toLocaleString()}</b> / ${nextLvlXP.toLocaleString()} • نازناو: <b>${tier.title}</b>
+                    </div>
                 </div>
+                ${LEVEL_MILESTONES.map(m => {
+                    const unlocked = roomStats.level >= m.level;
+                    return `
+                        <div class="yk-member-row" style="cursor:default; border-color:${unlocked ? 'rgba(34,197,94,0.4)' : 'rgba(255,255,255,0.08)'};">
+                            <div>
+                                <div style="font-size:12.5px; font-weight:900; color:${unlocked ? '#4ade80' : '#fff'};">
+                                    ${unlocked ? '✅' : '🔒'} Lv.${m.level} — ${m.title}
+                                </div>
+                                <div style="font-size:11px; color:#94a3b8;">${m.perk}</div>
+                            </div>
+                            <span style="font-size:10.5px; color:#fde047; font-weight:900;">${getXPForLevel(m.level).toLocaleString()} XP</span>
+                        </div>
+                    `;
+                }).join('')}
             `;
-        });
+        }
 
-        box.innerHTML = html;
-        document.getElementById('roomLevelModal').classList.add('open');
+        overlay.innerHTML = `
+            <div class="yk-rhub-sheet" onclick="event.stopPropagation()">
+                <div class="yk-rhub-top">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${getSafeRoomAvatar()}" onerror="this.src='images.png/controller.png'" style="width:50px; height:50px; border-radius:16px; border:2px solid #ffb800; object-fit:cover;">
+                            <div>
+                                <div style="font-size:16px; font-weight:900; color:#fff;">${getSafeRoomTitle()}</div>
+                                <div style="font-size:11.5px; color:#fde047;">ID: ${getSafeRoomDisplayId()} • ${tier.title}</div>
+                            </div>
+                        </div>
+                        <button onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open')" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.18); background:#1d1542; color:#fff; cursor:pointer;">✕</button>
+                    </div>
+
+                    <div class="yk-rhub-stats">
+                        <div class="yk-rhub-stat-box">
+                            <div style="font-size:10.5px; color:#94a3b8;">ئێستا لە ژوور</div>
+                            <div style="font-size:16px; font-weight:900; color:#4ade80;">🟢 ${liveCount}</div>
+                        </div>
+                        <div class="yk-rhub-stat-box">
+                            <div style="font-size:10.5px; color:#94a3b8;">ئەندامانی ژوور</div>
+                            <div style="font-size:16px; font-weight:900; color:#ffd000;">👥 ${memberCount}</div>
+                        </div>
+                        <div class="yk-rhub-stat-box">
+                            <div style="font-size:10.5px; color:#94a3b8;">ئاستی ژوور</div>
+                            <div style="font-size:16px; font-weight:900; color:#38bdf8;">Lv.${roomStats.level}</div>
+                        </div>
+                    </div>
+
+                    <button onclick="toggleJoinCurrentRoom()" style="width:100%; margin-top:12px; padding:11px; border-radius:14px; border:${isMember ? '1.5px solid #10b981' : 'none'}; background:${isMember ? 'rgba(16,185,129,0.18)' : 'linear-gradient(135deg,#ffd000,#ff8800)'}; color:${isMember ? '#34d399' : '#1a0f00'}; font-size:13.5px; font-weight:900; cursor:pointer;">
+                        ${isMember ? '✅ تۆ ئەندامی ئەم ژوورەیت (کلیک بکە بۆ دەرچوون)' : '➕ جۆینکردنی ژوور (ببە بە ئەندام)'}
+                    </button>
+                </div>
+
+                <div class="yk-rhub-tabs">
+                    <button class="yk-rhub-tab ${activeRoomHubTab === 'members' ? 'active' : ''}" onclick="openRoomHubModal('members')">
+                        ئەندامان (${memberCount})
+                    </button>
+                    <button class="yk-rhub-tab ${activeRoomHubTab === 'online' ? 'active' : ''}" onclick="openRoomHubModal('online')">
+                        لە ژووردان (${liveCount})
+                    </button>
+                    <button class="yk-rhub-tab ${activeRoomHubTab === 'level' ? 'active' : ''}" onclick="openRoomHubModal('level')">
+                        ئاست (Lv.${roomStats.level})
+                    </button>
+                </div>
+
+                <div class="yk-rhub-body">${bodyHtml}</div>
+            </div>
+        `;
     }
 
     // =========================================================================
@@ -1642,17 +2031,17 @@
                 const giftObj = getFullGiftList().find(g => g.id === ev.giftId);
                 if (giftObj) playSoftHologramGift(giftObj, ev.receiverLabel, ev.combo || 1, ev.senderName, ev.senderAvatar);
             });
-
+initLiveRoomMembership();
             initWebRTCReceiver();
         });
     }
-
-    function renderRealAudience(users) {
-     document.getElementById('viewersTotal').innerText = users.length;
-     document.getElementById('realAudienceStrip').innerHTML = users.slice(0, 12).map(u => `
-         <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="aud-pic" style="cursor:pointer;" onclick="openRoomPlayerCard({uid:'${u.uid}',name:'${(u.name||'یاریزان').replace(/'/g,'')}',avatar:'${u.avatar||'images.png/controller.png'}'})" title="${u.name}" alt="">
-     `).join('');
- }
+function renderRealAudience(users) {
+        document.getElementById('viewersTotal').innerText = users.length;
+        document.getElementById('realAudienceStrip').innerHTML = users.slice(0, 12).map(u => `
+            <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" class="aud-pic" style="cursor:pointer;" onclick="openRoomPlayerCard({uid:'${u.uid}',name:'${(u.name||'یاریزان').replace(/'/g,'')}',avatar:'${u.avatar||'images.png/controller.png'}'})" title="${u.name}" alt="">
+        `).join('');
+        if (typeof updateLiveRoomHeaderBadges === 'function') updateLiveRoomHeaderBadges();
+    }
     function syncRoomStatsToServer() {
         if (!roomDbRef) return;
         roomDbRef.child('stats').update({
