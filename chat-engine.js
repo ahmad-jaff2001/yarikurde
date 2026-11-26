@@ -1,5 +1,5 @@
 // =============================================================================
-// YARI KURDI - DIRECT MESSAGING SYSTEM (INSTAGRAM STYLE)
+// YARI KURDI - DIRECT MESSAGING SYSTEM (INSTAGRAM STYLE WITH FRIENDS STRIP)
 // =============================================================================
 
 (function () {
@@ -10,9 +10,9 @@
         activeChatUid: null,
         activeChatName: '',
         activeChatAvatar: '',
-        inboxList: [], // لیستی ئەو کەسانەی چاتت لەگەڵ کردوون
-        messagesCache: {}, // پاشەکەوتی نامەکانی هەر چاتێک
-        friendsList: [] // بۆ دەستپێکردنی چاتی نوێ
+        inboxList: [], 
+        messagesCache: {}, 
+        friendsList: []
     };
 
     function escapeHtml(str) {
@@ -61,20 +61,23 @@
 
         const db = firebase.database();
 
-        // وەرگرتنی زانیاری خۆم
         db.ref('players/' + uid).once('value', function(snap) {
             const d = snap.val() || {};
             state.myName = d.name || 'یاریزان';
             state.myAvatar = d.avatar || 'images.png/controller.png';
         });
 
-        // وەرگرتنی لیستی هاوڕێکان بۆ چاتی نوێ
+        // وەرگرتنی لیستی هاوڕێکان بۆ شریتی سەرەوە
         db.ref('friends/' + uid).on('value', function(snap) {
             const friends = snap.val() || {};
             state.friendsList = Object.keys(friends).map(function(k) { return friends[k]; });
+            
+            const overlay = document.getElementById('ykChatOverlay');
+            if (overlay && overlay.classList.contains('open') && !state.activeChatUid) {
+                renderInbox();
+            }
         });
 
-        // گوێگرتن بۆ ئینبۆکس (دوایین نامەکان)
         db.ref('inbox/' + uid).on('value', function(snap) {
             const data = snap.val() || {};
             const arr = [];
@@ -87,7 +90,6 @@
             arr.sort(function(a, b) { return b.lastMessageTs - a.lastMessageTs; });
             state.inboxList = arr;
             
-            // ئەگەر لە لیستی چاتەکانە، ڕیفرێشی بکە
             const overlay = document.getElementById('ykChatOverlay');
             if (overlay && overlay.classList.contains('open') && !state.activeChatUid) {
                 renderInbox();
@@ -102,12 +104,11 @@
         
         renderChatWindow();
         
-        // گوێگرتن بۆ نامەکانی ئەم چاتە دیاریکراوە
         const db = firebase.database();
         const chatId = getChatId(state.myUid, partnerUid);
         
         db.ref('messages/' + chatId).limitToLast(50).on('value', function(snap) {
-            if (state.activeChatUid !== partnerUid) return; // ئەگەر چاتێکی تری کردەوە
+            if (state.activeChatUid !== partnerUid) return; 
             const msgs = snap.val() || {};
             const msgArr = Object.keys(msgs).map(function(k) { return Object.assign({ id: k }, msgs[k]); });
             msgArr.sort(function(a, b) { return a.ts - b.ts; });
@@ -115,7 +116,6 @@
             state.messagesCache[partnerUid] = msgArr;
             renderMessages();
             
-            // ئەگەر نامەی نەخوێندراوە هەبوو بیخوێنەرەوە
             if (msgArr.length > 0) {
                 const lastMsg = msgArr[msgArr.length - 1];
                 if (lastMsg.senderUid !== state.myUid && !lastMsg.read) {
@@ -145,11 +145,9 @@
             read: false
         };
         
-        // ناردنی نامەکە بۆ چاتەکە
         const newMsgRef = db.ref('messages/' + chatId).push();
         await newMsgRef.set(msgData);
         
-        // نوێکردنەوەی ئینبۆکسی خۆم
         await db.ref('inbox/' + state.myUid + '/' + partnerUid).update({
             lastMessage: text,
             lastMessageTs: now,
@@ -159,7 +157,6 @@
             unread: 0
         });
         
-        // نوێکردنەوەی ئینبۆکسی بەرامبەر
         const pRef = db.ref('inbox/' + partnerUid + '/' + state.myUid);
         pRef.transaction(function(curr) {
             if (!curr) curr = {};
@@ -190,6 +187,14 @@
             '.yk-ch-back{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;cursor:pointer;background:transparent;border:none;}' +
             '.yk-ch-back:hover{background:rgba(255,255,255,0.1);}' +
             
+            /* شریتی هاوڕێکان لە سەرەوە */
+            '.yk-inbox-friends-strip{display:flex;align-items:flex-start;gap:14px;padding:16px 18px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,0.06);-webkit-overflow-scrolling:touch;flex-shrink:0;}' +
+            '.yk-inbox-friends-strip::-webkit-scrollbar{display:none;}' +
+            '.yk-af-item{display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;width:56px;flex-shrink:0;}' +
+            '.yk-af-avatar-wrap{position:relative;width:56px;height:56px;border-radius:50%;padding:2px;background:linear-gradient(135deg,#ffd000,#ff8800);}' +
+            '.yk-af-avatar-wrap img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2.5px solid #050505;background:#1a1a1a;}' +
+            '.yk-af-name{font-size:11px;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;text-align:center;}' +
+
             /* لیستی ئینبۆکس */
             '.yk-inbox-body{padding:0;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch;}' +
             '.yk-inbox-row{display:flex;align-items:center;gap:14px;padding:12px 18px;cursor:pointer;transition:background 0.2s;}' +
@@ -208,8 +213,8 @@
             '.yk-msg-wrap.mine{justify-content:flex-start;}' +
             '.yk-msg-wrap.theirs{justify-content:flex-end;}' +
             '.yk-bubble{max-width:75%;padding:10px 14px;font-size:14px;line-height:1.4;word-wrap:break-word;}' +
-            '.yk-bubble.mine{background:#3797f0;color:#fff;border-radius:20px 4px 20px 20px;}' + /* شینی ئینستاگرام */
-            '.yk-bubble.theirs{background:#262626;color:#fff;border-radius:4px 20px 20px 20px;border:1px solid rgba(255,255,255,0.05);}' + /* ڕەشی ئینستاگرام */
+            '.yk-bubble.mine{background:#3797f0;color:#fff;border-radius:20px 4px 20px 20px;}' +
+            '.yk-bubble.theirs{background:#262626;color:#fff;border-radius:4px 20px 20px 20px;border:1px solid rgba(255,255,255,0.05);}' +
             '.yk-msg-time{font-size:9.5px;color:#64748b;margin-top:4px;display:flex;align-items:center;gap:4px;}' +
             '.yk-msg-wrap.mine .yk-msg-time{justify-content:flex-start;}' +
             '.yk-msg-wrap.theirs .yk-msg-time{justify-content:flex-end;}' +
@@ -228,9 +233,26 @@
         const overlay = document.getElementById('ykChatOverlay');
         if (!overlay) return;
 
+        // ١. دروستکردنی شریتی هاوڕێکان (Friends Strip)
+        let friendsHtml = '';
+        if (state.friendsList && state.friendsList.length > 0) {
+            const fList = state.friendsList.map(function(f) {
+                const safeName = escapeHtml(f.name || 'یاریزان');
+                const safeAv = escapeHtml(f.avatar || 'images.png/controller.png');
+                return '<div class="yk-af-item" onclick="YariChat.openWith(\'' + f.uid + '\', \'' + safeName + '\', \'' + safeAv + '\')">' +
+                    '<div class="yk-af-avatar-wrap">' +
+                        '<img src="' + safeAv + '" onerror="this.src=\'images.png/controller.png\'" alt="">' +
+                    '</div>' +
+                    '<div class="yk-af-name">' + safeName + '</div>' +
+                '</div>';
+            }).join('');
+            friendsHtml = '<div class="yk-inbox-friends-strip">' + fList + '</div>';
+        }
+
+        // ٢. دروستکردنی لیستی نامەکان (Inbox List)
         let listHtml = '';
         if (state.inboxList.length === 0) {
-            listHtml = '<div style="text-align:center;padding:40px 20px;color:#737373;font-size:14px;"><i class="fa-solid fa-paper-plane" style="font-size:40px;margin-bottom:15px;display:block;"></i>هیچ نامەیەک نییە.<br>لە لیستی هاوڕێکانتەوە دەتوانیت چات دەستپێبکەیت.</div>';
+            listHtml = '<div style="text-align:center;padding:40px 20px;color:#737373;font-size:14px;"><i class="fa-solid fa-paper-plane" style="font-size:40px;margin-bottom:15px;display:block;"></i>هیچ نامەیەک نییە.<br>لە سەرەوە هاوڕێیەک هەڵبژێرە بۆ دەستپێکردنی چات.</div>';
         } else {
             listHtml = state.inboxList.map(function(chat) {
                 const isUnread = chat.senderUid !== state.myUid && chat.unread > 0;
@@ -257,6 +279,7 @@
                     '<div class="yk-ch-title">نامەکان</div>' +
                     '<button class="yk-ch-back" onclick="YariChat.close()"><i class="fa-solid fa-xmark"></i></button>' +
                 '</div>' +
+                friendsHtml + // دانانی شریتی هاوڕێکان ڕێک لە ژێر هێدەر
                 '<div class="yk-inbox-body">' + listHtml + '</div>' +
             '</div>';
     }
