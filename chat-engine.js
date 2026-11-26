@@ -348,7 +348,7 @@
                             <img src="${escapeHtml(state.activeChatAvatar || 'images.png/controller.png')}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;" onerror="this.src='images.png/controller.png'">
                             <div style="display:flex; flex-direction:column;">
                                 <span style="font-size:15px; font-weight:900; color:#fff;">${escapeHtml(state.activeChatName)}</span>
-                                <span style="font-size:11.5px; color:#a3a3a3;">Instagram</span>
+                                <span style="font-size:11.5px; color:#a3a3a3;">yarikurdi</span>
                             </div>
                         </div>
                     </div>
