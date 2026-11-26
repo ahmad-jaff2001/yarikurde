@@ -333,7 +333,7 @@
         `;
     }
 
-    function renderChatWindow() {
+   function renderChatWindow() {
         const overlay = document.getElementById('ykChatOverlay');
         if (!overlay) return;
 
@@ -348,25 +348,19 @@
                             <img src="${escapeHtml(state.activeChatAvatar || 'images.png/controller.png')}" style="width:36px; height:36px; border-radius:50%; object-fit:cover;" onerror="this.src='images.png/controller.png'">
                             <div style="display:flex; flex-direction:column;">
                                 <span style="font-size:15px; font-weight:900; color:#fff;">${escapeHtml(state.activeChatName)}</span>
-                                <span style="font-size:11.5px; color:#a3a3a3;">yarikurdi</span>
+                                <span style="font-size:11.5px; color:#a3a3a3;">یاری کوردی</span>
                             </div>
                         </div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:18px; font-size:20px; color:#fff;">
-                        <i class="fa-solid fa-phone"></i>
-                        <i class="fa-solid fa-video"></i>
                     </div>
                 </div>
                 
                 <div class="yk-msg-body" id="ykChatMessagesBox"></div>
                 
                 <div class="yk-chat-footer">
-                    <button class="yk-cam-btn"><i class="fa-solid fa-camera"></i></button>
                     <div class="yk-chat-input-box">
                         <input type="text" id="ykChatInput" placeholder="نامە بنووسە..." autocomplete="off" onkeypress="if(event.key==='Enter') YariChat.send()">
                         <button class="yk-send-btn" onclick="YariChat.send()"><i class="fa-solid fa-paper-plane"></i></button>
                     </div>
-                    <i class="fa-solid fa-microphone" style="color:#fff; font-size:20px; margin-right:4px;"></i>
                 </div>
             </div>
         `;
