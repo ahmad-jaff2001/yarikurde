@@ -871,7 +871,7 @@
             margin-bottom: 10px;
             outline: none;
         }
-       /* شریت و پەنجەرەی شاهانەی ژوور (بێ ئیمۆجی - دیزاینی VIP) */
+       /* شریت و پەنجەرەی شاهانەی ژوور (دیزاینی VIP و ئایکۆنی 3D) */
         .yk-room-top-pills {
             display: flex;
             align-items: center;
@@ -887,13 +887,11 @@
             border-radius: 8px;
             font-size: 10.5px;
             font-weight: 800;
-            background: rgba(13, 9, 28, 0.88);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            color: #e2e8f0;
+            background: rgba(13, 9, 28, 0.9);
+            border: 1px solid rgba(255, 184, 0, 0.25);
+            color: #f8fafc;
             cursor: pointer;
-            transition: border-color 0.2s;
         }
-        .yk-r-pill:hover { border-color: rgba(255, 184, 0, 0.45); }
         .yk-live-dot {
             width: 6px;
             height: 6px;
@@ -912,114 +910,213 @@
             font-size: 10.5px;
             font-weight: 900;
             cursor: pointer;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            color: #0f0700;
+            background: linear-gradient(135deg, #ffd000, #ff8800);
+            color: #140a00;
         }
         .yk-join-mini-btn.joined {
-            background: rgba(16, 185, 129, 0.14);
-            border: 1px solid rgba(16, 185, 129, 0.45);
+            background: rgba(16, 185, 129, 0.16);
+            border: 1px solid rgba(16, 185, 129, 0.48);
             color: #34d399;
         }
+
+        /* دەرکردنی ١٢ ئایکۆنە شاهانەکە لە پاکێجی royal-icons.png */
+        .yk-rico {
+            display: inline-block;
+            background-image: url('images.png/royal-icons.png');
+            background-size: 400% 300%;
+            background-repeat: no-repeat;
+            flex-shrink: 0;
+        }
+        .yk-rico-crown-tall { background-position: 0% 0%; }
+        .yk-rico-lion       { background-position: 33.33% 0%; }
+        .yk-rico-frame      { background-position: 66.66% 0%; }
+        .yk-rico-shield     { background-position: 100% 0%; }
+        .yk-rico-medal      { background-position: 0% 50%; }
+        .yk-rico-trophy     { background-position: 33.33% 50%; }
+        .yk-rico-laurel     { background-position: 66.66% 50%; }
+        .yk-rico-wings      { background-position: 100% 50%; }
+        .yk-rico-crown      { background-position: 0% 100%; }
+        .yk-rico-gem        { background-position: 33.33% 100%; }
+        .yk-rico-megaphone  { background-position: 66.66% 100%; }
+        .yk-rico-pillar     { background-position: 100% 100%; }
 
         #ykRoomHubOverlay {
             position: fixed;
             inset: 0;
-            background: rgba(3, 2, 10, 0.88);
+            background: rgba(4, 2, 12, 0.9);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             z-index: 999995;
             display: none;
-            align-items: flex-end;
+            align-items: center;
             justify-content: center;
+            padding: 12px;
             direction: rtl;
             font-family: 'Vazirmatn', sans-serif;
-            color: #f8fafc;
-        }
-        @media (min-width: 520px) {
-            #ykRoomHubOverlay { align-items: center; padding: 16px; }
+            color: #fff;
         }
         #ykRoomHubOverlay.open { display: flex; }
 
-        .yk-rhub-sheet {
+        .yk-royal-modal {
             width: 100%;
-            max-width: 440px;
-            max-height: 86dvh;
-            background: #0c081c;
-            border-top: 1.5px solid rgba(245, 158, 11, 0.55);
-            border-radius: 24px 24px 0 0;
+            max-width: 430px;
+            max-height: 91dvh;
+            background: radial-gradient(circle at top center, #261152 0%, #0d0621 55%, #070312 100%);
+            border: 2px solid #ffb800;
+            border-radius: 26px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.95);
+            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.96), 0 0 35px rgba(168, 85, 247, 0.35);
+            position: relative;
         }
-        @media (min-width: 520px) {
-            .yk-rhub-sheet { border: 1.5px solid rgba(245, 158, 11, 0.55); border-radius: 22px; }
+
+        .yk-rm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px 10px;
+            background: linear-gradient(180deg, rgba(168, 85, 247, 0.18) 0%, transparent 100%);
+            flex-shrink: 0;
         }
-        .yk-rhub-top {
-            padding: 18px 18px 14px;
-            background: linear-gradient(180deg, #161033 0%, #0c081c 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        .yk-rm-avatar-ring {
+            position: relative;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            padding: 2.5px;
+            background: linear-gradient(135deg, #ffe066, #ff8800);
+            box-shadow: 0 0 16px rgba(255, 184, 0, 0.55);
+            flex-shrink: 0;
         }
-        .yk-rhub-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 14px;
+        .yk-rm-avatar-ring img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #12082b;
         }
-        .yk-rhub-stat-box {
-            background: #130e2b;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            padding: 9px 6px;
-            text-align: center;
-        }
-        .yk-rhub-tabs {
+
+        .yk-rm-tabs {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
-            padding: 10px 14px;
-            background: #080514;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 6px 14px 10px;
+            flex-shrink: 0;
         }
-        .yk-rhub-tab {
-            padding: 8px 4px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: #130e2b;
-            color: #94a3b8;
-            font-size: 11.5px;
+        .yk-rm-tab {
+            padding: 9px 4px;
+            border-radius: 14px;
+            border: 1px solid rgba(168, 85, 247, 0.35);
+            background: rgba(18, 9, 43, 0.85);
+            color: #d8b4fe;
+            font-size: 12px;
             font-weight: 800;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
             transition: all 0.2s;
         }
-        .yk-rhub-tab.active {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-color: #fbbf24;
-            color: #0f0700;
+        .yk-rm-tab.active {
+            background: linear-gradient(180deg, rgba(255, 184, 0, 0.28) 0%, rgba(180, 83, 9, 0.45) 100%);
+            border: 1.5px solid #ffd000;
+            color: #ffe066;
             font-weight: 900;
+            box-shadow: 0 4px 18px rgba(255, 184, 0, 0.28);
         }
-        .yk-rhub-body {
-            padding: 14px 16px 24px;
+
+        .yk-rm-body {
+            padding: 6px 14px 20px;
             overflow-y: auto;
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
+            -webkit-overflow-scrolling: touch;
         }
-        .yk-rhub-body::-webkit-scrollbar { width: 4px; }
-        .yk-rhub-body::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.35); border-radius: 8px; }
+        .yk-rm-body::-webkit-scrollbar { width: 4px; }
+        .yk-rm-body::-webkit-scrollbar-thumb { background: rgba(255, 184, 0, 0.4); border-radius: 8px; }
+
+        /* بانەری شێرە تاجدارەکە */
+        .yk-lion-showcase {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2.25 / 1;
+            background-image: url('images.png/lion-banner.png');
+            background-size: 100% auto;
+            background-position: center 44%;
+            background-repeat: no-repeat;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .yk-lion-avatar-slot {
+            position: absolute;
+            left: 6.8%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 23.5%;
+            aspect-ratio: 1 / 1;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #090414;
+        }
+        .yk-lion-avatar-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .yk-lion-center-info {
+            position: absolute;
+            left: 33%;
+            right: 33%;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* کارتە زێڕین و مۆرەکان */
+        .yk-royal-bar {
+            background: linear-gradient(90deg, rgba(35, 15, 77, 0.92) 0%, rgba(20, 9, 46, 0.95) 100%);
+            border: 1.5px solid rgba(255, 184, 0, 0.65);
+            border-radius: 16px;
+            padding: 11px 13px;
+            box-shadow: inset 0 0 18px rgba(168, 85, 247, 0.2);
+        }
+        .yk-sub-cards-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+            margin-top: 10px;
+        }
+        .yk-sub-card {
+            background: rgba(11, 5, 28, 0.85);
+            border: 1px solid rgba(255, 184, 0, 0.4);
+            border-radius: 13px;
+            padding: 8px 4px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
         .yk-member-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: #130e2b;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            padding: 10px 13px;
-            border-radius: 13px;
+            background: rgba(24, 12, 54, 0.88);
+            border: 1px solid rgba(255, 184, 0, 0.25);
+            padding: 10px 12px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: background 0.18s;
         }
-        .yk-member-row:hover { background: #1a133b; }
+        .yk-member-row:hover { border-color: #ffd000; }
     </style>
 </head>
 <body>
@@ -1390,10 +1487,11 @@
     }, 60000);
 
   // =========================================================================
-    // سیستمی زیندووی پڕۆفایلی ژوور، جۆینکردن، ئەندامان و ئاست (دیزاینی VIP)
+    // سیستمی زیندووی پڕۆفایلی شاهانەی ژوور (بە شێرە تاجدارەکە و ئایکۆنە 3Dـەکان)
     // =========================================================================
     let roomMembersMap = {};
-    let activeRoomHubTab = 'members';
+    let activeRoomHubTab = 'profile';
+    let roomAnnouncementText = '';
 
     function cleanBrokenChars(str) {
         return (str || '').replace(/[\uFFFD▯□]+/g, '').trim();
@@ -1420,11 +1518,17 @@
         return img ? img.src : 'images.png/controller.png';
     }
 
+    function isCurrentUserRoomHost() {
+        if (typeof roomMeta !== 'undefined' && roomMeta.ownerUid && me.uid) {
+            return roomMeta.ownerUid === me.uid;
+        }
+        return false;
+    }
+
     function injectTopRoomLiveStrip() {
         const idEl = document.getElementById('roomIdDisplay');
         if (!idEl || document.getElementById('ykRoomTopPills')) return;
 
-        // پاککردنەوەی هەر چوارگۆشەیەکی تێکچوو لە ناوی سەرەوەی ژوورەکە
         const titleEl = idEl.previousElementSibling;
         if (titleEl && titleEl.innerText) {
             titleEl.innerText = cleanBrokenChars(titleEl.innerText) || 'دیوەخانی شاهانە';
@@ -1435,7 +1539,7 @@
             headerContainer.style.cursor = 'pointer';
             headerContainer.onclick = (e) => {
                 if (e.target.closest('button')) return;
-                openRoomHubModal('members');
+                openRoomHubModal('profile');
             };
         }
 
@@ -1443,17 +1547,17 @@
         strip.id = 'ykRoomTopPills';
         strip.className = 'yk-room-top-pills';
         strip.innerHTML = `
-            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('online')">
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('members')">
                 <span class="yk-live-dot"></span>
                 ئێستا: <b id="ykTopLiveCount" style="color:#34d399;">1</b>
             </span>
             <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('members')">
-                <i class="fa-solid fa-users" style="color:#fbbf24; font-size:10px;"></i>
-                ئەندام: <b id="ykTopMemberCount" style="color:#fbbf24;">0</b>
+                <i class="fa-solid fa-users" style="color:#ffd000; font-size:10px;"></i>
+                ئەندام: <b id="ykTopMemberCount" style="color:#ffd000;">0</b>
             </span>
-            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('level')">
-                <i class="fa-solid fa-circle-info" style="color:#38bdf8; font-size:10px;"></i>
-                زانیاری
+            <span class="yk-r-pill" onclick="event.stopPropagation(); openRoomHubModal('profile')">
+                <i class="fa-solid fa-crown" style="color:#ffd000; font-size:10px;"></i>
+                پڕۆفایل
             </span>
             <button id="ykTopJoinBtn" class="yk-join-mini-btn" onclick="event.stopPropagation(); toggleJoinCurrentRoom()">
                 <i class="fa-solid fa-plus"></i> جۆین
@@ -1497,6 +1601,21 @@
             firebase.database().ref(`voice_rooms_list/${activeRoomId}/membersCount`).set(count).catch(() => {});
             updateLiveRoomHeaderBadges();
         });
+
+        roomDbRef.child('announcement').on('value', snap => {
+            roomAnnouncementText = snap.val() || '';
+            const overlay = document.getElementById('ykRoomHubOverlay');
+            if (overlay && overlay.classList.contains('open')) renderRoomHubContent();
+        });
+    }
+
+    async function editRoomAnnouncement() {
+        if (!roomDbRef) return;
+        const nextText = prompt('ڕاگەیاندنی دیوەخان بنووسە:', roomAnnouncementText || 'بەخێربێن بۆ دیوەخانەکەمان');
+        if (nextText !== null) {
+            const clean = nextText.trim().substring(0, 140);
+            await roomDbRef.child('announcement').set(clean);
+        }
     }
 
     async function toggleJoinCurrentRoom() {
@@ -1509,14 +1628,13 @@
             await firebase.database().ref(`players/${me.uid}/joinedRooms/${activeRoomId}`).remove().catch(() => {});
             appendChatLine(`<i class="fa-solid fa-arrow-right-from-bracket" style="color:#fb7185;"></i> <b>${me.name}</b> لە ئەندامێتیی ژوورەکە دەرچوو.`, true);
         } else {
-            const memberPayload = {
+            await roomDbRef.child(`members/${me.uid}`).set({
                 uid: me.uid,
                 name: me.name,
                 avatar: me.avatar || 'images.png/controller.png',
                 level: me.level || 1,
                 joinedAt: Date.now()
-            };
-            await roomDbRef.child(`members/${me.uid}`).set(memberPayload);
+            });
             await firebase.database().ref(`players/${me.uid}/joinedRooms/${activeRoomId}`).set({
                 roomId: activeRoomId,
                 title: getSafeRoomTitle(),
@@ -1533,16 +1651,16 @@
                 }
             });
 
-            spawnParticles(0xffd000, 25);
-            appendChatLine(`<i class="fa-solid fa-crown" style="color:#fbbf24;"></i> <b>${me.name}</b> جۆینی ژوورەکەی کرد و بوو بە ئەندام.`, true);
+            spawnParticles(0xffd000, 28);
+            appendChatLine(`<i class="fa-solid fa-crown" style="color:#ffd000;"></i> <b>${me.name}</b> جۆینی ژوورەکەی کرد و بوو بە ئەندام.`, true);
         }
     }
 
     function openRoomLevelModal() {
-        openRoomHubModal('level');
+        openRoomHubModal('levels');
     }
 
-    function openRoomHubModal(tab = 'members') {
+    function openRoomHubModal(tab = 'profile') {
         activeRoomHubTab = tab;
         let overlay = document.getElementById('ykRoomHubOverlay');
         if (!overlay) {
@@ -1570,94 +1688,179 @@
         const nextLvlXP = roomStats.level < 99 ? getXPForLevel(roomStats.level + 1) : curLvlXP;
         const pct = roomStats.level >= 99 ? 100 : Math.min(100, Math.max(0, Math.floor(((roomStats.xp - curLvlXP) / Math.max(1, nextLvlXP - curLvlXP)) * 100)));
 
+        const roomTitle = getSafeRoomTitle();
+        const roomDispId = getSafeRoomDisplayId();
+        const roomAvatar = getSafeRoomAvatar();
+        const announcement = roomAnnouncementText || 'بەخێربێن بۆ دیوەخانەکەمان، ڕێزگرتن لە یەکتر بنەمای ئەم ژوورەیە.';
+
         let bodyHtml = '';
 
-        if (activeRoomHubTab === 'members') {
-            if (membersArr.length === 0) {
-                bodyHtml = `
-                    <div style="text-align:center; padding:28px 14px; color:#94a3b8; font-size:12.5px; line-height:1.8;">
-                        <i class="fa-solid fa-users-slash" style="font-size:24px; color:#64748b; margin-bottom:8px; display:block;"></i>
-                        هێشتا هیچ کەسێک جۆینی ئەم ژوورەی نەکردووە.<br>
-                        تۆ یەکەم کەس بە و دوگمەی <b>جۆینکردنی ژوور</b> دابگرە.
+        if (activeRoomHubTab === 'profile') {
+            bodyHtml = `
+                <!-- ١. کارتە گەورەکەی شێرە تاجدارەکە -->
+                <div class="yk-lion-showcase">
+                    <div class="yk-lion-avatar-slot">
+                        <img src="${roomAvatar}" onerror="this.src='images.png/controller.png'" alt="">
                     </div>
-                `;
-            } else {
-                bodyHtml = membersArr.map(m => {
-                    const isOnlineNow = onlineUidSet.has(m.uid);
-                    return `
-                        <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${m.uid}',name:'${(m.name||'یاریزان').replace(/'/g,'')}',avatar:'${m.avatar||'images.png/controller.png'}',level:${m.level||1}})">
-                            <div style="display:flex; align-items:center; gap:11px;">
-                                <div style="position:relative;">
-                                    <img src="${m.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:1.5px solid ${isOnlineNow ? '#10b981' : 'rgba(245,158,11,0.6)'};">
-                                    <span style="position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:${isOnlineNow ? '#10b981' : '#64748b'}; border:2px solid #0c081c;"></span>
-                                </div>
-                                <div>
-                                    <div style="font-size:13.5px; font-weight:900; color:#f8fafc;">${m.name || 'یاریزان'}</div>
-                                    <div style="font-size:11px; color:${isOnlineNow ? '#34d399' : '#94a3b8'}; margin-top:2px;">
-                                        ${isOnlineNow ? 'ئێستا لە ناو ژووردایە' : 'ئەندامی ژوور'} • Lv.${m.level || 1}
-                                    </div>
+                    <div class="yk-lion-center-info">
+                        <div style="font-size:13px; font-weight:900; color:#fff; text-shadow:0 2px 8px #000; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%;">
+                            ${roomTitle}
+                        </div>
+                        <div onclick="navigator.clipboard?.writeText('${roomDispId}'); alert('ID کۆپی کرا: ${roomDispId}')" style="font-size:10.5px; font-weight:800; color:#fde047; background:rgba(0,0,0,0.65); padding:2px 8px; border-radius:8px; border:1px solid rgba(255,184,0,0.4); cursor:pointer;">
+                            ID: ${roomDispId} <i class="fa-regular fa-copy"></i>
+                        </div>
+                        <div style="font-size:10px; font-weight:900; color:#fff; background:linear-gradient(135deg,#2563eb,#1d4ed8); padding:2px 10px; border-radius:10px; border:1px solid #60a5fa;">
+                            کوردی • Live
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ٢. شریتی ئاستی ژوور (Room Level) -->
+                <div class="yk-royal-bar" onclick="openRoomHubModal('levels')" style="cursor:pointer;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="yk-rico yk-rico-crown" style="width:28px; height:28px;"></span>
+                            <span style="font-size:13.5px; font-weight:900; color:#fff;">ئاستی ژوور</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:8px; flex:1; max-width:210px;">
+                            <span style="background:linear-gradient(135deg,#a855f7,#7e22ce); border:1.5px solid #ffd000; color:#ffe066; font-size:11px; font-weight:900; padding:2px 8px; border-radius:10px;">
+                                Lv.${roomStats.level}
+                            </span>
+                            <div style="flex:1; height:16px; background:#090414; border:1px solid rgba(255,184,0,0.45); border-radius:10px; position:relative; overflow:hidden;">
+                                <div style="width:${pct}%; height:100%; background:linear-gradient(90deg,#f59e0b,#ffd000);"></div>
+                                <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:9.5px; font-weight:900; color:#fff; text-shadow:0 1px 3px #000;">
+                                    ${roomStats.xp.toLocaleString()} / ${nextLvlXP.toLocaleString()}
                                 </div>
                             </div>
-                            <i class="fa-solid fa-chevron-left" style="color:#64748b; font-size:12px;"></i>
+                            <i class="fa-solid fa-chevron-left" style="color:#ffd000; font-size:12px;"></i>
                         </div>
-                    `;
-                }).join('');
-            }
-        } else if (activeRoomHubTab === 'online') {
-            bodyHtml = onlineUsersList.map(u => {
+                    </div>
+                </div>
+
+                <!-- ٣. ڕاگەیاندنی دیوەخان (Announcement) -->
+                <div class="yk-royal-bar" onclick="editRoomAnnouncement()" style="cursor:pointer;">
+                    <div style="display:flex; align-items:center; justify-content:space-between;">
+                        <div style="display:flex; align-items:center; gap:9px;">
+                            <span class="yk-rico yk-rico-megaphone" style="width:28px; height:28px;"></span>
+                            <div>
+                                <div style="font-size:13.5px; font-weight:900; color:#fff;">ڕاگەیاندنی ژوور</div>
+                                <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">${announcement}</div>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-pen-to-square" style="color:#ffd000; font-size:13px;"></i>
+                    </div>
+                </div>
+
+                <!-- ٤. ئامار و زانیاریی ئەندامان (Member Club) -->
+                <div class="yk-royal-bar">
+                    <div style="display:flex; align-items:center; justify-content:space-between;" onclick="openRoomHubModal('members')">
+                        <div style="display:flex; align-items:center; gap:9px; cursor:pointer;">
+                            <span class="yk-rico yk-rico-shield" style="width:28px; height:28px;"></span>
+                            <span style="font-size:13.5px; font-weight:900; color:#fff;">تۆماری دیوەخان</span>
+                        </div>
+                        <i class="fa-solid fa-chevron-left" style="color:#ffd000; font-size:12px;"></i>
+                    </div>
+
+                    <div class="yk-sub-cards-3">
+                        <div class="yk-sub-card" onclick="openRoomHubModal('members')" style="cursor:pointer;">
+                            <span class="yk-rico yk-rico-crown-tall" style="width:26px; height:26px;"></span>
+                            <div style="font-size:10.5px; color:#cbd5e1; font-weight:700;">ئەندامان</div>
+                            <div style="font-size:15px; font-weight:900; color:#ffd000;">${memberCount.toLocaleString()}</div>
+                        </div>
+                        <div class="yk-sub-card" onclick="openRoomHubModal('members')" style="cursor:pointer;">
+                            <span class="yk-rico yk-rico-trophy" style="width:26px; height:26px;"></span>
+                            <div style="font-size:10.5px; color:#cbd5e1; font-weight:700;">ئێستا لە ژوور</div>
+                            <div style="font-size:15px; font-weight:900; color:#34d399;">${liveCount.toLocaleString()}</div>
+                        </div>
+                        <div class="yk-sub-card" onclick="openRoomHubModal('levels')" style="cursor:pointer;">
+                            <span class="yk-rico yk-rico-gem" style="width:26px; height:26px;"></span>
+                            <div style="font-size:10.5px; color:#cbd5e1; font-weight:700;">پلەی ژوور</div>
+                            <div style="font-size:11.5px; font-weight:900; color:#e9d5ff;">${tier.title}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ٥. دوگمەی جۆینکردنی ژوور -->
+                <button onclick="toggleJoinCurrentRoom()" style="width:100%; padding:12px; border-radius:15px; border:${isMember ? '1.5px solid #10b981' : '1.5px solid #ffe066'}; background:${isMember ? 'rgba(16,185,129,0.16)' : 'linear-gradient(135deg,#ffd000,#ff8800)'}; color:${isMember ? '#34d399' : '#140a00'}; font-size:13.5px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:7px; box-shadow:0 6px 20px rgba(0,0,0,0.5);">
+                    <i class="fa-solid ${isMember ? 'fa-circle-check' : 'fa-user-plus'}"></i>
+                    ${isMember ? 'تۆ ئەندامی ئەم ژوورەیت (دەرچوون)' : 'جۆینکردنی ژوور (ببە بە ئەندام)'}
+                </button>
+
+                <!-- تاج و باڵە زێڕینەکەی خوارەوە -->
+                <div style="display:flex; justify-content:center; margin-top:2px;">
+                    <span class="yk-rico yk-rico-wings" style="width:110px; height:72px;"></span>
+                </div>
+            `;
+        } else if (activeRoomHubTab === 'members') {
+            const onlineSection = onlineUsersList.map(u => {
                 const alsoMember = !!roomMembersMap[u.uid];
                 return `
                     <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${u.uid}',name:'${(u.name||'یاریزان').replace(/'/g,'')}',avatar:'${u.avatar||'images.png/controller.png'}',level:${u.level||1}})">
-                        <div style="display:flex; align-items:center; gap:11px;">
+                        <div style="display:flex; align-items:center; gap:10px;">
                             <div style="position:relative;">
-                                <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:1.5px solid #10b981;">
-                                <span style="position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:#10b981; border:2px solid #0c081c;"></span>
+                                <img src="${u.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:2px solid #10b981;">
+                                <span style="position:absolute; bottom:1px; right:1px; width:10px; height:10px; border-radius:50%; background:#10b981; border:2px solid #0d0621;"></span>
                             </div>
                             <div>
-                                <div style="font-size:13.5px; font-weight:900; color:#f8fafc;">${u.name || 'یاریزان'}</div>
-                                <div style="font-size:11px; color:#34d399; margin-top:2px;">
-                                    لە ژووردایە ${alsoMember ? '• <span style="color:#fbbf24;">ئەندامە</span>' : ''}
-                                </div>
+                                <div style="font-size:13.5px; font-weight:900; color:#fff;">${u.name || 'یاریزان'}</div>
+                                <div style="font-size:11px; color:#34d399;">ئێستا لە ژووردایە ${alsoMember ? '• <span style="color:#ffd000;">ئەندام</span>' : ''}</div>
                             </div>
                         </div>
-                        <i class="fa-solid fa-chevron-left" style="color:#64748b; font-size:12px;"></i>
+                        <i class="fa-solid fa-chevron-left" style="color:#ffd000; font-size:12px;"></i>
                     </div>
                 `;
             }).join('');
+
+            const offlineMembers = membersArr.filter(m => !onlineUidSet.has(m.uid)).map(m => `
+                <div class="yk-member-row" onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open'); openRoomPlayerCard({uid:'${m.uid}',name:'${(m.name||'یاریزان').replace(/'/g,'')}',avatar:'${m.avatar||'images.png/controller.png'}',level:${m.level||1}})">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${m.avatar || 'images.png/controller.png'}" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:50%; object-fit:cover; border:1.5px solid rgba(255,184,0,0.5);">
+                        <div>
+                            <div style="font-size:13.5px; font-weight:900; color:#e2e8f0;">${m.name || 'یاریزان'}</div>
+                            <div style="font-size:11px; color:#94a3b8;">ئەندامی دیوەخان • Lv.${m.level || 1}</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-left" style="color:#64748b; font-size:12px;"></i>
+                </div>
+            `).join('');
+
+            bodyHtml = `
+                <div style="font-size:11.5px; font-weight:900; color:#34d399; padding:2px 4px;">ئەوانەی ئێستا لە ژووردان (${liveCount})</div>
+                ${onlineSection}
+                <div style="font-size:11.5px; font-weight:900; color:#ffd000; padding:6px 4px 2px;">ئەندامانی تری ژوور (${Math.max(0, memberCount - onlineUsersList.filter(u => roomMembersMap[u.uid]).length)})</div>
+                ${offlineMembers || '<div style="text-align:center; color:#94a3b8; font-size:12px; padding:14px;">هەموو ئەندامەکان ئێستا لە ژووردان یان هێشتا کەسی تر جۆینی نەکردووە.</div>'}
+            `;
         } else {
             bodyHtml = `
-                <div style="background:#130e2b; border:1px solid rgba(245,158,11,0.3); border-radius:14px; padding:13px;">
+                <div class="yk-royal-bar">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-size:13.5px; font-weight:900; color:#fbbf24; display:flex; align-items:center; gap:6px;">
-                            <i class="fa-solid fa-trophy"></i> ئاستی ژوور: Lv.${roomStats.level} / 99
+                        <span style="font-size:13.5px; font-weight:900; color:#ffd000; display:flex; align-items:center; gap:6px;">
+                            <span class="yk-rico yk-rico-trophy" style="width:24px; height:24px;"></span>
+                            ئاستی ژوور: Lv.${roomStats.level} / 99
                         </span>
-                        <span style="font-size:11px; font-weight:800; color:#38bdf8; background:rgba(56,189,248,0.12); padding:2px 8px; border-radius:6px;">
-                            ${tier.mics} مایک
-                        </span>
+                        <span style="font-size:11px; font-weight:900; color:#38bdf8;">${tier.mics} مایک کراوەیە</span>
                     </div>
-                    <div style="width:100%; height:8px; background:rgba(0,0,0,0.6); border-radius:6px; overflow:hidden; margin-bottom:7px;">
-                        <div style="width:${pct}%; height:100%; background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
+                    <div style="width:100%; height:10px; background:#090414; border-radius:8px; overflow:hidden; margin-bottom:6px; border:1px solid rgba(255,184,0,0.4);">
+                        <div style="width:${pct}%; height:100%; background:linear-gradient(90deg,#f59e0b,#ffd000);"></div>
                     </div>
-                    <div style="font-size:11px; color:#cbd5e1;">
-                        XP: <b>${roomStats.xp.toLocaleString()}</b> / ${nextLvlXP.toLocaleString()} • نازناو: <b style="color:#fbbf24;">${tier.title}</b>
+                    <div style="font-size:11px; color:#e2e8f0;">
+                        XP: <b>${roomStats.xp.toLocaleString()}</b> / ${nextLvlXP.toLocaleString()} • پلە: <b style="color:#ffd000;">${tier.title}</b>
                     </div>
                 </div>
                 ${LEVEL_MILESTONES.map(m => {
                     const unlocked = roomStats.level >= m.level;
                     return `
-                        <div class="yk-member-row" style="cursor:default; border-color:${unlocked ? 'rgba(16,185,129,0.32)' : 'rgba(255,255,255,0.06)'};">
+                        <div class="yk-member-row" style="cursor:default; border-color:${unlocked ? 'rgba(255,184,0,0.45)' : 'rgba(255,255,255,0.08)'};">
                             <div style="display:flex; align-items:center; gap:10px;">
-                                <div style="width:32px; height:32px; border-radius:9px; background:${unlocked ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.05)'}; color:${unlocked ? '#34d399' : '#64748b'}; display:flex; align-items:center; justify-content:center; font-size:13px;">
-                                    <i class="fa-solid ${unlocked ? 'fa-circle-check' : 'fa-lock'}"></i>
-                                </div>
+                                <span class="yk-rico ${unlocked ? 'yk-rico-medal' : 'yk-rico-pillar'}" style="width:30px; height:30px; opacity:${unlocked ? '1' : '0.45'};"></span>
                                 <div>
-                                    <div style="font-size:12.5px; font-weight:900; color:${unlocked ? '#f8fafc' : '#94a3b8'};">
+                                    <div style="font-size:12.5px; font-weight:900; color:${unlocked ? '#ffe066' : '#94a3b8'};">
                                         Lv.${m.level} — ${m.title}
                                     </div>
-                                    <div style="font-size:11px; color:#64748b;">${m.perk}</div>
+                                    <div style="font-size:11px; color:#cbd5e1;">${m.perk}</div>
                                 </div>
                             </div>
-                            <span style="font-size:10.5px; color:#fbbf24; font-weight:800;">${getXPForLevel(m.level).toLocaleString()} XP</span>
+                            <span style="font-size:10.5px; color:#ffd000; font-weight:900;">${getXPForLevel(m.level).toLocaleString()} XP</span>
                         </div>
                     `;
                 }).join('')}
@@ -1665,62 +1868,38 @@
         }
 
         overlay.innerHTML = `
-            <div class="yk-rhub-sheet" onclick="event.stopPropagation()">
-                <div class="yk-rhub-top">
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                        <div style="display:flex; align-items:center; gap:11px;">
-                            <img src="${getSafeRoomAvatar()}" onerror="this.src='images.png/controller.png'" style="width:48px; height:48px; border-radius:14px; border:1.5px solid rgba(245,158,11,0.65); object-fit:cover;">
-                            <div>
-                                <div style="font-size:16px; font-weight:900; color:#fff; display:flex; align-items:center; gap:6px;">
-                                    ${getSafeRoomTitle()} <i class="fa-solid fa-crown" style="color:#fbbf24; font-size:13px;"></i>
-                                </div>
-                                <div style="font-size:11px; color:#94a3b8; margin-top:2px;">ID: ${getSafeRoomDisplayId()} • ${tier.title}</div>
-                            </div>
+            <div class="yk-royal-modal" onclick="event.stopPropagation()">
+                <div class="yk-rm-header">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div class="yk-rm-avatar-ring">
+                            <img src="${roomAvatar}" onerror="this.src='images.png/controller.png'" alt="">
                         </div>
-                        <button onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open')" style="width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,0.14); background:#181238; color:#cbd5e1; cursor:pointer; display:flex; align-items:center; justify-content:center;">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-
-                    <div class="yk-rhub-stats">
-                        <div class="yk-rhub-stat-box">
-                            <div style="font-size:10px; color:#94a3b8; margin-bottom:2px;">ئێستا لە ژوور</div>
-                            <div style="font-size:15px; font-weight:900; color:#34d399; display:flex; align-items:center; justify-content:center; gap:5px;">
-                                <span class="yk-live-dot"></span> ${liveCount}
+                        <div>
+                            <div style="font-size:15.5px; font-weight:900; color:#fff; display:flex; align-items:center; gap:6px;">
+                                ${roomTitle}
+                                <span class="yk-rico yk-rico-shield" style="width:22px; height:22px;"></span>
                             </div>
-                        </div>
-                        <div class="yk-rhub-stat-box">
-                            <div style="font-size:10px; color:#94a3b8; margin-bottom:2px;">ئەندامانی ژوور</div>
-                            <div style="font-size:15px; font-weight:900; color:#fbbf24; display:flex; align-items:center; justify-content:center; gap:5px;">
-                                <i class="fa-solid fa-users" style="font-size:12px;"></i> ${memberCount}
-                            </div>
-                        </div>
-                        <div class="yk-rhub-stat-box">
-                            <div style="font-size:10px; color:#94a3b8; margin-bottom:2px;">ئاستی ژوور</div>
-                            <div style="font-size:15px; font-weight:900; color:#38bdf8;">Lv.${roomStats.level}</div>
+                            <div style="font-size:11px; color:#fde047; margin-top:2px;">ID: ${roomDispId}</div>
                         </div>
                     </div>
-
-                    <button onclick="toggleJoinCurrentRoom()" style="width:100%; margin-top:12px; padding:11px; border-radius:12px; border:${isMember ? '1px solid rgba(16,185,129,0.45)' : 'none'}; background:${isMember ? 'rgba(16,185,129,0.14)' : 'linear-gradient(135deg,#f59e0b,#d97706)'}; color:${isMember ? '#34d399' : '#0f0700'}; font-size:13px; font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px;">
-                        ${isMember
-                            ? '<i class="fa-solid fa-circle-check"></i> ئەندامی ئەم ژوورەیت (دەرچوون)'
-                            : '<i class="fa-solid fa-user-plus"></i> جۆینکردنی ژوور (ببە بە ئەندام)'}
+                    <button onclick="document.getElementById('ykRoomHubOverlay').classList.remove('open')" style="width:34px; height:34px; border-radius:50%; border:1.5px solid rgba(255,184,0,0.45); background:rgba(18,9,43,0.9); color:#ffd000; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
 
-                <div class="yk-rhub-tabs">
-                    <button class="yk-rhub-tab ${activeRoomHubTab === 'members' ? 'active' : ''}" onclick="openRoomHubModal('members')">
-                        ئەندامان (${memberCount})
+                <div class="yk-rm-tabs">
+                    <button class="yk-rm-tab ${activeRoomHubTab === 'profile' ? 'active' : ''}" onclick="openRoomHubModal('profile')">
+                        <i class="fa-solid fa-crown"></i> پڕۆفایل
                     </button>
-                    <button class="yk-rhub-tab ${activeRoomHubTab === 'online' ? 'active' : ''}" onclick="openRoomHubModal('online')">
-                        لە ژووردان (${liveCount})
+                    <button class="yk-rm-tab ${activeRoomHubTab === 'members' ? 'active' : ''}" onclick="openRoomHubModal('members')">
+                        <i class="fa-solid fa-users"></i> ئەندامان (${memberCount})
                     </button>
-                    <button class="yk-rhub-tab ${activeRoomHubTab === 'level' ? 'active' : ''}" onclick="openRoomHubModal('level')">
-                        ئاست (Lv.${roomStats.level})
+                    <button class="yk-rm-tab ${activeRoomHubTab === 'levels' ? 'active' : ''}" onclick="openRoomHubModal('levels')">
+                        <i class="fa-solid fa-star"></i> ئاست (Lv.${roomStats.level})
                     </button>
                 </div>
 
-                <div class="yk-rhub-body">${bodyHtml}</div>
+                <div class="yk-rm-body">${bodyHtml}</div>
             </div>
         `;
     }
