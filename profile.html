@@ -395,12 +395,12 @@
             <div id="myWalletStrip" style="display:flex; gap:10px; align-items:center; justify-content:center; padding:10px;">
                 <div style="display:flex; align-items:center; gap:8px; background:rgba(18,12,42,0.85); border:1.5px solid rgba(255,184,0,0.45); padding:6px 14px; border-radius:20px;">
                     <span style="font-size:16px;">🪙</span>
-                    <span data-wallet="gold" style="color:#ffd000; font-weight:900; font-size:14px;">0</span>
+                    <span id="profGoldText" style="color:#ffd000; font-weight:900; font-size:14px;">0</span>
                     <button onclick="if(window.YariWallet) YariWallet.openStore('gold')" style="background:linear-gradient(135deg,#ffd000,#ff8800); border:none; border-radius:50%; width:20px; height:20px; font-weight:900; color:#1a0f00; cursor:pointer;">+</button>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px; background:rgba(18,12,42,0.85); border:1.5px solid rgba(56,189,248,0.45); padding:6px 14px; border-radius:20px;">
                     <span style="font-size:16px;">💎</span>
-                    <span data-wallet="diamonds" style="color:#38bdf8; font-weight:900; font-size:14px;">0</span>
+                    <span id="profDiamondsText" style="color:#38bdf8; font-weight:900; font-size:14px;">0</span>
                     <button onclick="if(window.YariWallet) YariWallet.openStore('diamonds')" style="background:linear-gradient(135deg,#38bdf8,#0284c7); border:none; border-radius:50%; width:20px; height:20px; font-weight:900; color:#fff; cursor:pointer;">+</button>
                 </div>
             </div>
@@ -639,6 +639,12 @@
 
             firebase.database().ref(`players/${uid}`).on('value', snap => {
                 const data = snap.val() || {};
+                if (isSelf && window.formatCompactNumber) {
+    const gEl = document.getElementById('profGoldText');
+    const dEl = document.getElementById('profDiamondsText');
+    if (gEl) gEl.innerText = window.formatCompactNumber(data.gold || 0);
+    if (dEl) dEl.innerText = window.formatCompactNumber(data.diamonds || 0);
+}
                 const pName = data.name || (isSelf ? localStorage.getItem('yk_player_name') : '') || 'یاریزان';
                 const pAvatar = data.avatar || (isSelf ? localStorage.getItem('yk_player_avatar') : '') || 'images.png/controller.png';
 
