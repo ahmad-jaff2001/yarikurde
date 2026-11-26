@@ -1,44 +1,62 @@
 // =============================================================================
-// YARI KURDI - ROYAL SETTINGS, SECURITY & MULTI-LANGUAGE ENGINE (SCROLL VIEW)
-// Languages: Kurdish Sorani, Kurdish Badini, English
+// YARI KURDI - ULTRA-CRISP AAA SETTINGS, SECURITY & MULTI-LANGUAGE ENGINE
 // =============================================================================
 
 (function () {
     const TRANSLATIONS = {
         sorani: {
             dir: 'rtl',
-            langCode: 'ku',
-            settingsTitle: '⚙️ ڕێکخستنەکانی یاری کوردی',
-            langSectionTitle: '🌐 زمانی بەرنامە (Language)',
-            langDesc: 'زمانی دڵخوازت هەڵبژێرە بۆ هەموو بەشەکانی یاری کوردی:',
-            audioSectionTitle: '🔊 دەنگ و جووڵە',
-            sfxLabel: 'دەنگی کاریگەرییەکانی یاری (SFX)',
+            settingsTitle: 'ڕێکخستنەکان',
+            settingsSub: 'کۆنترۆڵی هەژمار، زمان و تایبەتمەندییەکان',
+            secLang: 'زمان (LANGUAGE)',
+            secAccount: 'هەژمار و پاراستن (SECURITY)',
+            secAudio: 'دەنگ و جووڵە (AUDIO)',
+            secPrivacy: 'تایبەتمەندی (PRIVACY)',
+            secSupport: 'پشتگیری و سیستەم',
+            sfxLabel: 'دەنگی کاریگەرییەکانی یاری',
+            sfxSub: 'دەنگی جووڵەی پارچەکان و بردنەوە',
             bgmLabel: 'میوزیکی باکگراوند',
-            vibrateLabel: 'لەرزینی مۆبایل (Vibration)',
-            testSoundBtn: '🔔 تاقیکردنەوەی دەنگ',
-            accInfoTitle: '🛡️ زانیاری و پاراستنی هەژمار',
-            accStatusSecure: 'پارێزراوە بە هەژماری فەرمی ✅',
-            accStatusGuest: 'هەژماری میوان (پێویستە بیبەستیتەوە) ⚠️',
-            emailLabel: 'ئیمەیڵ:',
-            idLabel: 'ئایدی یاریزان:',
-            verifiedYes: 'پشتڕاستکراوە ✅',
-            verifiedNo: 'پشتڕاستنەکراوە ⚠️',
-            verifyEmailBtn: 'ناردنی لینکی پشتڕاستکردنەوە',
-            changePassBtn: '🔑 گۆڕینی وشەی نهێنی (Password)',
-            linkAccBtn: '🔗 بەستنەوەی هەژمار (Google / Email)',
-            logoutBtn: '🚪 دەرچوون لە هەژمار (Log Out)',
+            bgmSub: 'ئاوازی ناو ژوور و یارییەکان',
+            vibrateLabel: 'لەرزینی مۆبایل (Haptics)',
+            vibrateSub: 'لەرزین لە کاتی نۆرە و کلیککردن',
+            testSoundBtn: 'تاقیکردنەوەی دەنگ و لەرزین',
+            accStatusSecure: 'هەژمارەکەت پارێزراوە',
+            accStatusGuest: 'هەژماری میوان (پێویستە بیبەستیتەوە)',
+            emailLabel: 'ئیمەیڵ',
+            idLabel: 'ئایدی (ID)',
+            copyDone: 'کۆپی کرا ✅',
+            verifiedYes: 'پشتڕاستکراوە',
+            verifiedNo: 'پشتڕاستنەکراوە',
+            verifyEmailBtn: 'ناردنی لینکی پشتڕاستکردنەوەی ئیمەیڵ',
+            changePassBtn: 'گۆڕینی وشەی نهێنی (Password)',
+            linkAccBtn: 'بەستنەوەی هەژمار بە Google یان Email',
+            logoutBtn: 'دەرچوون لە هەژمار (Log Out)',
             logoutConfirm: 'دڵنیایت دەتەوێت لە هەژمارەکەت دەربچیت؟',
-            privacyTitle: '🔒 ڕێکخستنی تایبەتمەندی',
             allowFriendsLabel: 'وەرگرتنی داواکاری هاوڕێیەتی',
-            allowInvitesLabel: 'وەرگرتنی بانگهێشتنامەی یاری و ژوور',
-            stealthModeLabel: 'شاردنەوەی دۆخی ئۆنڵاین',
-            blockedTitle: '🚫 یاریزانە بلۆککراوەکان',
-            noBlockedText: 'هیچ یاریزانێک بلۆک نەکراوە.',
-            toolsTitle: '🛠️ ئامراز و پشتگیری',
-            clearCacheBtn: '🧹 خاوێنکردنەوەی کاش و خێراکردن',
-            supportPlaceholder: 'کێشە یان پێشنیارەکەت لێرە بنووسە بۆ ئادمین...',
-            sendSupportBtn: 'ناردن بۆ پشتگیری 📩',
+            allowFriendsSub: 'ڕێگەدان بە یاریزانان داواکاریت بۆ بنێرن',
+            allowInvitesLabel: 'وەرگرتنی بانگهێشتنامە',
+            allowInvitesSub: 'بانگهێشتکردن بۆ یاری و ژوورە دەنگییەکان',
+            stealthModeLabel: 'دۆخی شاراوە (Stealth)',
+            stealthModeSub: 'شاردنەوەی ئۆنڵاینبوونت لە هاوڕێکانت',
+            clearCacheBtn: 'خاوێنکردنەوەی کاش و خێراکردن',
+            supportPlaceholder: 'کێشە یان پێشنیارەکەت بنووسە بۆ تیمی یاری کوردی...',
+            sendSupportBtn: 'ناردن بۆ پشتگیری',
             savedToast: 'گۆڕانکارییەکە پاشەکەوت کرا ✅',
+            // وەرگێڕانی ماڵپەڕی سەرەکی
+            siteTitle: 'یاری کوردی',
+            voiceTitle: 'ژووری گفتوگۆ',
+            voiceSub: 'قسە بکە و هاوڕێی نوێ بناسە',
+            joinNow: 'ئێستا بەشداربە',
+            chessTitle: 'شەترەنج',
+            chessSub: 'ستراتیژی و زیرەکی',
+            dominoTitle: 'دۆمینە',
+            dominoSub: 'یارییە کلاسیکییەکە',
+            ludoTitle: 'لۆدۆ',
+            ludoSub: 'پێکەوە یاری بکەن',
+            okeyTitle: 'ئۆکەی',
+            okeySub: 'کۆنکانی تەختە و پوول',
+            flappyTitle: 'هەڵۆ',
+            flappySub: 'بەرز بفڕە و خاڵ کۆبکەرەوە',
             navHome: 'سەرەکی',
             navGames: 'یارییەکان',
             navRank: 'ڕیزبەندی',
@@ -47,38 +65,56 @@
         },
         badini: {
             dir: 'rtl',
-            langCode: 'ku',
-            settingsTitle: '⚙️ ڕێکخستنێن یاری کوردی',
-            langSectionTitle: '🌐 زمانێ بەرنامەی (Language)',
-            langDesc: 'زمانێ خۆ یێ دڵخواز هەلبژێرە بۆ هەمی پشکێن یاری کوردی:',
-            audioSectionTitle: '🔊 دەنگ و لڤین',
-            sfxLabel: 'دەنگێ کارتێکرنێن یاریێ (SFX)',
+            settingsTitle: 'ڕێکخستن',
+            settingsSub: 'کۆنترۆڵا هەژماری، زمان و تایبەتمەندیان',
+            secLang: 'زمان (LANGUAGE)',
+            secAccount: 'هەژمار و پاراستن (SECURITY)',
+            secAudio: 'دەنگ و لڤین (AUDIO)',
+            secPrivacy: 'تایبەتمەندی (PRIVACY)',
+            secSupport: 'پشتەڤانی و سیستەم',
+            sfxLabel: 'دەنگێ کارتێکرنێن یاریێ',
+            sfxSub: 'دەنگێ لڤینا پارچان و برنێ',
             bgmLabel: 'مۆزیکا پاشبنەمای',
-            vibrateLabel: 'لەرزینا مۆبایلێ (Vibration)',
-            testSoundBtn: '🔔 تاقیکرنا دەنگی',
-            accInfoTitle: '🛡️ پێزانین و پاراستنا هەژماری',
-            accStatusSecure: 'پاراستییە ب هەژمارێ فەرمی ✅',
-            accStatusGuest: 'هەژمارێ مێهڤان (پێدڤییە گرێبدەی) ⚠️',
-            emailLabel: 'ئیمەیڵ:',
-            idLabel: 'ئایدیێ یاریزانی:',
-            verifiedYes: 'پشتڕاستکرییە ✅',
-            verifiedNo: 'نەهاتییە پشتڕاستکرن ⚠️',
-            verifyEmailBtn: 'هنارتنا لینکێ پشتڕاستکرنێ',
-            changePassBtn: '🔑 گوهۆڕینا پەیڤا نهێنی (Password)',
-            linkAccBtn: '🔗 گرێدانا هەژماری (Google / Email)',
-            logoutBtn: '🚪 دەرکەفتن ژ هەژماری (Log Out)',
+            bgmSub: 'ئاوازێ ناڤ ژوور و یاریان',
+            vibrateLabel: 'لەرزینا مۆبایلێ (Haptics)',
+            vibrateSub: 'لەرزین د دەمێ نۆرە و کلیککرنێ دا',
+            testSoundBtn: 'تاقیکرنا دەنگ و لەرزینێ',
+            accStatusSecure: 'هەژمارێ تە پاراستییە',
+            accStatusGuest: 'هەژمارێ مێهڤان (پێدڤییە گرێبدەی)',
+            emailLabel: 'ئیمەیڵ',
+            idLabel: 'ئایدی (ID)',
+            copyDone: 'هاتە کۆپیکرن ✅',
+            verifiedYes: 'پشتڕاستکرییە',
+            verifiedNo: 'نەهاتییە پشتڕاستکرن',
+            verifyEmailBtn: 'هنارتنا لینکێ پشتڕاستکرنا ئیمەیڵی',
+            changePassBtn: 'گوهۆڕینا پەیڤا نهێنی (Password)',
+            linkAccBtn: 'گرێدانا هەژماری ب Google یان Email',
+            logoutBtn: 'دەرکەفتن ژ هەژماری (Log Out)',
             logoutConfirm: 'تۆ پشتڕاستی دڤێت ژ هەژمارێ خۆ دەربکەڤی؟',
-            privacyTitle: '🔒 ڕێکخستنا تایبەتمەندیێ',
             allowFriendsLabel: 'وەرگرتنا داخوازێن هەڤالینیێ',
-            allowInvitesLabel: 'وەرگرتنا داخوازنامێن یاری و ژووران',
-            stealthModeLabel: 'ڤەشارتنا ڕەوشا ئۆنڵاین',
-            blockedTitle: '🚫 یاریزانێن بلۆککری',
-            noBlockedText: 'چ یاریزان نەهاتینە بلۆککرن.',
-            toolsTitle: '🛠️ ئامراز و پشتەڤانی',
-            clearCacheBtn: '🧹 پاقژکرنا کاشی و بلەزکرن',
-            supportPlaceholder: 'ئاریشە یان پێشنیارا خۆ ل ڤێرێ بنڤیسە بۆ ئادمینی...',
-            sendSupportBtn: 'هنارتن بۆ پشتەڤانیێ 📩',
+            allowFriendsSub: 'ڕێگەدان ب یاریزانان داخوازیێ بۆ تە بهنێرن',
+            allowInvitesLabel: 'وەرگرتنا داخوازنامان',
+            allowInvitesSub: 'داخوازکرن بۆ یاری و ژوورێن دەنگی',
+            stealthModeLabel: 'ڕەوشا ڤەشارتی (Stealth)',
+            stealthModeSub: 'ڤەشارتنا ئۆنڵاینبوونا تە ژ هەڤالێن تە',
+            clearCacheBtn: 'پاقژکرنا کاشی و بلەزکرن',
+            supportPlaceholder: 'ئاریشە یان پێشنیارا خۆ بنڤیسە بۆ تیمێ یاری کوردی...',
+            sendSupportBtn: 'هنارتن بۆ پشتەڤانیێ',
             savedToast: 'گوهۆڕین هاتە پاراستن ✅',
+            siteTitle: 'یاری کوردی',
+            voiceTitle: 'ژوورێن دەنگی',
+            voiceSub: 'بئاخڤە و هەڤالێن نوو بناسە',
+            joinNow: 'نها پشکداربە',
+            chessTitle: 'شەترەنج',
+            chessSub: 'ستراتیژی و زیرەکی',
+            dominoTitle: 'دۆمینە',
+            dominoSub: 'یارییا کلاسیکی',
+            ludoTitle: 'لۆدۆ',
+            ludoSub: 'پێکڤە یاری بکەن',
+            okeyTitle: 'ئۆکەی',
+            okeySub: 'کۆنکانێ تەختە و پوولان',
+            flappyTitle: 'هەڵۆ',
+            flappySub: 'بلند بفڕە و خالان کۆمبکە',
             navHome: 'سەرەکی',
             navGames: 'یاری',
             navRank: 'ڕێزبەندی',
@@ -87,38 +123,56 @@
         },
         english: {
             dir: 'ltr',
-            langCode: 'en',
-            settingsTitle: '⚙️ Yari Kurdi Settings',
-            langSectionTitle: '🌐 App Language',
-            langDesc: 'Choose your preferred language across Yari Kurdi:',
-            audioSectionTitle: '🔊 Audio & Haptics',
-            sfxLabel: 'Game Sound Effects (SFX)',
+            settingsTitle: 'Settings',
+            settingsSub: 'Account security, language & preferences',
+            secLang: 'LANGUAGE',
+            secAccount: 'ACCOUNT & SECURITY',
+            secAudio: 'AUDIO & HAPTICS',
+            secPrivacy: 'PRIVACY & SAFETY',
+            secSupport: 'SUPPORT & SYSTEM',
+            sfxLabel: 'Game Sound Effects',
+            sfxSub: 'Board moves, dice & victory sounds',
             bgmLabel: 'Background Music',
+            bgmSub: 'Ambient music in lobby & rooms',
             vibrateLabel: 'Vibration / Haptics',
-            testSoundBtn: '🔔 Test Audio',
-            accInfoTitle: '🛡️ Account & Security Status',
-            accStatusSecure: 'Protected Official Account ✅',
-            accStatusGuest: 'Guest Account (Link to save progress) ⚠️',
-            emailLabel: 'Email:',
-            idLabel: 'Player ID:',
-            verifiedYes: 'Verified ✅',
-            verifiedNo: 'Not Verified ⚠️',
+            vibrateSub: 'Tactile feedback on turns and taps',
+            testSoundBtn: 'Test Audio & Vibration',
+            accStatusSecure: 'Protected Official Account',
+            accStatusGuest: 'Guest Account (Link to protect data)',
+            emailLabel: 'Email',
+            idLabel: 'Player ID',
+            copyDone: 'Copied ✅',
+            verifiedYes: 'Verified',
+            verifiedNo: 'Unverified',
             verifyEmailBtn: 'Send Verification Email',
-            changePassBtn: '🔑 Reset / Change Password',
-            linkAccBtn: '🔗 Link Account (Google / Email)',
-            logoutBtn: '🚪 Log Out of Account',
-            logoutConfirm: 'Are you sure you want to log out of your account?',
-            privacyTitle: '🔒 Privacy Controls',
-            allowFriendsLabel: 'Allow Friend Requests',
-            allowInvitesLabel: 'Allow Game & Voice Room Invites',
-            stealthModeLabel: 'Hide Online Status (Stealth)',
-            blockedTitle: '🚫 Blocked Players',
-            noBlockedText: 'No blocked players.',
-            toolsTitle: '🛠️ Tools & Support',
-            clearCacheBtn: '🧹 Clear Cache & Boost Speed',
-            supportPlaceholder: 'Describe your issue or suggestion for the admin team...',
-            sendSupportBtn: 'Send to Support 📩',
+            changePassBtn: 'Reset / Change Password',
+            linkAccBtn: 'Link Account (Google / Email)',
+            logoutBtn: 'Log Out of Account',
+            logoutConfirm: 'Are you sure you want to log out?',
+            allowFriendsLabel: 'Friend Requests',
+            allowFriendsSub: 'Allow other players to add you',
+            allowInvitesLabel: 'Game & Room Invites',
+            allowInvitesSub: 'Receive live match & voice invites',
+            stealthModeLabel: 'Stealth Mode',
+            stealthModeSub: 'Hide your online status from friends',
+            clearCacheBtn: 'Clear Cache & Refresh App',
+            supportPlaceholder: 'Write your issue or feedback for the Yari Kurdi team...',
+            sendSupportBtn: 'Send Message',
             savedToast: 'Settings saved ✅',
+            siteTitle: 'Yari Kurdi',
+            voiceTitle: 'Voice Rooms',
+            voiceSub: 'Talk live & meet new friends',
+            joinNow: 'Join Now',
+            chessTitle: 'Chess',
+            chessSub: 'Strategy & intellect',
+            dominoTitle: 'Dominoes',
+            dominoSub: 'Classic board game',
+            ludoTitle: 'Ludo',
+            ludoSub: 'Play together live',
+            okeyTitle: 'Okey',
+            okeySub: 'Classic tile rummy',
+            flappyTitle: 'Eagle',
+            flappySub: 'Fly high & score points',
             navHome: 'Home',
             navGames: 'Games',
             navRank: 'Ranking',
@@ -148,42 +202,59 @@
             toast = document.createElement('div');
             toast.id = 'ykSettingsToast';
             toast.style.cssText = `
-                position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
-                background:linear-gradient(135deg,#ffd000,#ff8800); color:#1a0f00;
-                padding:9px 20px; border-radius:20px; font-weight:900; font-size:13px;
-                z-index:1000001; box-shadow:0 8px 25px rgba(0,0,0,0.6); transition:opacity 0.3s;
+                position:fixed; bottom:92px; left:50%; transform:translateX(-50%);
+                background:#ffd000; color:#120900; padding:10px 22px; border-radius:14px;
+                font-weight:900; font-size:13px; z-index:1000005;
+                box-shadow:0 10px 28px rgba(0,0,0,0.75); transition:opacity 0.25s;
             `;
             document.body.appendChild(toast);
         }
         toast.innerText = msg;
         toast.style.opacity = '1';
         clearTimeout(toast._t);
-        toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2400);
+        toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2200);
     }
 
+    // وەرگێڕانی نووسینەکانی ناو شاشە بێ تێکدانی دیزاین و وێنەکان
     function applyLanguageToPage() {
         const pack = TRANSLATIONS[state.lang] || TRANSLATIONS.sorani;
-        document.documentElement.dir = pack.dir;
-        document.documentElement.lang = pack.langCode;
+        // ئاڕاستەی لاپەڕەی سەرەکی وەک خۆی دەهێڵینەوە تا کارەکتەرەکان تێکنەچن
+        document.documentElement.dir = 'rtl';
 
-        const navLabels = [
-            { keys: ['سەرەکی', 'Home'], val: pack.navHome },
-            { keys: ['یارییەکان', 'یاری', 'Games'], val: pack.navGames },
-            { keys: ['ڕیزبەندی', 'ڕێزبەندی', 'Ranking'], val: pack.navRank },
-            { keys: ['هاوڕێکان', 'هەڤاڵ', 'Friends'], val: pack.navFriends },
-            { keys: ['ڕێکخستن', 'Settings'], val: pack.navSettings }
+        const textDictionary = [
+            { key: 'voiceTitle', variants: ['ژووری گفتوگۆ', 'ژوورێن دەنگی', 'Voice Rooms'] },
+            { key: 'voiceSub', variants: ['قسە بکە و هاوڕێی نوێ بناسە', 'بئاخڤە و هەڤالێن نوو بناسە', 'Talk live & meet new friends'] },
+            { key: 'joinNow', variants: ['ئێستا بەشداربە', 'نها پشکداربە', 'Join Now'] },
+            { key: 'chessTitle', variants: ['شەترەنج', 'Chess'] },
+            { key: 'chessSub', variants: ['ستراتیژی و زیرەکی', 'Strategy & intellect'] },
+            { key: 'dominoTitle', variants: ['دۆمینە', 'Dominoes'] },
+            { key: 'dominoSub', variants: ['یارییە کلاسیکییەکە', 'یارییا کلاسیکی', 'Classic board game'] },
+            { key: 'ludoTitle', variants: ['لۆدۆ', 'Ludo'] },
+            { key: 'ludoSub', variants: ['پێکەوە یاری بکەن', 'پێکڤە یاری بکەن', 'Play together live'] },
+            { key: 'okeyTitle', variants: ['ئۆکەی', 'Okey'] },
+            { key: 'okeySub', variants: ['کۆنکانی تەختە و پوول', 'کۆنکانێ تەختە و پوولان', 'Classic tile rummy'] },
+            { key: 'flappyTitle', variants: ['هەڵۆ', 'Eagle'] },
+            { key: 'flappySub', variants: ['بەرز بفڕە و خاڵ کۆبکەرەوە', 'بلند بفڕە و خالان کۆمبکە', 'Fly high & score points'] },
+            { key: 'navHome', variants: ['سەرەکی', 'Home'] },
+            { key: 'navGames', variants: ['یارییەکان', 'یاری', 'Games'] },
+            { key: 'navRank', variants: ['ڕیزبەندی', 'ڕێزبەندی', 'Ranking'] },
+            { key: 'navFriends', variants: ['هاوڕێکان', 'هەڤاڵ', 'Friends'] },
+            { key: 'navSettings', variants: ['ڕێکخستن', 'Settings'] }
         ];
 
-        document.querySelectorAll('nav span, .bottom-nav span, .nav-item span, footer span, div').forEach(el => {
-            if (el.children.length === 0) {
-                const txt = el.textContent.trim();
-                for (const item of navLabels) {
-                    if (item.keys.includes(txt)) {
-                        el.textContent = item.val;
-                    }
+        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+        let node;
+        while ((node = walker.nextNode())) {
+            if (node.parentElement && node.parentElement.closest('#ykSettingsOverlay')) continue;
+            const raw = node.nodeValue.trim();
+            if (!raw) continue;
+            for (const item of textDictionary) {
+                if (item.variants.includes(raw)) {
+                    node.nodeValue = node.nodeValue.replace(raw, pack[item.key]);
+                    break;
                 }
             }
-        });
+        }
     }
 
     function setLanguage(newLang) {
@@ -198,9 +269,7 @@
     function toggleLocalSetting(key, storageKey) {
         state[key] = !state[key];
         localStorage.setItem(storageKey, String(state[key]));
-        if (key === 'vibrate' && state.vibrate && navigator.vibrate) {
-            navigator.vibrate(60);
-        }
+        if (key === 'vibrate' && state.vibrate && navigator.vibrate) navigator.vibrate(50);
         renderModalContent();
         showToast(t('savedToast'));
     }
@@ -220,21 +289,26 @@
         }
     }
 
+    function copyPlayerId(idText) {
+        navigator.clipboard?.writeText(idText);
+        showToast(t('copyDone'));
+    }
+
     function playTestBeep() {
         try {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             const ctx = new AudioCtx();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(587.33, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.18);
-            gain.gain.setValueAtTime(0.25, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(660, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(990, ctx.currentTime + 0.16);
+            gain.gain.setValueAtTime(0.28, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.24);
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start();
-            osc.stop(ctx.currentTime + 0.26);
+            osc.stop(ctx.currentTime + 0.25);
         } catch (e) {}
         if (state.vibrate && navigator.vibrate) navigator.vibrate([50, 40, 50]);
         showToast('🔊 ' + t('testSoundBtn'));
@@ -246,7 +320,7 @@
             await firebase.auth().currentUser.sendEmailVerification();
             alert(state.lang === 'english'
                 ? 'Verification link sent to your email!'
-                : 'لینکی پشتڕاستکردنەوە نێردرا بۆ ئیمەیڵەکەت! تکایە سەیری Inbox یان Spam بکە.');
+                : 'لینکی پشتڕاستکردنەوە نێردرا بۆ ئیمەیڵەکەت! سەیری Inbox یان Spam بکە.');
         } catch (err) {
             alert(err.message);
         }
@@ -255,12 +329,7 @@
     async function handlePasswordReset() {
         if (!window.firebase || !firebase.auth().currentUser) return;
         const user = firebase.auth().currentUser;
-        if (!user.email) {
-            alert(state.lang === 'english'
-                ? 'No email attached to this account.'
-                : 'ئەم هەژمارە ئیمەیڵی لەسەر نییە.');
-            return;
-        }
+        if (!user.email) return;
         try {
             await firebase.auth().sendPasswordResetEmail(user.email);
             alert(state.lang === 'english'
@@ -290,17 +359,12 @@
     async function sendSupportTicket() {
         const inp = document.getElementById('ykSupportInput');
         if (!inp || !inp.value.trim()) return;
-        const msg = inp.value.trim();
         const uid = localStorage.getItem('yk_player_uid') || 'guest';
         const name = localStorage.getItem('yk_player_name') || 'یاریزان';
 
         if (window.firebase && firebase.apps && firebase.apps.length) {
             await firebase.database().ref('supportTickets').push({
-                uid,
-                name,
-                message: msg,
-                lang: state.lang,
-                ts: Date.now()
+                uid, name, message: inp.value.trim(), lang: state.lang, ts: Date.now()
             }).catch(() => {});
         }
         inp.value = '';
@@ -313,83 +377,131 @@
         style.id = 'ykSettingsStyles';
         style.textContent = `
             #ykSettingsOverlay {
-                position: fixed; inset: 0; background: rgba(4, 2, 14, 0.88);
-                backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-                z-index: 999990; display: none; align-items: center; justify-content: center;
-                padding: 14px; font-family: 'Vazirmatn', sans-serif; color: #fff;
+                position: fixed; inset: 0;
+                background: rgba(3, 2, 10, 0.86);
+                z-index: 999990; display: none; align-items: flex-end; justify-content: center;
+                font-family: 'Vazirmatn', sans-serif; color: #ffffff;
+                -webkit-font-smoothing: antialiased;
+            }
+            @media (min-width: 520px) {
+                #ykSettingsOverlay { align-items: center; padding: 16px; }
             }
             #ykSettingsOverlay.open { display: flex; }
-            .yk-set-card {
-                width: 100%; max-width: 440px; max-height: 86dvh;
-                background: linear-gradient(180deg, #1a0d40 0%, #0b0520 100%);
-                border: 2px solid #ffb800; border-radius: 26px;
+
+            .yk-set-sheet {
+                width: 100%; max-width: 460px; max-height: 90dvh;
+                background: #0d091f;
+                border-top: 2px solid #ffb800;
+                border-radius: 28px 28px 0 0;
                 display: flex; flex-direction: column; overflow: hidden;
-                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.92), 0 0 30px rgba(255, 184, 0, 0.25);
+                box-shadow: 0 -15px 50px rgba(0, 0, 0, 0.95);
+                animation: ykSheetUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
             }
+            @media (min-width: 520px) {
+                .yk-set-sheet { border: 2px solid #ffb800; border-radius: 26px; }
+            }
+            @keyframes ykSheetUp {
+                from { transform: translateY(40px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+
             .yk-set-header {
                 display: flex; align-items: center; justify-content: space-between;
-                padding: 15px 18px; background: rgba(255, 184, 0, 0.12);
-                border-bottom: 1px solid rgba(255, 184, 0, 0.28);
+                padding: 18px 20px 14px;
+                background: linear-gradient(180deg, #191238 0%, #0d091f 100%);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 flex-shrink: 0;
             }
-            .yk-set-title { font-size: 16.5px; font-weight: 900; color: #ffd000; }
+            .yk-set-title { font-size: 19px; font-weight: 900; color: #ffffff; letter-spacing: -0.2px; }
+            .yk-set-subtitle { font-size: 11.5px; color: #94a3b8; margin-top: 2px; font-weight: 600; }
             .yk-set-close {
-                width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2);
-                background: rgba(255,255,255,0.08); color: #fff; font-size: 15px; cursor: pointer;
+                width: 36px; height: 36px; border-radius: 50%;
+                border: 1px solid rgba(255, 255, 255, 0.14);
+                background: #1c153d; color: #ffffff;
+                font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
             }
+
             .yk-set-body {
-                padding: 16px; overflow-y: auto; flex: 1;
-                display: flex; flex-direction: column; gap: 14px;
-                scroll-behavior: smooth;
+                padding: 14px 18px 28px; overflow-y: auto; flex: 1;
+                display: flex; flex-direction: column; gap: 18px;
                 -webkit-overflow-scrolling: touch;
             }
-            .yk-set-body::-webkit-scrollbar { width: 5px; }
-            .yk-set-body::-webkit-scrollbar-thumb { background: rgba(255, 184, 0, 0.45); border-radius: 10px; }
-            .yk-set-box {
-                background: rgba(255, 255, 255, 0.05);
-                border: 1px solid rgba(168, 85, 247, 0.35);
-                border-radius: 18px; padding: 14px;
+            .yk-set-body::-webkit-scrollbar { width: 4px; }
+            .yk-set-body::-webkit-scrollbar-thumb { background: rgba(255, 184, 0, 0.4); border-radius: 8px; }
+
+            .yk-sec-label {
+                font-size: 11px; font-weight: 900; color: #fbbf24;
+                letter-spacing: 0.6px; margin-bottom: 8px; padding: 0 4px;
             }
-            .yk-set-box-title {
-                font-size: 13.5px; font-weight: 900; color: #fde047; margin-bottom: 8px;
+
+            .yk-group-card {
+                background: #151030;
+                border: 1px solid rgba(255, 255, 255, 0.09);
+                border-radius: 20px; overflow: hidden;
             }
-            .yk-lang-grid {
-                display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px;
+
+            .yk-lang-seg {
+                display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding: 12px;
             }
-            .yk-lang-btn {
-                padding: 10px 6px; border-radius: 14px;
-                border: 1.5px solid rgba(255,255,255,0.16);
-                background: rgba(12, 6, 32, 0.8); color: #fff;
-                font-size: 12px; font-weight: 800; cursor: pointer; text-align: center;
+            .yk-lang-pill {
+                padding: 12px 6px; border-radius: 14px;
+                border: 1.5px solid rgba(255, 255, 255, 0.1);
+                background: #0d091f; color: #cbd5e1;
+                font-size: 13px; font-weight: 800; cursor: pointer; text-align: center;
+                transition: all 0.2s;
             }
-            .yk-lang-btn.active {
-                border-color: #ffd000; background: rgba(255, 184, 0, 0.22); color: #ffd000;
+            .yk-lang-pill.active {
+                background: linear-gradient(135deg, #ffd000 0%, #ff8c00 100%);
+                border-color: #ffe680; color: #140a00; font-weight: 900;
+                box-shadow: 0 4px 16px rgba(255, 184, 0, 0.35);
             }
-            .yk-switch-row {
-                display: flex; align-items: center; justify-content: space-between;
-                padding: 9px 0; border-bottom: 1px dashed rgba(255,255,255,0.1);
-                font-size: 12.5px; font-weight: 700;
+
+            .yk-row {
+                display: flex; align-items: center; justify-content: space-between; gap: 12px;
+                padding: 13px 15px;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
             }
-            .yk-switch-row:last-child { border-bottom: none; }
-            .yk-toggle {
-                width: 46px; height: 25px; border-radius: 20px;
-                background: #334155; position: relative; cursor: pointer;
+            .yk-row:last-child { border-bottom: none; }
+            .yk-row-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+            .yk-ico-badge {
+                width: 36px; height: 36px; border-radius: 11px;
+                display: flex; align-items: center; justify-content: center;
+                font-size: 15px; color: #fff; flex-shrink: 0;
+            }
+            .yk-row-title { font-size: 13.5px; font-weight: 800; color: #f8fafc; }
+            .yk-row-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+            .yk-switch {
+                width: 48px; height: 26px; border-radius: 20px;
+                background: #2b234d; position: relative; cursor: pointer;
                 transition: background 0.25s; flex-shrink: 0;
             }
-            .yk-toggle.on { background: #10b981; }
-            .yk-toggle::after {
+            .yk-switch.on { background: #10b981; }
+            .yk-switch::after {
                 content: ''; position: absolute; top: 3px; left: 3px;
-                width: 19px; height: 19px; border-radius: 50%; background: #fff;
-                transition: transform 0.25s;
+                width: 20px; height: 20px; border-radius: 50%; background: #ffffff;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+                transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             }
-            .yk-toggle.on::after { transform: translateX(21px); }
-            .yk-action-btn {
-                width: 100%; padding: 11px; border-radius: 14px; border: none;
-                font-size: 13px; font-weight: 900; cursor: pointer; margin-top: 8px;
+            .yk-switch.on::after { transform: translateX(22px); }
+
+            .yk-btn-row {
+                width: 100%; padding: 13px 15px; background: transparent; border: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.06);
+                color: #ffd000; font-size: 13px; font-weight: 900;
+                display: flex; align-items: center; justify-content: space-between;
+                cursor: pointer; text-align: inherit;
             }
-            .yk-btn-gold { background: linear-gradient(135deg, #ffd000, #ff8800); color: #1a0f00; }
-            .yk-btn-purple { background: rgba(168, 85, 247, 0.25); border: 1.5px solid #a855f7; color: #fff; }
-            .yk-btn-danger { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; }
+            .yk-btn-row:active { background: rgba(255, 255, 255, 0.04); }
+
+            .yk-logout-btn {
+                width: 100%; padding: 14px; border-radius: 18px;
+                background: rgba(239, 68, 68, 0.14);
+                border: 1.5px solid rgba(239, 68, 68, 0.55);
+                color: #fca5a5; font-size: 14px; font-weight: 900;
+                cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            }
+            .yk-logout-btn:active { background: rgba(239, 68, 68, 0.25); }
         `;
         document.head.appendChild(style);
     }
@@ -397,8 +509,8 @@
     function renderModalContent() {
         const overlay = document.getElementById('ykSettingsOverlay');
         if (!overlay) return;
-        const previousScroll = overlay.querySelector('.yk-set-body')?.scrollTop || 0;
-        overlay.dir = t('dir');
+        const prevScroll = overlay.querySelector('.yk-set-body')?.scrollTop || 0;
+        const sheetDir = t('dir');
 
         const user = (window.firebase && firebase.apps && firebase.apps.length) ? firebase.auth().currentUser : null;
         const uid = (user && user.uid) || localStorage.getItem('yk_player_uid') || '---';
@@ -407,127 +519,198 @@
         const email = (user && user.email) ? user.email : '---';
         const isVerified = user && user.emailVerified;
 
-        const allSectionsHtml = `
-            <!-- ١. زمان -->
-            <div class="yk-set-box">
-                <div class="yk-set-box-title">${t('langSectionTitle')}</div>
-                <div style="font-size:11.5px; color:#cbd5e1;">${t('langDesc')}</div>
-                <div class="yk-lang-grid">
-                    <button class="yk-lang-btn ${state.lang === 'sorani' ? 'active' : ''}" onclick="YariSettings.setLang('sorani')">
-                        کوردی<br><span style="font-size:10px; opacity:0.85;">(سۆرانی)</span>
-                    </button>
-                    <button class="yk-lang-btn ${state.lang === 'badini' ? 'active' : ''}" onclick="YariSettings.setLang('badini')">
-                        کوردی<br><span style="font-size:10px; opacity:0.85;">(بادینی)</span>
-                    </button>
-                    <button class="yk-lang-btn ${state.lang === 'english' ? 'active' : ''}" onclick="YariSettings.setLang('english')">
-                        English<br><span style="font-size:10px; opacity:0.85;">(Global)</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- ٢. پاراستن و زانیاری هەژمار -->
-            <div class="yk-set-box">
-                <div class="yk-set-box-title">${t('accInfoTitle')}</div>
-                <div style="background:rgba(0,0,0,0.4); padding:10px 12px; border-radius:12px; font-size:12px; line-height:1.9;">
-                    <div style="color:${isGuest ? '#fbbf24' : '#4ade80'}; font-weight:900;">
-                        ${isGuest ? t('accStatusGuest') : t('accStatusSecure')}
-                    </div>
-                    <div><b>${t('idLabel')}</b> <span style="color:#ffd000;">${shortId}</span></div>
-                    <div><b>${t('emailLabel')}</b> <span style="color:#e9d5ff;">${email}</span></div>
-                    ${!isGuest && user.email ? `
-                        <div><b>Email Status:</b> <span style="color:${isVerified ? '#4ade80' : '#fb7185'};">${isVerified ? t('verifiedYes') : t('verifiedNo')}</span></div>
-                    ` : ''}
-                </div>
-
-                ${isGuest ? `
-                    <button class="yk-action-btn yk-btn-gold" onclick="YariSettings.close(); if(window.YariAuth) YariAuth.openAuthModal();">
-                        ${t('linkAccBtn')}
-                    </button>
-                ` : `
-                    ${(!isVerified && user.email) ? `
-                        <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.verifyEmail()">
-                            ${t('verifyEmailBtn')}
-                        </button>
-                    ` : ''}
-                    <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.resetPassword()">
-                        ${t('changePassBtn')}
-                    </button>
-                `}
-            </div>
-
-            <!-- ٣. دەنگ و لەرزین -->
-            <div class="yk-set-box">
-                <div class="yk-set-box-title">${t('audioSectionTitle')}</div>
-                <div class="yk-switch-row">
-                    <span>${t('sfxLabel')}</span>
-                    <div class="yk-toggle ${state.sfx ? 'on' : ''}" onclick="YariSettings.toggleLocal('sfx','yk_sfx_enabled')"></div>
-                </div>
-                <div class="yk-switch-row">
-                    <span>${t('bgmLabel')}</span>
-                    <div class="yk-toggle ${state.bgm ? 'on' : ''}" onclick="YariSettings.toggleLocal('bgm','yk_bgm_enabled')"></div>
-                </div>
-                <div class="yk-switch-row">
-                    <span>${t('vibrateLabel')}</span>
-                    <div class="yk-toggle ${state.vibrate ? 'on' : ''}" onclick="YariSettings.toggleLocal('vibrate','yk_vibrate_enabled')"></div>
-                </div>
-                <button class="yk-action-btn yk-btn-purple" onclick="YariSettings.testSound()">
-                    ${t('testSoundBtn')}
-                </button>
-            </div>
-
-            <!-- ٤. تایبەتمەندی و بلۆک -->
-            <div class="yk-set-box">
-                <div class="yk-set-box-title">${t('privacyTitle')}</div>
-                <div class="yk-switch-row">
-                    <span>${t('allowFriendsLabel')}</span>
-                    <div class="yk-toggle ${state.allowFriends ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowFriends')"></div>
-                </div>
-                <div class="yk-switch-row">
-                    <span>${t('allowInvitesLabel')}</span>
-                    <div class="yk-toggle ${state.allowInvites ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowInvites')"></div>
-                </div>
-                <div class="yk-switch-row">
-                    <span>${t('stealthModeLabel')}</span>
-                    <div class="yk-toggle ${state.stealthMode ? 'on' : ''}" onclick="YariSettings.togglePrivacy('stealthMode')"></div>
-                </div>
-                <div style="margin-top:10px; padding-top:8px; border-top:1px dashed rgba(255,255,255,0.12);">
-                    <div style="font-size:12px; font-weight:900; color:#fda4af; margin-bottom:4px;">${t('blockedTitle')}</div>
-                    <div style="font-size:11.5px; color:#94a3b8;">${t('noBlockedText')}</div>
-                </div>
-            </div>
-
-            <!-- ٥. پشتگیری و خاوێنکردنەوە -->
-            <div class="yk-set-box">
-                <div class="yk-set-box-title">${t('toolsTitle')}</div>
-                <textarea id="ykSupportInput" rows="3" placeholder="${t('supportPlaceholder')}" style="width:100%; background:rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.2); border-radius:12px; padding:10px; color:#fff; font-size:12px; outline:none; resize:none;"></textarea>
-                <button class="yk-action-btn yk-btn-gold" onclick="YariSettings.sendSupport()">
-                    ${t('sendSupportBtn')}
-                </button>
-                <button class="yk-action-btn yk-btn-purple" onclick="window.location.reload(true)">
-                    ${t('clearCacheBtn')}
-                </button>
-            </div>
-
-            <!-- ٦. دەرچوون لە هەژمار -->
-            <div class="yk-set-box" style="border-color:rgba(239,68,68,0.45); margin-bottom:6px;">
-                <button class="yk-action-btn yk-btn-danger" style="margin-top:0;" onclick="YariSettings.logout()">
-                    ${t('logoutBtn')}
-                </button>
-            </div>
-        `;
-
         overlay.innerHTML = `
-            <div class="yk-set-card" onclick="event.stopPropagation()">
+            <div class="yk-set-sheet" dir="${sheetDir}" onclick="event.stopPropagation()">
                 <div class="yk-set-header">
-                    <div class="yk-set-title">${t('settingsTitle')}</div>
-                    <button class="yk-set-close" onclick="YariSettings.close()">✕</button>
+                    <div>
+                        <div class="yk-set-title">${t('settingsTitle')}</div>
+                        <div class="yk-set-subtitle">${t('settingsSub')}</div>
+                    </div>
+                    <button class="yk-set-close" onclick="YariSettings.close()"><i class="fa-solid fa-xmark"></i></button>
                 </div>
-                <div class="yk-set-body">${allSectionsHtml}</div>
+
+                <div class="yk-set-body">
+                    <!-- ١. بەشی زمان -->
+                    <div>
+                        <div class="yk-sec-label">${t('secLang')}</div>
+                        <div class="yk-group-card">
+                            <div class="yk-lang-seg">
+                                <button class="yk-lang-pill ${state.lang === 'sorani' ? 'active' : ''}" onclick="YariSettings.setLang('sorani')">
+                                    کوردی<br><span style="font-size:10.5px; opacity:0.85;">سۆرانی</span>
+                                </button>
+                                <button class="yk-lang-pill ${state.lang === 'badini' ? 'active' : ''}" onclick="YariSettings.setLang('badini')">
+                                    کوردی<br><span style="font-size:10.5px; opacity:0.85;">بادینی</span>
+                                </button>
+                                <button class="yk-lang-pill ${state.lang === 'english' ? 'active' : ''}" onclick="YariSettings.setLang('english')">
+                                    English<br><span style="font-size:10.5px; opacity:0.85;">Global</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ٢. بەشی هەژمار و پاراستن -->
+                    <div>
+                        <div class="yk-sec-label">${t('secAccount')}</div>
+                        <div class="yk-group-card">
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:${isGuest ? '#d97706' : '#059669'};">
+                                        <i class="fa-solid ${isGuest ? 'fa-user-clock' : 'fa-shield-halved'}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="yk-row-title" style="color:${isGuest ? '#fbbf24' : '#34d399'};">
+                                            ${isGuest ? t('accStatusGuest') : t('accStatusSecure')}
+                                        </div>
+                                        <div class="yk-row-sub">${t('emailLabel')}: <span style="color:#e2e8f0;">${email}</span></div>
+                                    </div>
+                                </div>
+                                ${(!isGuest && user.email) ? `
+                                    <span style="font-size:10.5px; font-weight:900; padding:3px 9px; border-radius:10px; background:${isVerified ? 'rgba(16,185,129,0.2)' : 'rgba(244,63,94,0.2)'}; color:${isVerified ? '#34d399' : '#fb7185'};">
+                                        ${isVerified ? t('verifiedYes') : t('verifiedNo')}
+                                    </span>
+                                ` : ''}
+                            </div>
+
+                            <div class="yk-row" style="cursor:pointer;" onclick="YariSettings.copyId('${shortId}')">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#2563eb;"><i class="fa-solid fa-id-badge"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('idLabel')}</div>
+                                        <div class="yk-row-sub" style="color:#ffd000; font-weight:900; font-size:12.5px;">${shortId}</div>
+                                    </div>
+                                </div>
+                                <i class="fa-regular fa-copy" style="color:#94a3b8;"></i>
+                            </div>
+
+                            ${isGuest ? `
+                                <button class="yk-btn-row" onclick="YariSettings.close(); if(window.YariAuth) YariAuth.openAuthModal();">
+                                    <span><i class="fa-solid fa-link"></i> ${t('linkAccBtn')}</span>
+                                    <i class="fa-solid fa-chevron-${sheetDir === 'rtl' ? 'left' : 'right'}"></i>
+                                </button>
+                            ` : `
+                                ${(!isVerified && user.email) ? `
+                                    <button class="yk-btn-row" onclick="YariSettings.verifyEmail()">
+                                        <span><i class="fa-solid fa-envelope-circle-check"></i> ${t('verifyEmailBtn')}</span>
+                                        <i class="fa-solid fa-chevron-${sheetDir === 'rtl' ? 'left' : 'right'}"></i>
+                                    </button>
+                                ` : ''}
+                                <button class="yk-btn-row" onclick="YariSettings.resetPassword()">
+                                    <span><i class="fa-solid fa-key"></i> ${t('changePassBtn')}</span>
+                                    <i class="fa-solid fa-chevron-${sheetDir === 'rtl' ? 'left' : 'right'}"></i>
+                                </button>
+                            `}
+                        </div>
+                    </div>
+
+                    <!-- ٣. بەشی دەنگ و جووڵە -->
+                    <div>
+                        <div class="yk-sec-label">${t('secAudio')}</div>
+                        <div class="yk-group-card">
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#7c3aed;"><i class="fa-solid fa-volume-high"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('sfxLabel')}</div>
+                                        <div class="yk-row-sub">${t('sfxSub')}</div>
+                                    </div>
+                                </div>
+                                <div class="yk-switch ${state.sfx ? 'on' : ''}" onclick="YariSettings.toggleLocal('sfx','yk_sfx_enabled')"></div>
+                            </div>
+
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#db2777;"><i class="fa-solid fa-music"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('bgmLabel')}</div>
+                                        <div class="yk-row-sub">${t('bgmSub')}</div>
+                                    </div>
+                                </div>
+                                <div class="yk-switch ${state.bgm ? 'on' : ''}" onclick="YariSettings.toggleLocal('bgm','yk_bgm_enabled')"></div>
+                            </div>
+
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#ea580c;"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('vibrateLabel')}</div>
+                                        <div class="yk-row-sub">${t('vibrateSub')}</div>
+                                    </div>
+                                </div>
+                                <div class="yk-switch ${state.vibrate ? 'on' : ''}" onclick="YariSettings.toggleLocal('vibrate','yk_vibrate_enabled')"></div>
+                            </div>
+
+                            <button class="yk-btn-row" onclick="YariSettings.testSound()">
+                                <span><i class="fa-solid fa-bell"></i> ${t('testSoundBtn')}</span>
+                                <i class="fa-solid fa-play"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ٤. بەشی تایبەتمەندی -->
+                    <div>
+                        <div class="yk-sec-label">${t('secPrivacy')}</div>
+                        <div class="yk-group-card">
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#0284c7;"><i class="fa-solid fa-user-plus"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('allowFriendsLabel')}</div>
+                                        <div class="yk-row-sub">${t('allowFriendsSub')}</div>
+                                    </div>
+                                </div>
+                                <div class="yk-switch ${state.allowFriends ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowFriends')"></div>
+                            </div>
+
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#0d9488;"><i class="fa-solid fa-gamepad"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('allowInvitesLabel')}</div>
+                                        <div class="yk-row-sub">${t('allowInvitesSub')}</div>
+                                    </div>
+                                </div>
+                                <div class="yk-switch ${state.allowInvites ? 'on' : ''}" onclick="YariSettings.togglePrivacy('allowInvites')"></div>
+                            </div>
+
+                            <div class="yk-row">
+                                <div class="yk-row-left">
+                                    <div class="yk-ico-badge" style="background:#4f46e5;"><i class="fa-solid fa-eye-slash"></i></div>
+                                    <div>
+                                        <div class="yk-row-title">${t('stealthModeLabel')}</div>
+                                        <div class="yk-row-sub">${t('stealthModeSub')}</div>
+                                    </div>
+                                </div>
+                                <div class="yk-switch ${state.stealthMode ? 'on' : ''}" onclick="YariSettings.togglePrivacy('stealthMode')"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ٥. پشتگیری و خاوێنکردنەوە -->
+                    <div>
+                        <div class="yk-sec-label">${t('secSupport')}</div>
+                        <div class="yk-group-card" style="padding:14px;">
+                            <textarea id="ykSupportInput" rows="2" placeholder="${t('supportPlaceholder')}" style="width:100%; background:#0d091f; border:1px solid rgba(255,255,255,0.14); border-radius:14px; padding:11px; color:#fff; font-size:12.5px; outline:none; resize:none; margin-bottom:10px;"></textarea>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                                <button onclick="YariSettings.sendSupport()" style="padding:11px; border-radius:13px; border:none; background:linear-gradient(135deg,#ffd000,#ff8800); color:#140a00; font-weight:900; font-size:12.5px; cursor:pointer;">
+                                    <i class="fa-solid fa-paper-plane"></i> ${t('sendSupportBtn')}
+                                </button>
+                                <button onclick="window.location.reload(true)" style="padding:11px; border-radius:13px; border:1px solid rgba(255,255,255,0.16); background:#1c153d; color:#e2e8f0; font-weight:800; font-size:12px; cursor:pointer;">
+                                    <i class="fa-solid fa-broom"></i> ${t('clearCacheBtn')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ٦. دەرچوون -->
+                    <button class="yk-logout-btn" onclick="YariSettings.logout()">
+                        <i class="fa-solid fa-right-from-bracket"></i> ${t('logoutBtn')}
+                    </button>
+                </div>
             </div>
         `;
 
         const newBody = overlay.querySelector('.yk-set-body');
-        if (newBody) newBody.scrollTop = previousScroll;
+        if (newBody) newBody.scrollTop = prevScroll;
     }
 
     function open() {
@@ -570,6 +753,7 @@
         setLang: setLanguage,
         toggleLocal: toggleLocalSetting,
         togglePrivacy: togglePrivacySetting,
+        copyId: copyPlayerId,
         testSound: playTestBeep,
         verifyEmail: handleVerifyEmail,
         resetPassword: handlePasswordReset,
