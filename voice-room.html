@@ -1117,6 +1117,38 @@
             cursor: pointer;
         }
         .yk-member-row:hover { border-color: #ffd000; }
+        /* ڕاگرتنی بەشی چات و دیاری لە خوارەوە لە کاتی پەخشی یوتیوب */
+        .bottom-controls {
+            flex-shrink: 0 !important;
+            z-index: 20 !important;
+        }
+        .chat-area {
+            flex: 1 1 auto !important;
+            min-height: 55px !important;
+        }
+        .app-shell:has(.cinema-stage-box.active) .cinema-frame-wrap {
+            height: 142px !important;
+        }
+        .app-shell:has(.cinema-stage-box.active) .mics-18-grid {
+            gap: 3px 2px !important;
+            padding: 4px !important;
+        }
+        .app-shell:has(.cinema-stage-box.active) .seat-avatar-wrap {
+            width: 32px !important;
+            height: 32px !important;
+        }
+        .app-shell:has(.cinema-stage-box.active) .seat-support-pill {
+            display: none !important;
+        }
+        .app-shell:has(.cinema-stage-box.active) .seat-name-lbl {
+            font-size: 7.5px !important;
+            margin-top: 1px !important;
+        }
+        .app-shell:has(.cinema-stage-box.active) .room-xp-footer,
+        .app-shell:has(.cinema-stage-box.active) .audience-bar {
+            padding-top: 2px !important;
+            padding-bottom: 2px !important;
+        }
     </style>
 </head>
 <body>
