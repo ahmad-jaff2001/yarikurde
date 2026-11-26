@@ -562,9 +562,11 @@
             <i class="fa-solid fa-house"></i>
             <span>سەرەکی</span>
         </div>
-        <div class="nav-item" onclick="setActiveNav(this, 'یارییەکان')">
-            <i class="fa-solid fa-gamepad"></i>
-            <span>یارییەکان</span>
+
+        <a href="#" class="nav-item" id="ykNavChatTrigger">
+    <i class="fa-solid fa-paper-plane"></i>
+    <span class="nav-text">نامەکان</span>
+</a>
         </div>
         <div class="nav-item" onclick="setActiveNav(this, 'ڕیزبەندی')">
             <i class="fa-solid fa-trophy"></i>
@@ -623,5 +625,6 @@ window.addEventListener('pageshow', syncHomeProfileAvatar);
 <script src="admin-engine.js"></script>
 <script src="settings-engine.js"></script>
 <script src="friends-engine.js"></script>
+<script src="chat-engine.js"></script>
 </body>
 </html>
