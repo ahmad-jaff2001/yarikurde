@@ -646,13 +646,14 @@
             font-weight: 900;
         }
 
-        .cues-4col-grid {
+       .cues-4col-grid {
             flex: 1;
             overflow-y: auto;
             display: grid;
             grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: minmax(128px, auto);
             gap: 8px;
-            padding: 2px 2px 6px;
+            padding: 4px 2px 8px;
         }
         .cues-4col-grid::-webkit-scrollbar { width: 4px; }
         .cues-4col-grid::-webkit-scrollbar-thumb { background: #ffb800; border-radius: 8px; }
@@ -698,6 +699,8 @@
             overflow: hidden;
             text-overflow: ellipsis;
             text-shadow: 0 1px 3px #000;
+            flex-shrink: 0;
+            line-height: 1.3;
             z-index: 2;
         }
 
@@ -707,17 +710,21 @@
             justify-content: space-between;
             gap: 4px;
             margin: 3px 0;
+            flex: 1;
+            min-height: 58px;
             z-index: 2;
         }
 
         .cue-svg-box {
-            width: 66px;
-            height: 66px;
+            width: 60px;
+            height: 60px;
             flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.85));
         }
 
-        /* ٣ شریتەکەی هێز، نیشانە و سوڕان */
         .cue-stats-col {
             flex: 1;
             display: flex;
@@ -742,7 +749,7 @@
 
         .cue-stat-segs {
             display: grid;
-            grid-template-columns: repeat(8, 1fr);
+            grid-template-columns: repeat(10, 1fr);
             gap: 1.5px;
             flex: 1;
             height: 7px;
@@ -763,6 +770,8 @@
 
         .cue-action-btn {
             width: 100%;
+            min-height: 25px;
+            flex-shrink: 0;
             border: none;
             border-radius: 9px;
             padding: 4px 6px;
@@ -955,7 +964,7 @@
             </div>
 
             <div class="cue-tabs-row" id="cueFilterTabs">
-                <button class="cue-tab-pill active" onclick="Billiard8BP.filterCues('all', this)">هەموویان (40)</button>
+                <button class="cue-tab-pill active" onclick="Billiard8BP.filterCues('all', this)">هەموویان (24)</button>
                 <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('classic', this)">کلاسیک</button>
                 <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('pro', this)">پێشکەوتوو</button>
                 <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('legendary', this)">ئەفسانەیی VIP</button>
