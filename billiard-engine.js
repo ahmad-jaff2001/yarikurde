@@ -1,5 +1,5 @@
 // =============================================================================
-// YARI KURDI - 8 BALL POOL LANDSCAPE 120FPS ENGINE (CLEAN 3D CUES)
+// YARI KURDI - 8 BALL POOL 120FPS PRO ENGINE (3D ROLLING + HAPTICS + STRIKE FX)
 // =============================================================================
 
 (function () {
@@ -63,10 +63,21 @@
     ];
 
     const BALL_COLORS = {
-        1: '#facc15', 2: '#2563eb', 3: '#dc2626', 4: '#7c3aed',
-        5: '#ea580c', 6: '#16a34a', 7: '#881337', 8: '#09090b',
-        9: '#facc15', 10: '#2563eb', 11: '#dc2626', 12: '#7c3aed',
-        13: '#ea580c', 14: '#16a34a', 15: '#881337'
+        1:  { base: '#eab308', light: '#fef08a', dark: '#854d0e' },
+        2:  { base: '#2563eb', light: '#93c5fd', dark: '#1e3a8a' },
+        3:  { base: '#dc2626', light: '#fca5a5', dark: '#7f1d1d' },
+        4:  { base: '#7c3aed', light: '#c4b5fd', dark: '#4c1d95' },
+        5:  { base: '#ea580c', light: '#fdba74', dark: '#7c2d12' },
+        6:  { base: '#16a34a', light: '#86efac', dark: '#14532d' },
+        7:  { base: '#9f1239', light: '#fda4af', dark: '#4c0519' },
+        8:  { base: '#18181b', light: '#71717a', dark: '#000000' },
+        9:  { base: '#eab308', light: '#fef08a', dark: '#854d0e' },
+        10: { base: '#2563eb', light: '#93c5fd', dark: '#1e3a8a' },
+        11: { base: '#dc2626', light: '#fca5a5', dark: '#7f1d1d' },
+        12: { base: '#7c3aed', light: '#c4b5fd', dark: '#4c1d95' },
+        13: { base: '#ea580c', light: '#fdba74', dark: '#7c2d12' },
+        14: { base: '#16a34a', light: '#86efac', dark: '#14532d' },
+        15: { base: '#9f1239', light: '#fda4af', dark: '#4c0519' }
     };
 
     const TABLE_W = 680;
@@ -77,7 +88,7 @@
 
     const RAIL_X = 40;
     const RAIL_Y = 44;
-    const BALL_R = 11.2;
+    const BALL_R = 11.4;
     const POCKET_R = 25;
 
     const POCKETS = [
@@ -100,7 +111,6 @@
         return imageCache[src];
     }
 
-    // دەرهێنانی دارە ٣ ڕەهەندییەکان و سڕینەوەی تەواوی پاشبنەمای مۆر (BFS Flood-Fill)
     const cueSprites = {};
 
     function processCueCell(img, cue) {
@@ -119,7 +129,6 @@
             const d = imgData.data;
             const total = cw * ch;
 
-            // وەرگرتنی ڕەنگی پاشبنەمای مۆر لە گۆشەکانی خانەکەوە (٥ پیکسڵ ناوەوە تا هێڵی جیاکەرەوە تێکەڵ نەبێت)
             const samples = [
                 (5 * cw + 5) * 4,
                 (5 * cw + (cw - 6)) * 4,
@@ -136,7 +145,6 @@
                 return dist < 34;
             }
 
-            // سڕینەوەی تەواوی باکگراوندە مۆرەکە لە هەموو لێوارەکانەوە (BFS Flood-Fill)
             const visited = new Uint8Array(total);
             const queue = new Int32Array(total);
             let head = 0, tail = 0;
@@ -166,7 +174,6 @@
                 if (cy < ch - 1) { const n = cur + cw; if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; } }
             }
 
-            // نەرمکردنی لێوارەکانی دارەکە
             for (let y = 1; y < ch - 1; y++) {
                 for (let x = 1; x < cw - 1; x++) {
                     const idx = y * cw + x;
@@ -181,7 +188,6 @@
 
             cctx.putImageData(imgData, 0, 0);
 
-            // دۆزینەوەی ناوەڕاست و گۆشەی ڕاستەقینەی دارەکە بەرەو سەرەوەی ڕاست
             let sumX = 0, sumY = 0, count = 0;
             for (let y = 0; y < ch; y++) {
                 for (let x = 0; x < cw; x++) {
@@ -226,7 +232,6 @@
             const targetLen = 375;
             const scale = targetLen / cueLen;
 
-            // دانانی دارەکە بە درێژیی تەواو و باریکتر (0.62) لەسەر مێزەکە
             const tableCanvas = document.createElement('canvas');
             tableCanvas.width = 410;
             tableCanvas.height = 76;
@@ -299,10 +304,16 @@
 
     let balls = [];
     let tubeBalls = [];
+    let particles = [];
     let aimAngle = 0;
     let pullPower = 0;
+    let lastPowerNotch = 0;
     let spinX = 0;
     let spinY = 0;
+
+    // بۆ ئەنیمەیشنی لێدانی دارەکە و لەرینەوەی کامێرا (Haptic Visual Shake)
+    let cueStrikeAnim = null;
+    let tableShake = 0;
 
     let gameMode = 'bot';
     let matchActive = false;
@@ -332,31 +343,83 @@
         return String(n);
     }
 
-   function playSfx(type, intensity = 1) {
+    // سیستمی لەرینەوەی مۆبایل (Haptic Feedback) + Sub-bass Thump بۆ ئایفۆن
+    function triggerHaptic(type, intensity = 1) {
+        try {
+            const p = Math.min(1, Math.max(0.1, intensity));
+            if (navigator.vibrate) {
+                if (type === 'strike') {
+                    const ms = Math.round(16 + p * 38);
+                    navigator.vibrate([ms, 18, Math.round(ms * 0.45)]);
+                } else if (type === 'collide') {
+                    if (p > 0.16) navigator.vibrate(Math.round(5 + p * 16));
+                } else if (type === 'pocket') {
+                    navigator.vibrate([18, 28, 32]);
+                } else if (type === 'tick') {
+                    navigator.vibrate(4);
+                } else if (type === 'rail') {
+                    if (p > 0.22) navigator.vibrate(8);
+                }
+            }
+            if (type === 'strike' && p > 0.35) {
+                tableShake = Math.min(4.2, p * 3.6);
+            } else if (type === 'collide' && p > 0.55) {
+                tableShake = Math.max(tableShake, p * 2.1);
+            }
+        } catch (e) {}
+    }
+
+    function spawnImpactParticles(x, y, color, count = 10, speedMul = 1) {
+        for (let i = 0; i < count; i++) {
+            const ang = Math.random() * Math.PI * 2;
+            const spd = (0.7 + Math.random() * 2.4) * speedMul;
+            particles.push({
+                x, y,
+                vx: Math.cos(ang) * spd,
+                vy: Math.sin(ang) * spd,
+                r: 1.3 + Math.random() * 1.8,
+                alpha: 0.9,
+                color
+            });
+        }
+    }
+
+    function playSfx(type, intensity = 1) {
         if (!soundOn) return;
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
-            const vol = Math.min(1, Math.max(0.06, intensity));
+            const vol = Math.min(1, Math.max(0.05, intensity));
 
-            if (type === 'cue') {
-                // دەنگی لێدانی سەری چەرمی دارەکە لە تۆپی سپی
-                const bufSize = Math.floor(audioCtx.sampleRate * 0.035);
+            if (type === 'tick') {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(620 + vol * 400, now);
+                osc.frequency.exponentialRampToValueAtTime(180, now + 0.014);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.014);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.015);
+
+            } else if (type === 'cue') {
+                // دەنگی لێدانی سەری چەرمی دارەکە + لەرینەوەی قووڵ (Haptic Sub-Bass)
+                const bufSize = Math.floor(audioCtx.sampleRate * 0.036);
                 const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
                 const data = buf.getChannelData(0);
-                for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.25));
+                for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.24));
                 const noise = audioCtx.createBufferSource();
                 noise.buffer = buf;
 
                 const filter = audioCtx.createBiquadFilter();
                 filter.type = 'bandpass';
-                filter.frequency.setValueAtTime(1400, now);
-                filter.Q.setValueAtTime(2.5, now);
+                filter.frequency.setValueAtTime(1480, now);
+                filter.Q.setValueAtTime(2.4, now);
 
                 const gain = audioCtx.createGain();
-                gain.gain.setValueAtTime(vol * 0.75, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+                gain.gain.setValueAtTime(vol * 0.82, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.036);
 
                 noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
                 noise.start(now);
@@ -364,58 +427,66 @@
                 const thud = audioCtx.createOscillator();
                 const tGain = audioCtx.createGain();
                 thud.type = 'sine';
-                thud.frequency.setValueAtTime(280, now);
-                thud.frequency.exponentialRampToValueAtTime(95, now + 0.04);
-                tGain.gain.setValueAtTime(vol * 0.45, now);
-                tGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                thud.frequency.setValueAtTime(260, now);
+                thud.frequency.exponentialRampToValueAtTime(58, now + 0.055);
+                tGain.gain.setValueAtTime(vol * 0.65, now);
+                tGain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
                 thud.connect(tGain); tGain.connect(audioCtx.destination);
-                thud.start(now); thud.stop(now + 0.045);
+                thud.start(now); thud.stop(now + 0.06);
 
             } else if (type === 'hit') {
-                // دەنگی بەیەکدادانی تۆپە عاجییەکان (Phenolic Clack)
-                [2380, 3820, 5490].forEach((freq, idx) => {
+                // دەنگی ڕاستەقینەی بەیەکدادانی تۆپە عاجییەکان (Phenolic Resin Clack)
+                [2420, 3860, 5540].forEach((freq, idx) => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(freq, now);
-                    osc.frequency.exponentialRampToValueAtTime(freq * 0.84, now + 0.032);
-                    gain.gain.setValueAtTime((vol * 0.36) / (idx + 1), now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 0.84, now + 0.034);
+                    gain.gain.setValueAtTime((vol * 0.38) / (idx + 1), now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.034);
                     osc.connect(gain); gain.connect(audioCtx.destination);
-                    osc.start(now); osc.stop(now + 0.035);
+                    osc.start(now); osc.stop(now + 0.037);
                 });
 
+                const bodyOsc = audioCtx.createOscillator();
+                const bodyGain = audioCtx.createGain();
+                bodyOsc.type = 'triangle';
+                bodyOsc.frequency.setValueAtTime(520, now);
+                bodyOsc.frequency.exponentialRampToValueAtTime(160, now + 0.025);
+                bodyGain.gain.setValueAtTime(vol * 0.35, now);
+                bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+                bodyOsc.connect(bodyGain); bodyGain.connect(audioCtx.destination);
+                bodyOsc.start(now); bodyOsc.stop(now + 0.028);
+
             } else if (type === 'rail') {
-                // دەنگی بەرکەوتنی تۆپ بە قەراغی لاستیکیی مێزەکە
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(135, now);
-                osc.frequency.exponentialRampToValueAtTime(52, now + 0.075);
-                gain.gain.setValueAtTime(vol * 0.42, now);
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.075);
+                gain.gain.setValueAtTime(vol * 0.45, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 osc.start(now); osc.stop(now + 0.08);
 
             } else if (type === 'pocket') {
-                // دەنگی کەوتنەخوارەوە و گلۆربوونەوەی تۆپ لە ناو کونەکەدا
-                [0, 0.075, 0.14].forEach((delay, idx) => {
+                [0, 0.075, 0.145].forEach((delay, idx) => {
                     const t = now + delay;
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
                     osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(220 - idx * 35, t);
-                    osc.frequency.exponentialRampToValueAtTime(68, t + 0.09);
-                    gain.gain.setValueAtTime(0.45 / (idx + 1), t);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+                    osc.frequency.setValueAtTime(225 - idx * 38, t);
+                    osc.frequency.exponentialRampToValueAtTime(65, t + 0.095);
+                    gain.gain.setValueAtTime(0.48 / (idx + 1), t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.095);
                     osc.connect(gain); gain.connect(audioCtx.destination);
-                    osc.start(t); osc.stop(t + 0.095);
+                    osc.start(t); osc.stop(t + 0.1);
                 });
             }
         } catch (e) {}
     }
 
-   function resizeCanvas() {
+    function resizeCanvas() {
         const holder = document.getElementById('tableStageHolder');
         if (!holder) return;
         const isPortraitRotated = window.innerHeight > window.innerWidth;
@@ -443,24 +514,30 @@
         canvas.height = Math.round(LOGICAL_H * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
+
     window.addEventListener('resize', resizeCanvas);
 
     function setupHorizontalRack() {
         balls = [];
         tubeBalls = [];
+        particles = [];
 
         balls.push({
             num: 0,
             x: RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25,
             y: TABLE_H / 2,
             vx: 0, vy: 0,
+            rollPhase: 0,
+            rollAngle: 0,
+            stripeAngle: 0,
+            hitFlash: 0,
             pocketed: false
         });
 
         const apexX = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.74;
         const apexY = TABLE_H / 2;
-        const colDx = BALL_R * Math.sqrt(3) + 0.45;
-        const rowDy = BALL_R * 2 + 0.45;
+        const colDx = BALL_R * Math.sqrt(3) + 0.35;
+        const rowDy = BALL_R * 2 + 0.35;
 
         const rackOrder = [
             1,
@@ -481,6 +558,10 @@
                     x: x,
                     y: startY + row * rowDy,
                     vx: 0, vy: 0,
+                    rollPhase: (num * 0.42) % (Math.PI * 2),
+                    rollAngle: (num * 1.1) % (Math.PI * 2),
+                    stripeAngle: (num * 0.65) % (Math.PI * 2),
+                    hitFlash: 0,
                     pocketed: false
                 });
             }
@@ -551,6 +632,7 @@
         playerGroups = { 1: null, 2: null };
         ballInHand = false;
         isMoving = false;
+        cueStrikeAnim = null;
         matchActive = true;
         aimAngle = 0;
         resetSpin();
@@ -688,7 +770,6 @@
             if (s.cueBallPos) {
                 const cb = getCueBall();
                 if (cb) { cb.x = s.cueBallPos.x; cb.y = s.cueBallPos.y; cb.pocketed = false; }
-                
             }
             aimAngle = s.angle;
             spinX = s.spinX || 0;
@@ -783,7 +864,7 @@
             const isGone = !bObj || bObj.pocketed;
             if (isGone) return '<div class="ball-slot-circle"></div>';
             const isStripe = n >= 9;
-            const col = BALL_COLORS[n];
+            const col = (BALL_COLORS[n] && BALL_COLORS[n].base) || '#eab308';
             return `<div class="ball-slot-circle ${isStripe ? 'stripe' : ''}" style="--bcol:${col}; background:${isStripe ? '#fff' : col};"><span>${n}</span></div>`;
         }).join('');
     }
@@ -831,16 +912,17 @@
     }
 
     function getCueBall() { return balls.find(b => b.num === 0); }
-    function isMyTurn() { return matchActive && !isMoving && currentTurn === myPlayerNum; }
+    function isMyTurn() { return matchActive && !isMoving && !cueStrikeAnim && currentTurn === myPlayerNum; }
 
-    function launchShot(powerRatio, broadcast = true) {
+    function executePhysicalShot(powerRatio, broadcast = true) {
         const cb = getCueBall();
         if (!cb || cb.pocketed || isMoving) return;
 
-        const maxCueSpeed = 22.0 + (selectedCue.force || 3) * 0.7;
+        const maxCueSpeed = 22.8 + (selectedCue.force || 3) * 0.72;
         const speed = Math.max(2.0, powerRatio * maxCueSpeed);
         cb.vx = Math.cos(aimAngle) * speed;
         cb.vy = Math.sin(aimAngle) * speed;
+        cb.hitFlash = 1.0;
 
         shotFirstHitBall = null;
         shotPocketedBalls = [];
@@ -848,7 +930,16 @@
         ballInHand = false;
         isMoving = true;
 
+        // دەنگ + لەرینەوەی مۆبایل (Haptic Strike) + تۆزی گەچی سەر دارەکە
         playSfx('cue', powerRatio);
+        triggerHaptic('strike', powerRatio);
+        spawnImpactParticles(
+            cb.x - Math.cos(aimAngle) * BALL_R,
+            cb.y - Math.sin(aimAngle) * BALL_R,
+            '#e0f2fe',
+            Math.round(8 + powerRatio * 12),
+            0.8 + powerRatio * 1.2
+        );
 
         if (broadcast && gameMode === 'online' && roomRef) {
             const shotId = Date.now();
@@ -863,6 +954,20 @@
                 cueBallPos: { x: cb.x, y: cb.y }
             });
         }
+    }
+
+    // دەستپێکردنی ئەنیمەیشنی هاتنەپێشەوەی دارەکە بەرەو تۆپی سپی
+    function launchShot(powerRatio, broadcast = true) {
+        const cb = getCueBall();
+        if (!cb || cb.pocketed || isMoving || cueStrikeAnim) return;
+
+        cueStrikeAnim = {
+            startOffset: BALL_R + 6 + powerRatio * 68,
+            curOffset: BALL_R + 6 + powerRatio * 68,
+            powerRatio,
+            broadcast,
+            progress: 0
+        };
     }
 
     function onBallsStopped() {
@@ -887,13 +992,13 @@
             foul = true;
             reason = 'فاول! تۆپی سپی کەوتە ناو سەبەتە';
             const cb = getCueBall();
-           if (cb) {
-            cb.pocketed = false;
-            cb.sinking = null;
-            cb.vx = 0; cb.vy = 0;
-            cb.x = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
-            cb.y = TABLE_H / 2;
-        }
+            if (cb) {
+                cb.pocketed = false;
+                cb.sinking = null;
+                cb.vx = 0; cb.vy = 0;
+                cb.x = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
+                cb.y = TABLE_H / 2;
+            }
         } else if (!shotFirstHitBall) {
             foul = true;
             reason = 'فاول! تۆپی سپی بەر هیچ تۆپێک نەکەوت';
@@ -1021,6 +1126,35 @@
     }
 
     function stepPhysics() {
+        // ئەنیمەیشنی هاتنەپێشەوەی دارەکە بەر لە دەستپێکردنی جووڵەی تۆپەکە
+        if (cueStrikeAnim) {
+            cueStrikeAnim.progress += 0.28;
+            if (cueStrikeAnim.progress >= 1) {
+                const s = cueStrikeAnim;
+                cueStrikeAnim = null;
+                executePhysicalShot(s.powerRatio, s.broadcast);
+            } else {
+                const ease = Math.pow(cueStrikeAnim.progress, 1.8);
+                cueStrikeAnim.curOffset = cueStrikeAnim.startOffset * (1 - ease) + (BALL_R + 1.5) * ease;
+            }
+        }
+
+        if (tableShake > 0.05) {
+            tableShake *= 0.82;
+        } else {
+            tableShake = 0;
+        }
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const pt = particles[i];
+            pt.x += pt.vx;
+            pt.y += pt.vy;
+            pt.vx *= 0.92;
+            pt.vy *= 0.92;
+            pt.alpha -= 0.04;
+            if (pt.alpha <= 0) particles.splice(i, 1);
+        }
+
         if (!isMoving) return;
 
         const STEPS = 8;
@@ -1032,32 +1166,79 @@
         for (let s = 0; s < STEPS; s++) {
             for (const b of balls) {
                 if (b.pocketed) continue;
-                b.x += b.vx / STEPS;
-                b.y += b.vy / STEPS;
-                b.vx *= Math.pow(0.9865, 1 / STEPS);
-                b.vy *= Math.pow(0.9865, 1 / STEPS);
 
+                const stepDx = b.vx / STEPS;
+                const stepDy = b.vy / STEPS;
+                b.x += stepDx;
+                b.y += stepDy;
+
+                // فیزیای خولانەوەی تۆپەکان (3D Rolling Physics) بەپێی دووریی بڕاو و نیوەتیرەی تۆپەکە
+                const stepDist = Math.hypot(stepDx, stepDy);
+                if (stepDist > 0.0005) {
+                    const moveAng = Math.atan2(stepDy, stepDx);
+                    b.rollAngle = moveAng;
+                    b.rollPhase = (b.rollPhase + (stepDist / BALL_R) * 1.15) % (Math.PI * 2);
+
+                    let diff = moveAng - (b.stripeAngle || 0);
+                    while (diff > Math.PI) diff -= Math.PI * 2;
+                    while (diff < -Math.PI) diff += Math.PI * 2;
+                    b.stripeAngle = (b.stripeAngle || 0) + diff * 0.06;
+                }
+
+                // خشاندنی سروشتیی سەر قوماشی مێزەکە (Cloth Friction + Rolling Resistance)
+                const spd = Math.hypot(b.vx, b.vy);
+                const friction = spd < 0.85 ? 0.980 : 0.9875;
+                b.vx *= Math.pow(friction, 1 / STEPS);
+                b.vy *= Math.pow(friction, 1 / STEPS);
+
+                // ڕاکێشانی لێواری کونەکان (Pocket Gravity Lip)
                 for (const p of POCKETS) {
-                    if (Math.hypot(b.x - p.x, b.y - p.y) < POCKET_R) {
+                    const pdx = p.x - b.x;
+                    const pdy = p.y - b.y;
+                    const pDist = Math.hypot(pdx, pdy);
+
+                    if (pDist < POCKET_R + 4 && pDist >= POCKET_R - 1) {
+                        b.vx += (pdx / pDist) * 0.045;
+                        b.vy += (pdy / pDist) * 0.045;
+                    }
+
+                    if (pDist < POCKET_R - 1) {
                         b.pocketed = true;
                         b.sinking = { px: p.x, py: p.y, startX: b.x, startY: b.y, t: 0 };
                         b.vx = 0; b.vy = 0;
-                        playSfx('pocket', 0.9);
+                        playSfx('pocket', 0.95);
+                        triggerHaptic('pocket', 1);
                         if (b.num === 0) {
                             cueBallPocketed = true;
                         } else {
                             shotPocketedBalls.push(b.num);
                             tubeBalls.push({ num: b.num, progress: 0 });
                         }
-                    break;
+                        break;
                     }
                 }
                 if (b.pocketed) continue;
 
-                if (b.x < minX) { b.x = minX; b.vx = -b.vx * 0.82; playSfx('rail', Math.abs(b.vx) / 15); }
-                if (b.x > maxX) { b.x = maxX; b.vx = -b.vx * 0.82; playSfx('rail', Math.abs(b.vx) / 15); }
-                if (b.y < minY) { b.y = minY; b.vy = -b.vy * 0.82; playSfx('rail', Math.abs(b.vy) / 15); }
-                if (b.y > maxY) { b.y = maxY; b.vy = -b.vy * 0.82; playSfx('rail', Math.abs(b.vy) / 15); }
+                if (b.x < minX) {
+                    b.x = minX; b.vx = -b.vx * 0.83;
+                    const rInt = Math.abs(b.vx) / 14;
+                    playSfx('rail', rInt); triggerHaptic('rail', rInt);
+                }
+                if (b.x > maxX) {
+                    b.x = maxX; b.vx = -b.vx * 0.83;
+                    const rInt = Math.abs(b.vx) / 14;
+                    playSfx('rail', rInt); triggerHaptic('rail', rInt);
+                }
+                if (b.y < minY) {
+                    b.y = minY; b.vy = -b.vy * 0.83;
+                    const rInt = Math.abs(b.vy) / 14;
+                    playSfx('rail', rInt); triggerHaptic('rail', rInt);
+                }
+                if (b.y > maxY) {
+                    b.y = maxY; b.vy = -b.vy * 0.83;
+                    const rInt = Math.abs(b.vy) / 14;
+                    playSfx('rail', rInt); triggerHaptic('rail', rInt);
+                }
             }
 
             for (let i = 0; i < balls.length; i++) {
@@ -1090,28 +1271,45 @@
                             b1.vx -= p * nx; b1.vy -= p * ny;
                             b2.vx += p * nx; b2.vy += p * ny;
 
-                           if ((b1.num === 0 || b2.num === 0) && (spinX !== 0 || spinY !== 0)) {
+                            const impactRatio = Math.min(1, p / 13);
+                            b1.hitFlash = Math.max(b1.hitFlash || 0, impactRatio);
+                            b2.hitFlash = Math.max(b2.hitFlash || 0, impactRatio);
+
+                            if ((b1.num === 0 || b2.num === 0) && (spinX !== 0 || spinY !== 0)) {
                                 const cueB = b1.num === 0 ? b1 : b2;
                                 const dirX = b1.num === 0 ? nx : -nx;
                                 const dirY = b1.num === 0 ? ny : -ny;
                                 const spinForce = (2.5 + (selectedCue.spin || 3) * 0.45) * (p / 12);
 
-                                // خاڵ لە خوارەوە (spinY > 0) = گەڕانەوە بۆ دواوە (Backspin) | خاڵ لە سەرەوە (spinY < 0) = پێشەوە (Topspin)
                                 cueB.vx += (-dirX * spinY * spinForce * 1.45) + (-dirY * spinX * spinForce);
                                 cueB.vy += (-dirY * spinY * spinForce * 1.45) + (dirX * spinX * spinForce);
                                 spinX *= 0.15;
                                 spinY *= 0.15;
                             }
-                            playSfx('hit', Math.min(1, p / 12));
+
+                            playSfx('hit', impactRatio);
+                            triggerHaptic('collide', impactRatio);
+
+                            if (impactRatio > 0.35) {
+                                spawnImpactParticles(
+                                    (b1.x + b2.x) * 0.5,
+                                    (b1.y + b2.y) * 0.5,
+                                    '#ffffff',
+                                    Math.round(4 + impactRatio * 6),
+                                    0.65
+                                );
+                            }
                         }
                     }
                 }
             }
         }
-let movingAny = false;
+
+        let movingAny = false;
         for (const b of balls) {
+            if (b.hitFlash > 0) b.hitFlash = Math.max(0, b.hitFlash - 0.08);
             if (b.pocketed) continue;
-            if (Math.hypot(b.vx, b.vy) < 0.045) {
+            if (Math.hypot(b.vx, b.vy) < 0.042) {
                 b.vx = 0; b.vy = 0;
             } else {
                 movingAny = true;
@@ -1122,6 +1320,13 @@ let movingAny = false;
 
     function drawScene() {
         ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
+
+        ctx.save();
+        if (tableShake > 0.05) {
+            const sx = (Math.random() - 0.5) * tableShake;
+            const sy = (Math.random() - 0.5) * tableShake;
+            ctx.translate(sx, sy);
+        }
 
         drawRightBallReturnTube();
 
@@ -1149,15 +1354,16 @@ let movingAny = false;
         ctx.moveTo(headX, RAIL_Y);
         ctx.lineTo(headX, TABLE_H - RAIL_Y);
         ctx.stroke();
-        // قووڵایی تاریکی ٦ کونەکەی سەر مێزەکە
+
+        // قووڵایی تاریکی ٦ کونەکەی سەر مێزەکە لە ژێر تۆپەکانەوە
         for (const p of POCKETS) {
-            const pg = ctx.createRadialGradient(p.x, p.y, 4, p.x, p.y, POCKET_R - 2);
+            const pg = ctx.createRadialGradient(p.x, p.y, 4, p.x, p.y, POCKET_R - 1);
             pg.addColorStop(0, '#000000');
-            pg.addColorStop(0.75, 'rgba(0, 0, 0, 0.92)');
+            pg.addColorStop(0.75, 'rgba(0, 0, 0, 0.94)');
             pg.addColorStop(1, 'rgba(0, 0, 0, 0)');
             ctx.fillStyle = pg;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, POCKET_R - 2, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, POCKET_R - 1, 0, Math.PI * 2);
             ctx.fill();
         }
 
@@ -1169,8 +1375,9 @@ let movingAny = false;
                 const sx = b.sinking.startX + (b.sinking.px - b.sinking.startX) * ease;
                 const sy = b.sinking.startY + (b.sinking.py - b.sinking.startY) * ease;
                 const sr = Math.max(2.5, BALL_R * (1 - t * 0.75));
+                b.rollPhase = (b.rollPhase + 0.25) % (Math.PI * 2);
 
-                draw3DBall(b.num, sx, sy, sr);
+                draw3DBall(b.num, sx, sy, sr, b);
 
                 ctx.save();
                 ctx.beginPath();
@@ -1181,8 +1388,19 @@ let movingAny = false;
 
                 if (t >= 1) b.sinking = null;
             } else if (!b.pocketed) {
-                draw3DBall(b.num, b.x, b.y, BALL_R);
+                draw3DBall(b.num, b.x, b.y, BALL_R, b);
             }
+        }
+
+        // کێشانی تۆزی گەچ و بریقەی بەرکەوتنی تۆپەکان
+        for (const pt of particles) {
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, pt.alpha);
+            ctx.fillStyle = pt.color;
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, pt.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
         }
 
         const cb = getCueBall();
@@ -1196,9 +1414,11 @@ let movingAny = false;
             ctx.setLineDash([]);
         }
 
-        if (cb && !cb.pocketed && isMyTurn() && !draggingCueBall) {
+        if (cb && !cb.pocketed && (isMyTurn() || cueStrikeAnim) && !draggingCueBall) {
             drawAimAndCueStick(cb);
         }
+
+        ctx.restore();
     }
 
     function drawRightBallReturnTube() {
@@ -1237,17 +1457,34 @@ let movingAny = false;
 
         tubeBalls.forEach((tb, idx) => {
             const targetY = botY - 4 - idx * 17;
-            if (tb.progress < 1) tb.progress = Math.min(1, tb.progress + 0.06);
+            if (tb.progress < 1) tb.progress = Math.min(1, tb.progress + 0.055);
             const curY = topY + (targetY - topY) * tb.progress;
-            draw3DBall(tb.num, tubeX, curY, 8.2);
+            const fakeBall = {
+                rollPhase: tb.progress * Math.PI * 6,
+                rollAngle: Math.PI / 2,
+                stripeAngle: 0
+            };
+            draw3DBall(tb.num, tubeX, curY, 8.2, fakeBall);
         });
         ctx.restore();
     }
-function draw3DBall(num, x, y, r) {
-        // سێبەری قووڵی تۆپەکە لەسەر مێزەکە
+
+    // وێنەکێشانی ٣ ڕەهەندیی تۆپەکان بە خولانەوەی ڕاستەقینەی ژمارە و هێڵەکانیان (3D Rolling Sphere)
+    function draw3DBall(num, x, y, r, ballObj = null) {
+        const phase = ballObj ? (ballObj.rollPhase || 0) : 0;
+        const rAng = ballObj ? (ballObj.rollAngle || 0) : 0;
+        const sAng = ballObj ? (ballObj.stripeAngle || rAng) : 0;
+        const cosR = Math.cos(rAng);
+        const sinR = Math.sin(rAng);
+
+        // ١. سێبەری نەرمی ژێر تۆپەکە لەسەر قوماشی مێزەکە
+        const shGrad = ctx.createRadialGradient(x + 2.2, y + 2.8, r * 0.1, x + 2.2, y + 2.8, r * 1.15);
+        shGrad.addColorStop(0, 'rgba(0, 0, 0, 0.62)');
+        shGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.25)');
+        shGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = shGrad;
         ctx.beginPath();
-        ctx.arc(x + 2.2, y + 3, r * 1.02, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
+        ctx.arc(x + 2.2, y + 2.8, r * 1.15, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.save();
@@ -1256,54 +1493,131 @@ function draw3DBall(num, x, y, r) {
         ctx.clip();
 
         if (num === 0) {
-            ctx.fillStyle = '#f8fafc';
+            // تۆپی سپی عاجی (3D Ivory Cue Ball)
+            const cueGrad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+            cueGrad.addColorStop(0, '#ffffff');
+            cueGrad.addColorStop(0.72, '#f1f5f9');
+            cueGrad.addColorStop(1, '#94a3b8');
+            ctx.fillStyle = cueGrad;
             ctx.fillRect(x - r, y - r, r * 2, r * 2);
-            // خاڵە سوورەکەی Spin لەسەر تۆپی سپی
-            ctx.fillStyle = '#dc2626';
-            ctx.beginPath();
-            ctx.arc(x + spinX * (r * 0.45), y + spinY * (r * 0.45), 2.2, 0, Math.PI * 2);
-            ctx.fill();
+
+            // خولانەوەی خاڵە سوورەکانی سەر تۆپی سپی لە کاتی ڕۆیشتندا (Pro Measles Cue Ball)
+            const spots = [0, Math.PI * 0.66, Math.PI * 1.33];
+            spots.forEach((offset, idx) => {
+                const p = phase + offset;
+                const z = Math.cos(p);
+                if (z > 0.05) {
+                    const proj = Math.sin(p) * r * 0.68;
+                    const sx = x + cosR * proj + (idx === 0 ? spinX * r * 0.35 : 0);
+                    const sy = y + sinR * proj + (idx === 0 ? spinY * r * 0.35 : 0);
+
+                    ctx.save();
+                    ctx.translate(sx, sy);
+                    ctx.rotate(rAng);
+                    ctx.scale(Math.max(0.25, z), 1);
+                    ctx.fillStyle = '#dc2626';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.18, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+            });
         } else {
-            const col = BALL_COLORS[num] || '#facc15';
-            if (num >= 9) {
-                ctx.fillStyle = '#f8fafc';
+            const pal = BALL_COLORS[num] || BALL_COLORS[1];
+            const isStripe = num >= 9;
+
+            if (isStripe) {
+                // بناغەی سپی عاجی بۆ تۆپە نیوەکان (9-15)
+                const ivGrad = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.1, x, y, r);
+                ivGrad.addColorStop(0, '#ffffff');
+                ivGrad.addColorStop(0.75, '#f1f5f9');
+                ivGrad.addColorStop(1, '#94a3b8');
+                ctx.fillStyle = ivGrad;
                 ctx.fillRect(x - r, y - r, r * 2, r * 2);
-                ctx.fillStyle = col;
-                ctx.fillRect(x - r, y - r * 0.56, r * 2, r * 1.12);
+
+                // هێڵە ڕەنگاوڕەنگەکەی ناوەڕاست کە لەگەڵ خولانەوەی تۆپەکە دەجوڵێت و دەسوڕێت
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(sAng);
+                const bandShift = Math.sin(phase) * r * 0.36;
+                const bGrad = ctx.createLinearGradient(0, -r, 0, r);
+                bGrad.addColorStop(0, pal.light);
+                bGrad.addColorStop(0.5, pal.base);
+                bGrad.addColorStop(1, pal.dark);
+                ctx.fillStyle = bGrad;
+                ctx.beginPath();
+                ctx.ellipse(bandShift * 0.45, 0, r * 1.15, r * 0.62, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
             } else {
-                ctx.fillStyle = col;
+                // تۆپە پڕەکان (1-8) بە قووڵایی ٣ ڕەهەندی
+                const bGrad = ctx.createRadialGradient(x - r * 0.32, y - r * 0.32, r * 0.08, x, y, r);
+                bGrad.addColorStop(0, pal.light);
+                bGrad.addColorStop(0.55, pal.base);
+                bGrad.addColorStop(1, pal.dark);
+                ctx.fillStyle = bGrad;
                 ctx.fillRect(x - r, y - r, r * 2, r * 2);
             }
 
-            // بازنەی سپی ناوەڕاست بۆ ژمارەکە
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
-            ctx.beginPath();
-            ctx.arc(x, y, r * 0.48, 0, Math.PI * 2);
-            ctx.fill();
+            // بازنەی سپی ژمارەکە کە لە دیوی پێشەوە و پشتەوەی تۆپەکە بە ٣ ڕەهەندی دەخولێتەوە
+            [phase, phase + Math.PI].forEach(p => {
+                const z = Math.cos(p);
+                if (z > 0.08) {
+                    const offset = Math.sin(p) * (r * 0.72);
+                    const nx = x + cosR * offset;
+                    const ny = y + sinR * offset;
+                    const foreshorten = Math.max(0.22, z);
 
-            ctx.fillStyle = '#09090b';
-            ctx.font = `900 ${Math.round(r * 0.68)}px Vazirmatn, sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(String(num), x, y + 0.6);
+                    ctx.save();
+                    ctx.translate(nx, ny);
+                    ctx.rotate(rAng);
+                    ctx.scale(foreshorten, 1);
+
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.48, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.rotate(-rAng);
+                    ctx.fillStyle = '#09090b';
+                    ctx.font = `900 ${Math.round(r * 0.66)}px Vazirmatn, sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(String(num), 0, 0.5);
+                    ctx.restore();
+                }
+            });
         }
 
-        // سێبەری دەوری تۆپەکە و بریقەی سەرەوەی چەپ (3D Glossy Specular)
-        const shade = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.15, x, y, r);
-        shade.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
-        shade.addColorStop(0.65, 'rgba(0, 0, 0, 0.05)');
-        shade.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
+        // سێبەری قووڵی چواردەوری گۆیەکە (3D Ambient Occlusion)
+        const shade = ctx.createRadialGradient(x - r * 0.28, y - r * 0.28, r * 0.15, x, y, r);
+        shade.addColorStop(0, 'rgba(255, 255, 255, 0.12)');
+        shade.addColorStop(0.68, 'rgba(0, 0, 0, 0.04)');
+        shade.addColorStop(1, 'rgba(0, 0, 0, 0.58)');
         ctx.fillStyle = shade;
         ctx.fillRect(x - r, y - r, r * 2, r * 2);
 
-        // خاڵی بریقەی ڕووناکی سەر تۆپەکە
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
+        // بریقەی سەرەکی گڵۆپی سەر مێزەکە (Glossy Specular Highlight — جێگیرە لە کاتی خولانەوەدا)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.84)';
         ctx.beginPath();
-        ctx.ellipse(x - r * 0.34, y - r * 0.36, r * 0.26, r * 0.15, -Math.PI / 4, 0, Math.PI * 2);
+        ctx.ellipse(x - r * 0.34, y - r * 0.36, r * 0.27, r * 0.14, -Math.PI / 4, 0, Math.PI * 2);
         ctx.fill();
+
+        // بریقەی دووەمی ورد
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+        ctx.beginPath();
+        ctx.arc(x - r * 0.15, y - r * 0.52, r * 0.07, 0, Math.PI * 2);
+        ctx.fill();
+
+        // فلاشکردنی کاتی بەیەکدادانی بەهێز
+        if (ballObj && ballObj.hitFlash > 0.05) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${ballObj.hitFlash * 0.35})`;
+            ctx.fillRect(x - r, y - r, r * 2, r * 2);
+        }
 
         ctx.restore();
     }
+
     function drawAimAndCueStick(cb) {
         const dx = Math.cos(aimAngle);
         const dy = Math.sin(aimAngle);
@@ -1345,63 +1659,63 @@ function draw3DBall(num, x, y, r) {
             }
         }
 
-        ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
-        ctx.lineWidth = 1.7;
-        ctx.beginPath();
-        ctx.moveTo(cb.x, cb.y);
-        ctx.lineTo(ex, ey);
-        ctx.stroke();
-        
-
-        ctx.strokeStyle = illegalTarget ? '#ef4444' : '#ffffff';
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        ctx.arc(ex, ey, BALL_R, 0, Math.PI * 2);
-        ctx.stroke();
-
-        if (hitBall && !illegalTarget) {
-            const tx = hitBall.x - ex, ty = hitBall.y - ey;
-            const tl = Math.hypot(tx, ty) || 1;
-            const nx = tx / tl, ny = ty / tl;
-            const aimLen = 42 + (selectedCue.aim || 3) * 13;
-
-            // ١. هێڵی ئاڕاستەی تۆپە لێدراوەکە (زەرد)
-            ctx.strokeStyle = '#fde047';
-            ctx.lineWidth = 2.1;
+        if (!cueStrikeAnim) {
+            ctx.save();
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+            ctx.lineWidth = 1.7;
             ctx.beginPath();
-            ctx.moveTo(hitBall.x, hitBall.y);
-            ctx.lineTo(hitBall.x + nx * aimLen, hitBall.y + ny * aimLen);
+            ctx.moveTo(cb.x, cb.y);
+            ctx.lineTo(ex, ey);
             ctx.stroke();
 
-            // ٢. هێڵی ئاڕاستەی تۆپی سپی خۆت دوای بەرکەوتن (بەپێی گۆشە و Spin)
-            const dot = dx * nx + dy * ny;
-            let cbx = dx - dot * nx;
-            let cby = dy - dot * ny;
-            const spinPower = (0.45 + (selectedCue.spin || 3) * 0.06);
-            cbx += (-nx * spinY * spinPower) + (-ny * spinX * spinPower * 0.8);
-            cby += (-ny * spinY * spinPower) + (nx * spinX * spinPower * 0.8);
+            ctx.strokeStyle = illegalTarget ? '#ef4444' : '#ffffff';
+            ctx.lineWidth = 1.8;
+            ctx.beginPath();
+            ctx.arc(ex, ey, BALL_R, 0, Math.PI * 2);
+            ctx.stroke();
 
-            const cbLen = Math.hypot(cbx, cby);
-            if (cbLen > 0.04) {
-                const cueLineLen = aimLen * 0.72;
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-                ctx.lineWidth = 1.7;
-                ctx.setLineDash([4, 3]);
+            if (hitBall && !illegalTarget) {
+                const tx = hitBall.x - ex, ty = hitBall.y - ey;
+                const tl = Math.hypot(tx, ty) || 1;
+                const nx = tx / tl, ny = ty / tl;
+                const aimLen = 42 + (selectedCue.aim || 3) * 13;
+
+                ctx.strokeStyle = '#fde047';
+                ctx.lineWidth = 2.1;
                 ctx.beginPath();
-                ctx.moveTo(ex, ey);
-                ctx.lineTo(ex + (cbx / cbLen) * cueLineLen, ey + (cby / cbLen) * cueLineLen);
+                ctx.moveTo(hitBall.x, hitBall.y);
+                ctx.lineTo(hitBall.x + nx * aimLen, hitBall.y + ny * aimLen);
                 ctx.stroke();
-                ctx.setLineDash([]);
-            }
-        }
-        ctx.restore();
 
-        // وێنەکێشانی دارە ٣ ڕەهەندییەکە بەبێ هیچ باکگراوندێک و ڕێک لەسەر هێڵی نیشانەگرتن
+                const dot = dx * nx + dy * ny;
+                let cbx = dx - dot * nx;
+                let cby = dy - dot * ny;
+                const spinPower = (0.45 + (selectedCue.spin || 3) * 0.06);
+                cbx += (-nx * spinY * spinPower) + (-ny * spinX * spinPower * 0.8);
+                cby += (-ny * spinY * spinPower) + (nx * spinX * spinPower * 0.8);
+
+                const cbLen = Math.hypot(cbx, cby);
+                if (cbLen > 0.04) {
+                    const cueLineLen = aimLen * 0.72;
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+                    ctx.lineWidth = 1.7;
+                    ctx.setLineDash([4, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(ex, ey);
+                    ctx.lineTo(ex + (cbx / cbLen) * cueLineLen, ey + (cby / cbLen) * cueLineLen);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
+            }
+            ctx.restore();
+        }
+
         ctx.save();
         ctx.translate(cb.x, cb.y);
         ctx.rotate(aimAngle + Math.PI);
-        const offset = BALL_R + 6 + pullPower * 65;
+        const offset = cueStrikeAnim
+            ? cueStrikeAnim.curOffset
+            : (BALL_R + 6 + pullPower * 68);
 
         const sprite = cueSprites[selectedCue.id];
         if (sprite && sprite.tableCanvas) {
@@ -1519,6 +1833,14 @@ function draw3DBall(num, x, y, r) {
         pFill.style.height = `${pullPower * 100}%`;
         const maxT = pRail.clientHeight - 42;
         pKnob.style.top = `${4 + pullPower * maxT}px`;
+
+        // چرکە چرکی هەستپێکراو (Haptic Tension Ticks) لە کاتی ڕاکێشانی هێزی دارەکەدا
+        const notch = Math.floor(pullPower * 10);
+        if (pullingPower && notch !== lastPowerNotch && notch > 0) {
+            lastPowerNotch = notch;
+            triggerHaptic('tick', pullPower);
+            playSfx('tick', pullPower);
+        }
     }
 
     function updatePowerFromClient(e) {
@@ -1535,6 +1857,7 @@ function draw3DBall(num, x, y, r) {
     function releasePower() {
         if (!pullingPower) return;
         pullingPower = false;
+        lastPowerNotch = 0;
         if (pullPower > 0.06 && isMyTurn()) {
             const p = pullPower;
             setPowerVisual(0);
@@ -1759,12 +2082,6 @@ function draw3DBall(num, x, y, r) {
     };
 
     window.addEventListener('DOMContentLoaded', () => {
-        // ڕاگرتنی گەڕانەوەی بەهەڵەی مۆبایل (Swipe Back) لە کاتی نیشانەگرتن و لێداندا
-        document.documentElement.style.overscrollBehavior = 'none';
-        document.body.style.overscrollBehavior = 'none';
-        document.body.style.touchAction = 'none';
-
-        // ڕاگرتنی گەڕانەوەی بەهەڵەی مۆبایل (Swipe Back) بێ ئەوەی دوگمەکان بوەستن
         document.documentElement.style.overscrollBehavior = 'none';
         document.body.style.overscrollBehavior = 'none';
 
@@ -1783,7 +2100,8 @@ function draw3DBall(num, x, y, r) {
                 e.preventDefault();
             }
         }, { passive: false });
-       resizeCanvas();
+
+        resizeCanvas();
         setupHorizontalRack();
         renderLobbyCarousel();
         render7Slots('p1BallSlots', null);
