@@ -641,5 +641,18 @@ window.addEventListener('pageshow', syncHomeProfileAvatar);
 <script src="settings-engine.js"></script>
 <script src="friends-engine.js"></script>
 <script src="chat-engine.js"></script>
+<script>
+    window.addEventListener('pagehide', function () {
+        if (window.firebase && firebase.apps && firebase.apps.length) {
+            try { firebase.database().goOffline(); } catch (e) {}
+        }
+    });
+
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted && window.firebase && firebase.apps && firebase.apps.length) {
+            try { firebase.database().goOnline(); } catch (e) {}
+        }
+    });
+</script>
 </body>
 </html>
