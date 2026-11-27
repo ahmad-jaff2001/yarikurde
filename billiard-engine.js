@@ -332,39 +332,85 @@
         return String(n);
     }
 
-    function playSfx(type, intensity = 1) {
+   function playSfx(type, intensity = 1) {
         if (!soundOn) return;
         try {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') audioCtx.resume();
             const now = audioCtx.currentTime;
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
+            const vol = Math.min(1, Math.max(0.06, intensity));
 
-            const vol = Math.min(1, Math.max(0.05, intensity));
-            if (type === 'hit') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(540, now);
-                osc.frequency.exponentialRampToValueAtTime(145, now + 0.045);
-                gain.gain.setValueAtTime(vol * 0.45, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-                osc.start(now); osc.stop(now + 0.05);
+            if (type === 'cue') {
+                // دەنگی لێدانی سەری چەرمی دارەکە لە تۆپی سپی
+                const bufSize = Math.floor(audioCtx.sampleRate * 0.035);
+                const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize * 0.25));
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buf;
+
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(1400, now);
+                filter.Q.setValueAtTime(2.5, now);
+
+                const gain = audioCtx.createGain();
+                gain.gain.setValueAtTime(vol * 0.75, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+                noise.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
+                noise.start(now);
+
+                const thud = audioCtx.createOscillator();
+                const tGain = audioCtx.createGain();
+                thud.type = 'sine';
+                thud.frequency.setValueAtTime(280, now);
+                thud.frequency.exponentialRampToValueAtTime(95, now + 0.04);
+                tGain.gain.setValueAtTime(vol * 0.45, now);
+                tGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                thud.connect(tGain); tGain.connect(audioCtx.destination);
+                thud.start(now); thud.stop(now + 0.045);
+
+            } else if (type === 'hit') {
+                // دەنگی بەیەکدادانی تۆپە عاجییەکان (Phenolic Clack)
+                [2380, 3820, 5490].forEach((freq, idx) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.frequency.exponentialRampToValueAtTime(freq * 0.84, now + 0.032);
+                    gain.gain.setValueAtTime((vol * 0.36) / (idx + 1), now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(now); osc.stop(now + 0.035);
+                });
+
             } else if (type === 'rail') {
+                // دەنگی بەرکەوتنی تۆپ بە قەراغی لاستیکیی مێزەکە
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(165, now);
-                osc.frequency.exponentialRampToValueAtTime(65, now + 0.06);
-                gain.gain.setValueAtTime(vol * 0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-                osc.start(now); osc.stop(now + 0.065);
+                osc.frequency.setValueAtTime(135, now);
+                osc.frequency.exponentialRampToValueAtTime(52, now + 0.075);
+                gain.gain.setValueAtTime(vol * 0.42, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.075);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now); osc.stop(now + 0.08);
+
             } else if (type === 'pocket') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(290, now);
-                osc.frequency.exponentialRampToValueAtTime(115, now + 0.16);
-                gain.gain.setValueAtTime(0.42, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-                osc.start(now); osc.stop(now + 0.17);
+                // دەنگی کەوتنەخوارەوە و گلۆربوونەوەی تۆپ لە ناو کونەکەدا
+                [0, 0.075, 0.14].forEach((delay, idx) => {
+                    const t = now + delay;
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220 - idx * 35, t);
+                    osc.frequency.exponentialRampToValueAtTime(68, t + 0.09);
+                    gain.gain.setValueAtTime(0.45 / (idx + 1), t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+                    osc.connect(gain); gain.connect(audioCtx.destination);
+                    osc.start(t); osc.stop(t + 0.095);
+                });
             }
         } catch (e) {}
     }
@@ -798,7 +844,7 @@
         ballInHand = false;
         isMoving = true;
 
-        playSfx('hit', powerRatio);
+        playSfx('cue', powerRatio);
 
         if (broadcast && gameMode === 'online' && roomRef) {
             const shotId = Date.now();
@@ -1092,6 +1138,17 @@ let movingAny = false;
         ctx.moveTo(headX, RAIL_Y);
         ctx.lineTo(headX, TABLE_H - RAIL_Y);
         ctx.stroke();
+        // قووڵایی تاریکی ٦ کونەکەی سەر مێزەکە
+        for (const p of POCKETS) {
+            const pg = ctx.createRadialGradient(p.x, p.y, 4, p.x, p.y, POCKET_R - 2);
+            pg.addColorStop(0, '#000000');
+            pg.addColorStop(0.75, 'rgba(0, 0, 0, 0.92)');
+            pg.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = pg;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, POCKET_R - 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
         for (const b of balls) {
             if (b.sinking) {
@@ -1175,11 +1232,11 @@ let movingAny = false;
         });
         ctx.restore();
     }
-
-    function draw3DBall(num, x, y, r) {
+function draw3DBall(num, x, y, r) {
+        // سێبەری قووڵی تۆپەکە لەسەر مێزەکە
         ctx.beginPath();
-        ctx.arc(x + 2, y + 2.5, r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0,0,0,0.48)';
+        ctx.arc(x + 2.2, y + 3, r * 1.02, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.52)';
         ctx.fill();
 
         ctx.save();
@@ -1190,9 +1247,10 @@ let movingAny = false;
         if (num === 0) {
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(x - r, y - r, r * 2, r * 2);
+            // خاڵە سوورەکەی Spin لەسەر تۆپی سپی
             ctx.fillStyle = '#dc2626';
             ctx.beginPath();
-            ctx.arc(x + spinX * (r * 0.45), y + spinY * (r * 0.45), 2.1, 0, Math.PI * 2);
+            ctx.arc(x + spinX * (r * 0.45), y + spinY * (r * 0.45), 2.2, 0, Math.PI * 2);
             ctx.fill();
         } else {
             const col = BALL_COLORS[num] || '#facc15';
@@ -1200,33 +1258,41 @@ let movingAny = false;
                 ctx.fillStyle = '#f8fafc';
                 ctx.fillRect(x - r, y - r, r * 2, r * 2);
                 ctx.fillStyle = col;
-                ctx.fillRect(x - r, y - r * 0.55, r * 2, r * 1.1);
+                ctx.fillRect(x - r, y - r * 0.56, r * 2, r * 1.12);
             } else {
                 ctx.fillStyle = col;
                 ctx.fillRect(x - r, y - r, r * 2, r * 2);
             }
 
-            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+            // بازنەی سپی ناوەڕاست بۆ ژمارەکە
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.96)';
             ctx.beginPath();
             ctx.arc(x, y, r * 0.48, 0, Math.PI * 2);
             ctx.fill();
 
             ctx.fillStyle = '#09090b';
-            ctx.font = `900 ${Math.round(r * 0.65)}px Vazirmatn, sans-serif`;
+            ctx.font = `900 ${Math.round(r * 0.68)}px Vazirmatn, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(String(num), x, y + 0.5);
+            ctx.fillText(String(num), x, y + 0.6);
         }
 
-        const shine = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, 0.5, x, y, r);
-        shine.addColorStop(0, 'rgba(255,255,255,0.58)');
-        shine.addColorStop(0.35, 'rgba(255,255,255,0.08)');
-        shine.addColorStop(1, 'rgba(0,0,0,0.38)');
-        ctx.fillStyle = shine;
+        // سێبەری دەوری تۆپەکە و بریقەی سەرەوەی چەپ (3D Glossy Specular)
+        const shade = ctx.createRadialGradient(x - r * 0.3, y - r * 0.3, r * 0.15, x, y, r);
+        shade.addColorStop(0, 'rgba(255, 255, 255, 0.25)');
+        shade.addColorStop(0.65, 'rgba(0, 0, 0, 0.05)');
+        shade.addColorStop(1, 'rgba(0, 0, 0, 0.55)');
+        ctx.fillStyle = shade;
         ctx.fillRect(x - r, y - r, r * 2, r * 2);
+
+        // خاڵی بریقەی ڕووناکی سەر تۆپەکە
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.78)';
+        ctx.beginPath();
+        ctx.ellipse(x - r * 0.34, y - r * 0.36, r * 0.26, r * 0.15, -Math.PI / 4, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.restore();
     }
-
     function drawAimAndCueStick(cb) {
         const dx = Math.cos(aimAngle);
         const dy = Math.sin(aimAngle);
@@ -1275,6 +1341,7 @@ let movingAny = false;
         ctx.moveTo(cb.x, cb.y);
         ctx.lineTo(ex, ey);
         ctx.stroke();
+        
 
         ctx.strokeStyle = illegalTarget ? '#ef4444' : '#ffffff';
         ctx.lineWidth = 1.8;
