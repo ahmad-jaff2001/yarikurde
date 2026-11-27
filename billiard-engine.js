@@ -119,18 +119,24 @@
             const d = imgData.data;
             const total = cw * ch;
 
-            // وەرگرتنی ڕەنگی پاشبنەما لە هەر ٤ گۆشەکەوە تا دارە ڕەشەکان (وەک Eclipse) نەسڕێنەوە
-            const corners = [0, (cw - 1) * 4, ((ch - 1) * cw) * 4, ((ch - 1) * cw + (cw - 1)) * 4];
+            // وەرگرتنی ڕەنگی پاشبنەمای مۆر لە گۆشەکانی خانەکەوە (٥ پیکسڵ ناوەوە تا هێڵی جیاکەرەوە تێکەڵ نەبێت)
+            const samples = [
+                (5 * cw + 5) * 4,
+                (5 * cw + (cw - 6)) * 4,
+                ((ch - 6) * cw + 5) * 4,
+                ((ch - 6) * cw + (cw - 6)) * 4
+            ];
             let bgR = 0, bgG = 0, bgB = 0;
-            corners.forEach(p => { bgR += d[p]; bgG += d[p + 1]; bgB += d[p + 2]; });
+            samples.forEach(p => { bgR += d[p]; bgG += d[p + 1]; bgB += d[p + 2]; });
             bgR /= 4; bgG /= 4; bgB /= 4;
 
             function isPurpleBg(idx) {
                 const p = idx * 4;
                 const dist = Math.hypot(d[p] - bgR, d[p + 1] - bgG, d[p + 2] - bgB);
-                return dist < 28;
+                return dist < 34;
             }
 
+            // سڕینەوەی تەواوی باکگراوندە مۆرەکە لە هەموو لێوارەکانەوە (BFS Flood-Fill)
             const visited = new Uint8Array(total);
             const queue = new Int32Array(total);
             let head = 0, tail = 0;
@@ -168,7 +174,7 @@
                     if (visited[idx - 1] || visited[idx + 1] || visited[idx - cw] || visited[idx + cw]) {
                         const p = idx * 4;
                         const dist = Math.hypot(d[p] - bgR, d[p + 1] - bgG, d[p + 2] - bgB);
-                        if (dist < 46) d[p + 3] = Math.round(((dist - 28) / 18) * 255);
+                        if (dist < 52) d[p + 3] = Math.round(((dist - 34) / 18) * 255);
                     }
                 }
             }
@@ -220,7 +226,7 @@
             const targetLen = 375;
             const scale = targetLen / cueLen;
 
-            // درێژییەکە وەک خۆی دەمێنێتەوە بەڵام پانییەکەی باریکتر دەکرێتەوە (0.62)
+            // دانانی دارەکە بە درێژیی تەواو و باریکتر (0.62) لەسەر مێزەکە
             const tableCanvas = document.createElement('canvas');
             tableCanvas.width = 410;
             tableCanvas.height = 76;
