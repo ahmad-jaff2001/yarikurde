@@ -1046,8 +1046,7 @@
                 }
             }
         }
-
-        let movingAny = false;
+let movingAny = false;
         for (const b of balls) {
             if (b.pocketed) continue;
             if (Math.hypot(b.vx, b.vy) < 0.045) {
