@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="ku" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,10 +10,9 @@
 
     <style>
         :root {
-            --bg-dark: #05020e;
             --gold: #ffb800;
-            --gold-grad: linear-gradient(135deg, #ffe066 0%, #ffb800 55%, #e67e00 100%);
-            --card-bg: rgba(18, 10, 42, 0.9);
+            --gold-grad: linear-gradient(135deg, #ffe066 0%, #ffb800 55%, #d97706 100%);
+            --bg-slate: #1a2232;
         }
 
         * {
@@ -26,419 +25,571 @@
         }
 
         body {
-            background: radial-gradient(circle at top, #1e0b45 0%, #05020e 70%);
+            background: #0d131f;
             color: #fff;
+            width: 100vw;
             height: 100dvh;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
         }
 
-        .pool-app {
-            width: 100%;
-            max-width: 480px;
+        /* شاشەی ئاسۆیی تەواو (Landscape) بۆ مۆبایل و کۆمپیوتەر */
+        .pool-landscape-root {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
             height: 100dvh;
+            background: radial-gradient(circle at center, #263147 0%, #141b29 75%, #0b0f17 100%);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
             overflow: hidden;
         }
 
-        /* شریتی سەرەوە */
-        .top-bar {
+        @media (orientation: portrait) {
+            .pool-landscape-root {
+                width: 100dvh;
+                height: 100vw;
+                top: 0;
+                left: 100vw;
+                transform: rotate(90deg);
+                transform-origin: top left;
+            }
+        }
+
+        /* ================= ١. شریتی سەرەوە (8 Ball Pool HUD) ================= */
+        .hud-top-bar {
+            height: 54px;
+            padding: 4px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 8px 12px 4px;
+            gap: 8px;
             z-index: 20;
             flex-shrink: 0;
         }
 
-        .nav-btn {
-            width: 36px;
+        .green-menu-btn {
+            width: 38px;
             height: 36px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 9px;
+            background: linear-gradient(180deg, #4ade80 0%, #16a34a 55%, #15803d 100%);
+            border: 2px solid #052e16;
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.6), 0 3px 6px rgba(0,0,0,0.6);
             color: #fff;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 15px;
             cursor: pointer;
-        }
-
-        .prize-pill {
-            background: linear-gradient(135deg, rgba(255, 184, 0, 0.2), rgba(147, 51, 234, 0.25));
-            border: 1.5px solid rgba(255, 184, 0, 0.55);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-size: 12px;
-            font-weight: 900;
-            color: #ffe066;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
-        }
-
-        /* پانێڵی یاریزانەکان */
-        .hud-row {
-            display: grid;
-            grid-template-columns: 1fr auto 1fr;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            z-index: 20;
             flex-shrink: 0;
         }
 
-        .p-box {
-            background: var(--card-bg);
-            border: 1.5px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            padding: 6px 8px;
+        .players-center-cluster {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex: 1;
+            max-width: 680px;
+        }
+
+        .player-hud-side {
             display: flex;
             align-items: center;
             gap: 7px;
-            transition: 0.25s;
+            flex: 1;
+            min-width: 0;
+            position: relative;
+        }
+
+        .player-hud-side.left-side { justify-content: flex-end; }
+        .player-hud-side.right-side { justify-content: flex-start; }
+
+        .p-details-col {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
             min-width: 0;
         }
 
-        .p-box.active-turn {
-            border-color: #ffd000;
-            box-shadow: 0 0 18px rgba(255, 184, 0, 0.45);
-            background: linear-gradient(135deg, rgba(46, 20, 98, 0.95), rgba(18, 9, 42, 0.95));
+        .left-side .p-details-col { align-items: flex-end; }
+        .right-side .p-details-col { align-items: flex-start; }
+
+        .p-name-line {
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .p-av {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid var(--gold);
-            object-fit: cover;
-            flex-shrink: 0;
-            background: #12082a;
-        }
-
-        .p-info { flex: 1; min-width: 0; }
-        .p-name {
-            font-size: 11px;
+        .lvl-star-badge {
+            background: linear-gradient(135deg, #fde047, #d97706);
+            color: #1a0f00;
+            font-size: 9.5px;
             font-weight: 900;
+            padding: 1px 6px;
+            border-radius: 8px;
+            border: 1px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hud-player-name {
+            font-size: 12px;
+            font-weight: 800;
+            color: #f8fafc;
+            text-shadow: 0 1px 3px #000;
+            max-width: 110px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .p-targets {
+        .mini-chat-bubble-btn {
+            width: 22px;
+            height: 19px;
+            border-radius: 5px;
+            background: linear-gradient(180deg, #fde047, #eab308);
+            border: 1px solid #713f12;
+            color: #1a0f00;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .balls-slots-row {
             display: flex;
             align-items: center;
             gap: 3px;
-            margin-top: 3px;
-            min-height: 13px;
+            background: rgba(10, 15, 25, 0.72);
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
         }
 
-        .b-dot {
-            width: 11px;
-            height: 11px;
+        .ball-slot-circle {
+            width: 15px;
+            height: 15px;
             border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.55);
-            display: inline-block;
-            position: relative;
-        }
-        .b-dot.stripe::after {
-            content: '';
-            position: absolute;
-            left: 1px; right: 1px; top: 3px; height: 3px;
-            background: #fff;
-            border-radius: 1px;
-        }
-
-        .turn-timer {
-            background: rgba(0, 0, 0, 0.65);
-            border: 1.5px solid rgba(255, 184, 0, 0.45);
-            border-radius: 12px;
-            padding: 4px 8px;
-            font-size: 10.5px;
+            background: radial-gradient(circle at 35% 35%, #2a3447, #0f141f);
+            border: 1px solid rgba(255,255,255,0.14);
+            box-shadow: inset 0 2px 3px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7.5px;
             font-weight: 900;
-            color: #fde047;
-            text-align: center;
-            min-width: 58px;
-        }
-
-        .status-strip {
-            text-align: center;
-            font-size: 11px;
-            font-weight: 800;
-            color: #f3e8ff;
-            background: rgba(14, 7, 34, 0.88);
-            border-top: 1px solid rgba(255, 184, 0, 0.22);
-            border-bottom: 1px solid rgba(255, 184, 0, 0.22);
-            padding: 3px 10px;
-            z-index: 15;
-            flex-shrink: 0;
-        }
-
-        /* ناوچەی مێزی یاری و شریتی هێز */
-        .stage-wrap {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 6px 10px;
-            min-height: 0;
-            position: relative;
-        }
-
-        .canvas-holder {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
-
-        #poolCanvas {
-            border-radius: 22px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95), 0 0 28px rgba(255, 184, 0, 0.2);
-            touch-action: none;
-            display: block;
-        }
-
-        /* شریتی هێزی لێدان (Power Bar) */
-        .power-bar-box {
-            width: 36px;
-            height: 78%;
-            max-height: 370px;
-            background: rgba(10, 5, 25, 0.94);
-            border: 1.5px solid rgba(255, 184, 0, 0.5);
-            border-radius: 18px;
+            color: #000;
             position: relative;
             overflow: hidden;
+        }
+
+        .ball-slot-circle.stripe::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #f8fafc;
+            z-index: 0;
+        }
+        .ball-slot-circle.stripe::after {
+            content: '';
+            position: absolute;
+            left: 0; right: 0; top: 3px; bottom: 3px;
+            background: var(--bcol);
+            z-index: 1;
+        }
+        .ball-slot-circle span {
+            position: relative;
+            z-index: 2;
+            background: rgba(255,255,255,0.88);
+            border-radius: 50%;
+            width: 9px;
+            height: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .square-avatar-frame {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            padding: 2px;
+            background: linear-gradient(135deg, #94a3b8, #475569);
+            border: 1.5px solid #0f172a;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.7);
+            position: relative;
+            flex-shrink: 0;
+            transition: 0.25s;
+        }
+
+        .square-avatar-frame.active-turn {
+            background: linear-gradient(135deg, #4ade80, #fde047, #22c55e);
+            box-shadow: 0 0 16px rgba(74, 222, 128, 0.85);
+            transform: scale(1.04);
+        }
+
+        .square-avatar-frame img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #0f172a;
+        }
+
+        .center-trophy-shield {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(180deg, #3b1d0e 0%, #1c0d06 100%);
+            border: 2px solid #eab308;
+            border-radius: 10px 10px 22px 22px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 4px;
-            touch-action: none;
-            cursor: pointer;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.85);
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.8), inset 0 0 8px rgba(234, 179, 8, 0.4);
             flex-shrink: 0;
         }
 
-        .power-fill {
-            width: 100%;
-            height: 0%;
-            background: linear-gradient(180deg, #22c55e 0%, #eab308 55%, #ef4444 100%);
-            border-radius: 12px;
+        .center-trophy-shield i {
+            color: #ffd000;
+            font-size: 16px;
+            filter: drop-shadow(0 1px 2px #000);
         }
 
-        .power-handle {
-            position: absolute;
-            top: 6px;
-            width: 26px;
-            height: 36px;
-            border-radius: 10px;
-            background: var(--gold-grad);
-            color: #1a0f00;
-            font-size: 12px;
+        .center-trophy-shield span {
+            font-size: 11px;
             font-weight: 900;
+            color: #fde047;
+            line-height: 1.1;
+        }
+
+        .cheer-thumb-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            border: 1.5px solid #e0f2fe;
+            color: #fde047;
+            font-size: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.85);
-            pointer-events: none;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.6);
         }
 
-        /* شریتی خوارەوە */
-        .bottom-bar {
+        .top-right-tools {
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 8px;
-            padding: 6px 12px 12px;
-            background: linear-gradient(to top, rgba(4, 2, 12, 0.98), transparent);
-            z-index: 20;
             flex-shrink: 0;
         }
 
-        .spin-trigger {
+        .cue-spin-circle-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.85);
+            border: 2px solid #475569;
             display: flex;
             align-items: center;
-            gap: 7px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 184, 0, 0.4);
-            border-radius: 20px;
-            padding: 4px 10px;
+            justify-content: center;
             cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.7);
         }
 
-        .mini-cue-ball {
-            width: 26px;
-            height: 26px;
+        .spin-white-sphere {
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: radial-gradient(circle at 35% 35%, #fff, #cbd5e1);
+            background: radial-gradient(circle at 35% 35%, #ffffff, #94a3b8);
             position: relative;
-            box-shadow: inset 0 -2px 4px rgba(0,0,0,0.45);
         }
 
-        .mini-spin-dot {
-            width: 6px;
-            height: 6px;
+        .spin-red-point {
+            width: 5px;
+            height: 5px;
             border-radius: 50%;
-            background: #ef4444;
+            background: #dc2626;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        .fine-tuner {
-            flex: 1;
+        .cue-rack-btn {
+            width: 38px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+            border: 1.5px solid #93c5fd;
+            color: #fde047;
+            font-size: 15px;
             display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 20px;
-            padding: 5px 12px;
-        }
-
-        .fine-tuner input {
-            flex: 1;
-            accent-color: #ffb800;
-            cursor: pointer;
-        }
-
-        /* لۆبی و هەڵبژاردنی ١٥ مێزەکە */
-        .modal-screen {
-            position: absolute;
-            inset: 0;
-            background: rgba(4, 2, 14, 0.95);
-            backdrop-filter: blur(14px);
-            z-index: 60;
-            display: none;
             align-items: center;
             justify-content: center;
-            padding: 12px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.6);
         }
 
-        .modal-screen.open { display: flex; }
-
-        .lobby-box {
-            width: 100%;
-            max-width: 440px;
-            max-height: 92dvh;
-            background: radial-gradient(circle at top, #261154 0%, #0b051d 75%);
-            border: 2px solid var(--gold);
-            border-radius: 26px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 25px 65px rgba(0,0,0,0.95);
-        }
-
-        .tables-scroll {
-            overflow-y: auto;
-            max-height: 44dvh;
-            display: flex;
-            flex-direction: column;
-            gap: 9px;
-            padding: 4px 2px;
-            margin: 10px 0;
-        }
-
-        .tables-scroll::-webkit-scrollbar { width: 4px; }
-        .tables-scroll::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 8px; }
-
-        .table-tier-card {
+        /* ================= ٢. ناوچەی مێزی بڵیارد و شریتی هێز ================= */
+        .arena-main-row {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 10px 12px;
-            border-radius: 16px;
-            border: 1.5px solid rgba(255, 255, 255, 0.14);
-            background: rgba(15, 8, 35, 0.85);
-            cursor: pointer;
-            transition: 0.2s;
+            padding: 2px 12px 8px;
+            gap: 10px;
+            min-height: 0;
+            position: relative;
+        }
+
+        .left-power-slider {
+            width: 34px;
+            height: 84%;
+            max-height: 270px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #475569;
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
-        }
-
-        .table-tier-card.selected {
-            border-color: #ffd000;
-            background: linear-gradient(90deg, rgba(255, 184, 0, 0.22), rgba(30, 14, 68, 0.92));
-            box-shadow: 0 0 18px rgba(255, 184, 0, 0.35);
-        }
-
-        .mini-table-preview {
-            width: 54px;
-            height: 32px;
-            border-radius: 7px;
-            border: 3px solid #854d0e;
-            position: relative;
-            flex-shrink: 0;
-            box-shadow: inset 0 0 8px rgba(0,0,0,0.7);
-        }
-
-        .btn-gold {
-            width: 100%;
-            background: var(--gold-grad);
-            color: #1a0f00;
-            border: none;
-            border-radius: 15px;
-            padding: 11px;
-            font-size: 13.5px;
-            font-weight: 900;
+            touch-action: none;
             cursor: pointer;
-            margin-top: 6px;
+            box-shadow: inset 0 0 10px #000, 0 6px 16px rgba(0,0,0,0.75);
+            flex-shrink: 0;
+        }
+
+        .power-meter-fill {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 0%;
+            background: linear-gradient(180deg, #facc15 0%, #f97316 55%, #dc2626 100%);
+        }
+
+        .power-cue-thumb {
+            position: absolute;
+            top: 4px;
+            left: 3px;
+            right: 3px;
+            height: 34px;
+            border-radius: 8px;
+            background: linear-gradient(180deg, #fde68a, #b45309);
+            border: 1px solid #fff;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 7px;
+            color: #1a0f00;
+            font-size: 13px;
+            font-weight: 900;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.85);
+            pointer-events: none;
         }
 
-        .btn-purple {
+        .table-stage-center {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-width: 0;
+        }
+
+        #poolCanvas {
+            display: block;
+            touch-action: none;
+            filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.9));
+        }
+
+        .live-toast-pill {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 15, 28, 0.88);
+            border: 1px solid rgba(255, 184, 0, 0.5);
+            color: #fde68a;
+            padding: 3px 16px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 800;
+            pointer-events: none;
+            z-index: 25;
+            white-space: nowrap;
+            direction: rtl;
+        }
+
+        .floating-speech {
+            position: absolute;
+            top: 48px;
+            background: #fff;
+            color: #0f172a;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+            z-index: 40;
+            white-space: nowrap;
+            direction: rtl;
+        }
+
+        /* ================= ٣. لۆبیی ئاسۆیی 8 Ball Pool (١٥ مێزەکە) ================= */
+        .modal-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 10, 20, 0.94);
+            backdrop-filter: blur(12px);
+            z-index: 70;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            direction: rtl;
+        }
+        .modal-backdrop.open { display: flex; }
+
+        .pool-lobby-full {
             width: 100%;
-            background: linear-gradient(135deg, #7c3aed, #4f46e5);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.22);
-            border-radius: 15px;
+            height: 100%;
+            background:
+                linear-gradient(180deg, rgba(10, 16, 30, 0.88) 0%, rgba(15, 23, 42, 0.55) 48%, rgba(8, 12, 24, 0.94) 100%),
+                url('images.png/billiard-table-1.png') center bottom / cover no-repeat;
+            border: 2px solid #eab308;
+            border-radius: 20px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
+        }
+
+        .lobby-top-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            background: rgba(11, 17, 32, 0.88);
+            border: 1px solid rgba(255, 184, 0, 0.35);
+            border-radius: 14px;
+            padding: 6px 12px;
+        }
+
+        .horizontal-tables-carousel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 6px 4px;
+            scroll-snap-type: x mandatory;
+            flex: 1;
+        }
+        .horizontal-tables-carousel::-webkit-scrollbar { height: 5px; }
+        .horizontal-tables-carousel::-webkit-scrollbar-thumb { background: #eab308; border-radius: 8px; }
+
+        .table-city-card {
+            min-width: 168px;
+            scroll-snap-align: center;
+            background: linear-gradient(180deg, rgba(24, 34, 58, 0.95) 0%, rgba(11, 16, 30, 0.98) 100%);
+            border: 2px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            padding: 10px 10px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+            flex-shrink: 0;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.75);
+        }
+        .table-city-card.selected {
+            border-color: #4ade80;
+            background: linear-gradient(180deg, rgba(22, 101, 52, 0.45) 0%, rgba(11, 16, 30, 0.98) 100%);
+            transform: scale(1.04);
+            box-shadow: 0 0 22px rgba(74, 222, 128, 0.45);
+        }
+
+        .mini-felt-box {
+            width: 100%;
+            height: 62px;
+            border-radius: 10px;
+            border: 2.5px solid #eab308;
+            margin: 7px 0;
+            position: relative;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.75);
+        }
+
+        .royal-dialog {
+            width: 100%;
+            max-width: 400px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #eab308;
+            border-radius: 22px;
+            padding: 16px 18px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.95);
+        }
+
+        .action-row-3 {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-8bp-green {
+            background: linear-gradient(180deg, #4ade80, #16a34a);
+            color: #052e16;
+            border: 1.5px solid #bbf7d0;
+            border-radius: 13px;
             padding: 10px;
             font-size: 13px;
             font-weight: 900;
             cursor: pointer;
-            margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45);
         }
 
-        /* مۆداڵی Spin */
-        .spin-big-ball {
-            width: 150px;
-            height: 150px;
+        .btn-8bp-gold {
+            background: var(--gold-grad);
+            color: #1a0f00;
+            border: 1.5px solid #fef08a;
+            border-radius: 13px;
+            padding: 10px;
+            font-size: 12.5px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .btn-8bp-blue {
+            background: linear-gradient(180deg, #38bdf8, #0284c7);
+            color: #fff;
+            border: 1.5px solid #bae6fd;
+            border-radius: 13px;
+            padding: 10px;
+            font-size: 12.5px;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        .spin-selector-orb {
+            width: 135px;
+            height: 135px;
             border-radius: 50%;
             background: radial-gradient(circle at 35% 30%, #ffffff 0%, #e2e8f0 65%, #94a3b8 100%);
-            margin: 14px auto;
+            margin: 10px auto;
             position: relative;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.85), inset 0 -6px 14px rgba(0,0,0,0.35);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.85), inset 0 -6px 12px rgba(0,0,0,0.35);
             touch-action: none;
             cursor: crosshair;
         }
-
-        .spin-big-dot {
-            width: 18px;
-            height: 18px;
+        .spin-selector-dot {
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #ef4444;
-            border: 2.5px solid #fff;
+            background: #dc2626;
+            border: 2px solid #fff;
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             pointer-events: none;
         }
@@ -446,156 +597,187 @@
 </head>
 <body>
 
-<div class="pool-app">
-    <!-- شریتی سەرەوە -->
-    <div class="top-bar">
-        <button class="nav-btn" onclick="BilliardEngine.openLobby()" title="لیستی مێزەکان">
-            <i class="fa-solid fa-arrow-right"></i>
+<div class="pool-landscape-root" id="landscapeRoot">
+    <!-- ١. شریتی سەرەوەی 8 Ball Pool -->
+    <div class="hud-top-bar">
+        <button class="green-menu-btn" onclick="Billiard8BP.openPauseMenu()" title="مینیۆ">
+            <i class="fa-solid fa-bars"></i>
         </button>
 
-        <div class="prize-pill">
-            <span id="activeTableNameBadge">مێزی هەولێر</span> •
-            <i id="activePrizeIcon" class="fa-solid fa-coins" style="color:#ffd000;"></i>
-            <span id="activePrizeAmount">1,000</span>
-        </div>
+        <div class="players-center-cluster">
+            <div class="player-hud-side left-side" id="leftPlayerHud">
+                <div class="p-details-col">
+                    <div class="p-name-line">
+                        <button class="mini-chat-bubble-btn" onclick="Billiard8BP.openQuickChat()" title="چاتی خێرا">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </button>
+                        <span class="lvl-star-badge" id="p1LvlBadge">★ 1</span>
+                        <span class="hud-player-name" id="p1NameTxt">تۆ</span>
+                    </div>
+                    <div class="balls-slots-row" id="p1BallSlots"></div>
+                </div>
+                <div class="square-avatar-frame active-turn" id="p1AvatarFrame">
+                    <img id="p1AvatarImg" src="images.png/controller.png" onerror="this.src='images.png/controller.png'" alt="">
+                </div>
+            </div>
 
-        <button class="nav-btn" id="soundBtn" onclick="BilliardEngine.toggleSound()" title="دەنگ">
-            <i class="fa-solid fa-volume-high"></i>
-        </button>
-    </div>
+            <div class="center-trophy-shield" onclick="Billiard8BP.openLobby()" style="cursor:pointer;" title="مێزەکان">
+                <i class="fa-solid fa-trophy"></i>
+                <span id="potPrizeTxt">2k</span>
+            </div>
 
-    <!-- پانێڵی هەردوو یاریزان -->
-    <div class="hud-row">
-        <div class="p-box active-turn" id="hudPlayer1">
-            <img id="p1Avatar" src="images.png/controller.png" onerror="this.src='images.png/controller.png'" class="p-av" alt="">
-            <div class="p-info">
-                <div class="p-name" id="p1Name">تۆ</div>
-                <div class="p-targets" id="p1Targets">
-                    <span style="font-size:9.5px; color:#a49ec8;">مێز کراوەیە</span>
+            <div class="player-hud-side right-side" id="rightPlayerHud">
+                <div class="square-avatar-frame" id="p2AvatarFrame">
+                    <img id="p2AvatarImg" src="images.png/Royal-Billiard.png" onerror="this.src='images.png/controller.png'" alt="">
+                </div>
+                <div class="p-details-col">
+                    <div class="p-name-line">
+                        <span class="hud-player-name" id="p2NameTxt">ڕکابەر</span>
+                        <span class="lvl-star-badge" id="p2LvlBadge">★ 1</span>
+                        <button class="cheer-thumb-btn" onclick="Billiard8BP.sendCheer()" title="هاندان (Cheer)">
+                            <i class="fa-solid fa-thumbs-up"></i>
+                        </button>
+                    </div>
+                    <div class="balls-slots-row" id="p2BallSlots"></div>
                 </div>
             </div>
         </div>
 
-        <div class="turn-timer" id="turnClockBox">نۆرەی تۆیە</div>
-
-        <div class="p-box" id="hudPlayer2" style="flex-direction: row-reverse; text-align: left;">
-            <img id="p2Avatar" src="images.png/Royal-Billiard.png" onerror="this.src='images.png/controller.png'" class="p-av" alt="">
-            <div class="p-info">
-                <div class="p-name" id="p2Name">ڕکابەر</div>
-                <div class="p-targets" id="p2Targets" style="justify-content: flex-end;">
-                    <span style="font-size:9.5px; color:#a49ec8;">مێز کراوەیە</span>
+        <div class="top-right-tools">
+            <div class="cue-spin-circle-btn" onclick="Billiard8BP.openSpinModal()" title="سوڕانی تۆپ (Spin)">
+                <div class="spin-white-sphere">
+                    <div class="spin-red-point" id="hudSpinDot"></div>
                 </div>
             </div>
+            <button class="cue-rack-btn" onclick="Billiard8BP.openCueModal()" title="گۆڕینی دار (Cue)">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
         </div>
     </div>
 
-    <!-- شریتی زانیاریی یاسا و نۆرە -->
-    <div class="status-strip" id="gameStatusText">
-        🎱 دارەکە ئاڕاستە بکە و شریتی هێزەکە لە لای چەپ ڕابکێشە بۆ لێدان
-    </div>
+    <!-- ٢. ناوچەی مێزەکە و شریتی هێز -->
+    <div class="arena-main-row">
+        <div class="left-power-slider" id="powerSliderRail">
+            <div class="power-meter-fill" id="powerSliderFill"></div>
+            <div class="power-cue-thumb" id="powerSliderKnob"><i class="fa-solid fa-angles-down"></i></div>
+        </div>
 
-    <!-- مێزی بڵیارد و شریتی هێز -->
-    <div class="stage-wrap">
-        <div class="canvas-holder">
+        <div class="table-stage-center" id="tableStageHolder">
             <canvas id="poolCanvas"></canvas>
-        </div>
-
-        <div class="power-bar-box" id="powerBarRail">
-            <div class="power-fill" id="powerBarFill"></div>
-            <div class="power-handle" id="powerBarKnob"><i class="fa-solid fa-angles-down"></i></div>
+            <div class="live-toast-pill" id="gameStatusToast">نۆرەی تۆیە — دارەکە ئاڕاستە بکە و شریتی چەپ ڕابکێشە</div>
         </div>
     </div>
 
-    <!-- کۆنترۆڵی خوارەوە: Spin و نیشانەگرتنی ورد -->
-    <div class="bottom-bar">
-        <div class="spin-trigger" onclick="BilliardEngine.openSpinModal()">
-            <div class="mini-cue-ball">
-                <div class="mini-spin-dot" id="miniSpinDot"></div>
-            </div>
-            <span style="font-size:11px; font-weight:800; color:#fde047;">سوڕان (Spin)</span>
-        </div>
-
-        <div class="fine-tuner">
-            <i class="fa-solid fa-crosshairs" style="color:#ffd000; font-size:13px;"></i>
-            <input type="range" id="fineAimRange" min="-25" max="25" step="0.1" value="0">
-        </div>
-    </div>
-
-    <!-- ١. لۆبیی هەڵبژاردنی ١٥ مێزە شاهانەکە -->
-    <div class="modal-screen open" id="lobbyModal">
-        <div class="lobby-box">
-            <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+    <!-- ================= مۆداڵی ١: لۆبیی ئاسۆیی ١٥ مێزەکە ================= -->
+    <div class="modal-backdrop open" id="lobbyModal">
+        <div class="pool-lobby-full">
+            <div class="lobby-top-strip">
                 <div style="display:flex; align-items:center; gap:9px;">
-                    <img src="images.png/Royal-Billiard.png" onerror="this.src='images.png/controller.png'" style="width:42px; height:42px; border-radius:12px; border:1.5px solid #ffd000; object-fit:cover;">
-                    <div style="text-align:right;">
-                        <div style="font-size:16px; font-weight:900; color:#ffd000;">بڵیاردی شاهانە 120FPS</div>
-                        <div style="font-size:11px; color:#cbd5e1;">
-                            باڵانس: <i class="fa-solid fa-coins" style="color:#ffd000;"></i> <b data-wallet="gold" style="color:#ffd000;">0</b> •
-                            <i class="fa-solid fa-gem" style="color:#38bdf8;"></i> <b data-wallet="diamonds" style="color:#38bdf8;">0</b>
-                        </div>
+                    <img id="lobbyUserAvatar" src="images.png/controller.png" style="width:38px; height:38px; border-radius:10px; border:2px solid #ffd000; object-fit:cover;">
+                    <div>
+                        <div style="font-size:13.5px; font-weight:900; color:#fff;" id="lobbyUserName">بڵیاردی شاهانە 8 Ball Pool</div>
+                        <div style="font-size:10.5px; color:#fde047;">مێزێک هەڵبژێرە (سکڕۆڵ بکە بۆ لاتەنیشت ⇄)</div>
                     </div>
                 </div>
-                <button class="nav-btn" onclick="window.location.href='index.html'"><i class="fa-solid fa-house"></i></button>
+
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="Billiard8BP.openCueModal()" style="background:rgba(59,130,246,0.25); border:1px solid #60a5fa; color:#fff; border-radius:10px; padding:5px 10px; font-size:11px; font-weight:800; cursor:pointer;">
+                        🪄 دارەکان
+                    </button>
+                    <div style="background:rgba(0,0,0,0.55); border:1px solid rgba(255,184,0,0.45); border-radius:10px; padding:4px 10px; font-size:11.5px; font-weight:900;">
+                        <i class="fa-solid fa-coins" style="color:#ffd000;"></i> <span data-wallet="gold" style="color:#ffd000;">0</span> •
+                        <i class="fa-solid fa-gem" style="color:#38bdf8;"></i> <span data-wallet="diamonds" style="color:#38bdf8;">0</span>
+                    </div>
+                    <button onclick="window.location.href='index.html'" style="background:rgba(239,68,68,0.25); border:1px solid #f87171; color:#fff; width:34px; height:34px; border-radius:10px; cursor:pointer;" title="گەڕانەوە">
+                        <i class="fa-solid fa-house"></i>
+                    </button>
+                </div>
             </div>
 
-            <div style="font-size:12px; font-weight:900; color:#fde047; margin-top:8px; text-align:right;">
-                👑 مێزێک لە ١٥ دیزاینە جیاوازەکە هەڵبژێرە:
-            </div>
+            <!-- کارتی ئاسۆیی ١٥ مێزەکە -->
+            <div class="horizontal-tables-carousel" id="tablesCarousel"></div>
 
-            <div class="tables-scroll" id="tablesListContainer"></div>
-
-            <button class="btn-gold" onclick="BilliardEngine.startOnlineMatch()">
-                <i class="fa-solid fa-globe"></i> یاریی ئۆنڵاین لەم مێزەدا (Live)
-            </button>
-
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-                <button class="btn-purple" onclick="BilliardEngine.openPrivateRoomPrompt()">
+            <div class="action-row-3">
+                <button class="btn-8bp-green" onclick="Billiard8BP.startOnlineMatch()">
+                    <i class="fa-solid fa-globe"></i> یاریی ئۆنڵاین (1 on 1)
+                </button>
+                <button class="btn-8bp-gold" onclick="Billiard8BP.openPrivateRoom()">
                     <i class="fa-solid fa-user-group"></i> لەگەڵ هاوڕێ (کۆد)
                 </button>
-                <button class="btn-purple" style="background:linear-gradient(135deg,#0f766e,#047857);" onclick="BilliardEngine.startBotMatch()">
+                <button class="btn-8bp-blue" onclick="Billiard8BP.startBotMatch()">
                     <i class="fa-solid fa-robot"></i> یاری دژی بۆت (AI)
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ٢. مۆداڵی گەڕان بەدوای ڕکابەری ئۆنڵاین -->
-    <div class="modal-screen" id="matchmakingModal">
-        <div class="lobby-box" style="max-width:350px; text-align:center;">
-            <div style="font-size:16px; font-weight:900; color:#ffd000; margin-bottom:6px;" id="mmTitle">گەڕان بەدوای یاریزان...</div>
-            <div style="font-size:12px; color:#cbd5e1; margin-bottom:14px;" id="mmSubtitle">چاوەڕوانی پەیوەندیکردنی ڕکابەر لە سێرڤەر</div>
-            <div style="font-size:34px; color:#ffd000; margin:10px 0;"><i class="fa-solid fa-spinner fa-spin"></i></div>
-            <button class="btn-gold" id="mmPlayBotNowBtn" style="display:none;" onclick="BilliardEngine.fallbackToOnlineBot()">
-                ⚡ دەستپێکردنی خێرا لەسەر ئەم مێزە
+    <!-- ================= مۆداڵی ٢: گەڕان بەدوای ڕکابەر ================= -->
+    <div class="modal-backdrop" id="matchmakingModal">
+        <div class="royal-dialog" style="max-width:380px; text-align:center;">
+            <div style="font-size:16px; font-weight:900; color:#fde047;" id="mmTitleTxt">گەڕان بەدوای یاریزان...</div>
+            <div style="font-size:12px; color:#cbd5e1; margin:6px 0 12px;" id="mmSubTxt">بەستنەوە بە سێرڤەری ئۆنڵاین</div>
+            <div style="font-size:32px; color:#4ade80; margin-bottom:12px;"><i class="fa-solid fa-spinner fa-spin"></i></div>
+            <button class="btn-8bp-green" id="mmQuickStartBtn" style="display:none; width:100%; margin-bottom:8px;" onclick="Billiard8BP.fallbackToRival()">
+                ⚡ دەستپێکردنی خێرا لەم مێزەدا
             </button>
-            <button class="btn-purple" style="background:rgba(239,68,68,0.25); border-color:#ef4444;" onclick="BilliardEngine.cancelMatchmaking()">
+            <button class="btn-8bp-gold" style="width:100%; background:#ef4444; color:#fff; border-color:#fca5a5;" onclick="Billiard8BP.cancelMatchmaking()">
                 پاشگەزبوونەوە
             </button>
         </div>
     </div>
 
-    <!-- ٣. مۆداڵی دیاریکردنی Spin (English) -->
-    <div class="modal-screen" id="spinModal" onclick="if(event.target===this) this.classList.remove('open')">
-        <div class="lobby-box" style="max-width:320px; text-align:center;">
-            <div style="font-size:15px; font-weight:900; color:#ffd000;">شوێنی لێدانی تۆپی سپی (Spin)</div>
-            <div class="spin-big-ball" id="spinPadArea">
-                <div class="spin-big-dot" id="spinBigDot"></div>
+    <!-- ================= مۆداڵی ٣: Spin (English) ================= -->
+    <div class="modal-backdrop" id="spinModal" onclick="if(event.target===this) this.classList.remove('open')">
+        <div class="royal-dialog" style="max-width:310px; text-align:center;">
+            <div style="font-size:14px; font-weight:900; color:#fde047;">خاڵی لێدانی تۆپی سپی (Spin)</div>
+            <div class="spin-selector-orb" id="spinOrbArea">
+                <div class="spin-selector-dot" id="spinOrbDot"></div>
             </div>
-            <div style="display:flex; gap:8px;">
-                <button class="btn-purple" onclick="BilliardEngine.resetSpin()">ناوەڕاست</button>
-                <button class="btn-gold" onclick="document.getElementById('spinModal').classList.remove('open')">تەواو</button>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn-8bp-blue" onclick="Billiard8BP.resetSpin()">ناوەڕاست</button>
+                <button class="btn-8bp-green" onclick="document.getElementById('spinModal').classList.remove('open')">تەواو</button>
             </div>
         </div>
     </div>
 
-    <!-- ٤. مۆداڵی کۆتایی یاری -->
-    <div class="modal-screen" id="resultModal">
-        <div class="lobby-box" style="max-width:350px; text-align:center;">
-            <div style="font-size:44px; margin-bottom:6px;" id="resEmoji">🏆</div>
-            <div style="font-size:20px; font-weight:900; color:#ffd000;" id="resTitle">پیرۆزە بردتەوە!</div>
-            <div style="font-size:13px; color:#e2e8f0; margin:8px 0 16px;" id="resDesc">خەڵاتی مێزەکە خرایە سەر جزدانەکەت</div>
-            <button class="btn-gold" onclick="BilliardEngine.rematch()">🔄 یاریکردنەوە لەم مێزە</button>
-            <button class="btn-purple" onclick="BilliardEngine.openLobby()">👑 گۆڕینی مێز</button>
+    <!-- ================= مۆداڵی ٤: هەڵبژاردنی دار (Cues) ================= -->
+    <div class="modal-backdrop" id="cueModal" onclick="if(event.target===this) this.classList.remove('open')">
+        <div class="royal-dialog" style="max-width:420px; text-align:center;">
+            <div style="font-size:15px; font-weight:900; color:#fde047; margin-bottom:8px;">هەڵبژاردنی داری بڵیارد (Cue Sticks)</div>
+            <div id="cueListContainer" style="display:flex; flex-direction:column; gap:7px; max-height:190px; overflow-y:auto;"></div>
+            <button class="btn-8bp-green" style="margin-top:10px;" onclick="document.getElementById('cueModal').classList.remove('open')">داخستن</button>
+        </div>
+    </div>
+
+    <!-- ================= مۆداڵی ٥: چاتی خێرا ================= -->
+    <div class="modal-backdrop" id="quickChatModal" onclick="if(event.target===this) this.classList.remove('open')">
+        <div class="royal-dialog" style="max-width:360px; text-align:center;">
+            <div style="font-size:14px; font-weight:900; color:#fde047; margin-bottom:8px;">چاتی خێرای ناو یاری</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px;" id="quickChatGrid"></div>
+        </div>
+    </div>
+
+    <!-- ================= مۆداڵی ٦: مینیۆی پشوودان و دەرچوون ================= -->
+    <div class="modal-backdrop" id="pauseModal" onclick="if(event.target===this) this.classList.remove('open')">
+        <div class="royal-dialog" style="max-width:320px; text-align:center; gap:8px;">
+            <div style="font-size:16px; font-weight:900; color:#fde047;">ڕێکخستنەکانی یاری</div>
+            <button class="btn-8bp-blue" id="soundToggleMenuBtn" onclick="Billiard8BP.toggleSound()">🔊 دەنگ: کراوەیە</button>
+            <button class="btn-8bp-gold" onclick="document.getElementById('pauseModal').classList.remove('open'); Billiard8BP.openLobby();">👑 گۆڕینی مێز</button>
+            <button class="btn-8bp-gold" style="background:#dc2626; color:#fff; border-color:#fca5a5;" onclick="window.location.href='index.html'">🚪 چوونەدەرەوە بۆ سەرەکی</button>
+            <button class="btn-8bp-green" onclick="document.getElementById('pauseModal').classList.remove('open')">بەردەوامبوون لە یاری</button>
+        </div>
+    </div>
+
+    <!-- ================= مۆداڵی ٧: ئەنجامی کۆتایی ================= -->
+    <div class="modal-backdrop" id="resultModal">
+        <div class="royal-dialog" style="max-width:370px; text-align:center;">
+            <div style="font-size:42px;" id="resEmojiTxt">🏆</div>
+            <div style="font-size:19px; font-weight:900; color:#fde047;" id="resTitleTxt">پیرۆزە بردتەوە!</div>
+            <div style="font-size:12.5px; color:#e2e8f0; margin:6px 0 14px;" id="resDescTxt">خەڵاتەکە خرایە سەر جزدانەکەت</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                <button class="btn-8bp-green" onclick="Billiard8BP.rematch()">🔄 یاریکردنەوە</button>
+                <button class="btn-8bp-gold" onclick="Billiard8BP.openLobby()">👑 لیستی مێزەکان</button>
+            </div>
         </div>
     </div>
 </div>
@@ -607,6 +789,13 @@
 <script src="auth-engine.js"></script>
 <script src="wallet-engine.js"></script>
 <script src="billiard-engine.js"></script>
-
+<script>
+    (function () {
+        const av = localStorage.getItem('yk_player_avatar');
+        const nm = localStorage.getItem('yk_player_name');
+        if (av && document.getElementById('lobbyUserAvatar')) document.getElementById('lobbyUserAvatar').src = av;
+        if (nm && document.getElementById('lobbyUserName')) document.getElementById('lobbyUserName').innerText = nm;
+    })();
+</script>
 </body>
 </html>
