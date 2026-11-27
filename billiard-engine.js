@@ -415,12 +415,18 @@
         } catch (e) {}
     }
 
-    function resizeCanvas() {
+   function resizeCanvas() {
         const holder = document.getElementById('tableStageHolder');
         if (!holder) return;
         const isPortraitRotated = window.innerHeight > window.innerWidth;
-        const maxW = (isPortraitRotated ? holder.clientHeight : holder.clientWidth) - 4;
-        const maxH = (isPortraitRotated ? holder.clientWidth : holder.clientHeight) - 4;
+
+        // لەسەر مۆبایل (کاتی سوڕانەوە) مێزەکە زۆر گەورە و پڕی شاشەکە دەکات
+        const maxW = isPortraitRotated
+            ? Math.max(holder.clientHeight, window.innerHeight * 0.78)
+            : holder.clientWidth - 4;
+        const maxH = isPortraitRotated
+            ? Math.max(holder.clientWidth, window.innerWidth * 0.74)
+            : holder.clientHeight - 4;
         if (maxW <= 10 || maxH <= 10) return;
 
         const aspect = LOGICAL_W / LOGICAL_H;
@@ -438,7 +444,6 @@
         canvas.height = Math.round(LOGICAL_H * dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-
     window.addEventListener('resize', resizeCanvas);
 
     function setupHorizontalRack() {
