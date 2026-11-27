@@ -1764,8 +1764,16 @@ function draw3DBall(num, x, y, r) {
         document.body.style.overscrollBehavior = 'none';
         document.body.style.touchAction = 'none';
 
+        // ڕاگرتنی گەڕانەوەی بەهەڵەی مۆبایل (Swipe Back) بێ ئەوەی دوگمەکان بوەستن
+        document.documentElement.style.overscrollBehavior = 'none';
+        document.body.style.overscrollBehavior = 'none';
+
         document.addEventListener('touchstart', (e) => {
-            if (!e.target.closest('.modal-card, #tablesCarousel, #cueListContainer')) {
+            if (e.target.closest('button, a, input, select, .table-city-card, .royal-cue-card, .cue-tab-pill, .modal-card, #tablesCarousel, #cueListContainer')) {
+                return;
+            }
+            const t = e.touches[0];
+            if (t && (t.clientX < 35 || t.clientX > window.innerWidth - 35)) {
                 e.preventDefault();
             }
         }, { passive: false });
@@ -1775,7 +1783,6 @@ function draw3DBall(num, x, y, r) {
                 e.preventDefault();
             }
         }, { passive: false });
-
        resizeCanvas();
         setupHorizontalRack();
         renderLobbyCarousel();
