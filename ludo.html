@@ -48,7 +48,7 @@
             position: fixed;
             inset: 0;
             z-index: 5000;
-            background: #041d15;
+            background: #0a2463;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -67,111 +67,90 @@
             width: 100%;
             height: 100dvh;
             max-width: 480px;
-            background: url('images.png/ludo-lobby-bg.png') no-repeat center center / 100% 100%;
+            background: url('images.png/ludo-lobby-final.png') no-repeat center center / 100% 100%;
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.92);
             overflow: hidden;
         }
 
-        /* شریتی سەرەوە (پڕۆفایل، گۆڵد، ئەڵماس، ماڵەوە) */
-        .lobby-top-hud {
+        /* دانانی زانیاریی یاریزان لەسەر شریتە ئامادەکەی سەرەوەی وێنەکە */
+        .hud-avatar-overlay {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
+            top: 0.9%;
+            left: 2.5%;
+            width: 11.2%;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            overflow: hidden;
             z-index: 20;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 6px;
-        }
-
-        .lobby-profile-pill {
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            background: rgba(6, 38, 28, 0.85);
-            backdrop-filter: blur(8px);
-            border: 1.5px solid #ffd000;
-            border-radius: 999px;
-            padding: 3px 10px 3px 4px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.55);
-        }
-
-        .lobby-profile-pill img {
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1.5px solid #fde047;
-        }
-
-        .lobby-lvl-tag {
-            background: linear-gradient(135deg, #22c55e, #15803d);
-            color: #fff;
-            font-size: 10px;
-            font-weight: 900;
-            padding: 1px 6px;
-            border-radius: 8px;
-            border: 1px solid #bbf7d0;
-        }
-
-        .lobby-currency-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .lobby-coin-pill {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: rgba(6, 38, 28, 0.88);
-            backdrop-filter: blur(8px);
-            border: 1.5px solid rgba(255, 208, 0, 0.7);
-            border-radius: 999px;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: 900;
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.45);
-        }
-
-        .lobby-plus-btn {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: var(--gold-gradient);
-            color: #1a0f00;
-            font-size: 12px;
-            font-weight: 900;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
             cursor: pointer;
         }
 
-        .lobby-home-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(6, 38, 28, 0.88);
-            border: 1.5px solid #ffd000;
-            color: #fde047;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            font-size: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        .hud-avatar-overlay img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
-        /* دوگمە نادیارەکانی سەر ٥ کارتەکەی ناو وێنەکە */
+        .hud-level-overlay {
+            position: absolute;
+            top: 2.3%;
+            left: 16.5%;
+            width: 5.5%;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 900;
+            color: #451a03;
+            z-index: 21;
+            pointer-events: none;
+        }
+
+        .hud-gold-val {
+            position: absolute;
+            top: 1.9%;
+            left: 50%;
+            width: 14%;
+            text-align: center;
+            font-size: 12.5px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            z-index: 21;
+            pointer-events: none;
+        }
+
+        .hud-diamond-val {
+            position: absolute;
+            top: 1.9%;
+            left: 78.5%;
+            width: 13%;
+            text-align: center;
+            font-size: 12.5px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+            z-index: 21;
+            pointer-events: none;
+        }
+
+        /* دوگمە نادیارەکانی سەر + گۆڵد و + ئەڵماس */
+        .hud-plus-hitbox {
+            position: absolute;
+            top: 1.5%;
+            width: 6.5%;
+            height: 3.8%;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 22;
+        }
+
+        /* ٥ دوگمە نادیارەکەی سەر کارتەکانی ناوەڕاستی وێنەکە */
         .hotspot-card {
             position: absolute;
             background: transparent;
             border: none;
-            border-radius: 20px;
+            border-radius: 22px;
             cursor: pointer;
             z-index: 15;
             transition: transform 0.14s ease, box-shadow 0.14s ease;
@@ -179,53 +158,32 @@
 
         .hotspot-card:active {
             transform: scale(0.95);
-            box-shadow: inset 0 0 24px rgba(255, 255, 255, 0.45), 0 0 22px rgba(255, 208, 0, 0.7);
+            box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.45), 0 0 24px rgba(255, 208, 0, 0.75);
         }
 
-        /* دوگمەکانی سەر سەکۆ زێڕینەکەی خوارەوە */
-        .lobby-bottom-dock {
+        /* ٥ دوگمە نادیارەکەی سەر شریتی خوارەوەی وێنەکە */
+        .dock-hotspot {
             position: absolute;
-            bottom: 14px;
-            left: 10px;
-            right: 10px;
-            z-index: 20;
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 6px;
-        }
-
-        .dock-item-btn {
-            background: rgba(5, 34, 24, 0.86);
-            backdrop-filter: blur(8px);
-            border: 1.5px solid rgba(255, 208, 0, 0.65);
+            bottom: 0.5%;
+            height: 12.5%;
+            background: transparent;
+            border: none;
             border-radius: 16px;
-            padding: 7px 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            color: #fff;
             cursor: pointer;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.65);
-            transition: transform 0.14s;
+            z-index: 20;
+            transition: transform 0.12s ease;
         }
 
-        .dock-item-btn:active { transform: scale(0.92); }
-        .dock-item-btn.center-battle {
-            background: linear-gradient(135deg, #ffd000, #ea580c);
-            color: #1a0f00;
-            border-color: #fff;
-            transform: translateY(-6px);
+        .dock-hotspot:active {
+            transform: scale(0.92);
+            background: rgba(255, 255, 255, 0.15);
         }
-        .dock-item-btn i { font-size: 16px; }
-        .dock-item-btn span { font-size: 10.5px; font-weight: 900; }
 
-        /* پەنجەرەی هەڵبژاردنی مۆد (٢ یاریزان / ٤ یاریزان / دژی بۆت) */
+        /* پەنجەرەی هەڵبژاردنی مۆد */
         .sub-modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(3, 18, 13, 0.84);
+            background: rgba(3, 18, 45, 0.84);
             backdrop-filter: blur(10px);
             z-index: 6000;
             display: flex;
@@ -237,7 +195,7 @@
         .sub-modal-card {
             width: 100%;
             max-width: 380px;
-            background: linear-gradient(160deg, #093527 0%, #041b14 100%);
+            background: linear-gradient(160deg, #102a6b 0%, #071336 100%);
             border: 2px solid #ffd000;
             border-radius: 26px;
             padding: 20px;
@@ -620,73 +578,40 @@
          ========================================================= -->
     <section id="ludoRoyalLobby" class="ludo-lobby-screen">
         <div class="lobby-stage">
-            <!-- شریتی سەرەوە: پڕۆفایل + گۆڵد + ئەڵماس + گەڕانەوە -->
-            <div class="lobby-top-hud">
-                <div class="lobby-profile-pill">
-                    <img id="lobbyPlayerAvatar" src="images.png/controller.png" alt="">
-                    <div>
-                        <div id="lobbyPlayerName" style="font-size:11.5px; font-weight:900; color:#fff; max-width:85px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">یاریزان</div>
-                        <span id="lobbyPlayerLevel" class="lobby-lvl-tag">ئاست 1</span>
-                    </div>
-                </div>
-
-                <div class="lobby-currency-group">
-                    <div class="lobby-coin-pill">
-                        <i class="fa-solid fa-coins" style="color:#ffd000;"></i>
-                        <span id="lobbyGoldTxt" data-wallet-gold>0</span>
-                        <button class="lobby-plus-btn" onclick="if(window.YariWallet) YariWallet.openStore('gold')">+</button>
-                    </div>
-                    <div class="lobby-coin-pill">
-                        <i class="fa-solid fa-gem" style="color:#38bdf8;"></i>
-                        <span id="lobbyDiamondTxt" data-wallet-diamonds>0</span>
-                        <button class="lobby-plus-btn" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')">+</button>
-                    </div>
-                </div>
-
-                <a href="index.html" class="lobby-home-circle" title="گەڕانەوە بۆ سەرەکی">
-                    <i class="fa-solid fa-house"></i>
-                </a>
+            <!-- پڕۆفایل، ئاست، گۆڵد و ئەڵماس لەسەر شریتی سەرەوەی وێنەکە -->
+            <div class="hud-avatar-overlay" onclick="window.location.href='profile.html'" title="پڕۆفایل">
+                <img id="lobbyPlayerAvatar" src="images.png/controller.png" alt="">
             </div>
+            <div id="lobbyPlayerLevel" class="hud-level-overlay">1</div>
 
-            <!-- ٥ دوگمە نادیارەکەی سەر کارتەکانی ناو وێنەکە (ڕێژەی سەدی ورد) -->
+            <div id="lobbyGoldTxt" class="hud-gold-val" data-wallet-gold>0</div>
+            <button class="hud-plus-hitbox" style="left: 64.5%;" onclick="if(window.YariWallet) YariWallet.openStore('gold')" aria-label="زیادکردنی گۆڵد"></button>
+
+            <div id="lobbyDiamondTxt" class="hud-diamond-val" data-wallet-diamonds>0</div>
+            <button class="hud-plus-hitbox" style="left: 92%;" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')" aria-label="زیادکردنی ئەڵماس"></button>
+
+            <!-- ٥ دوگمە نادیارەکەی سەر کارتەکانی ناوەڕاست -->
             <!-- ١. کارتی زەرد: ٢ و ٤ یاریزان -->
-            <button class="hotspot-card" style="top: 33.5%; left: 5.5%; width: 42.5%; height: 25.5%;" onclick="openLudoModeModal('24players')" aria-label="٢ و ٤ یاریزان"></button>
+            <button class="hotspot-card" style="top: 37.5%; left: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('24players')" aria-label="٢ و ٤ یاریزان"></button>
 
             <!-- ٢. کارتی مۆر: تیپ -->
-            <button class="hotspot-card" style="top: 33.5%; right: 5.5%; width: 42.5%; height: 25.5%;" onclick="openLudoModeModal('team')" aria-label="تیپ"></button>
+            <button class="hotspot-card" style="top: 37.5%; right: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('team')" aria-label="تیپ"></button>
 
             <!-- ٣. کارتی سەوز: پاڵەوانێتی -->
-            <button class="hotspot-card" style="top: 61.5%; left: 2.5%; width: 30%; height: 22.5%;" onclick="openLudoModeModal('tournament')" aria-label="پاڵەوانێتی"></button>
+            <button class="hotspot-card" style="top: 63.5%; left: 8.5%; width: 26%; height: 18%;" onclick="openLudoModeModal('tournament')" aria-label="پاڵەوانێتی"></button>
 
             <!-- ٤. کارتی شین: ژووری تایبەت -->
-            <button class="hotspot-card" style="top: 61.5%; left: 35%; width: 30%; height: 22.5%;" onclick="openLudoModeModal('private')" aria-label="ژووری تایبەت"></button>
+            <button class="hotspot-card" style="top: 63.5%; left: 37%; width: 26%; height: 18%;" onclick="openLudoModeModal('private')" aria-label="ژووری تایبەت"></button>
 
             <!-- ٥. کارتی سوور: ژووری VIP -->
-            <button class="hotspot-card" style="top: 61.5%; right: 2.5%; width: 30%; height: 22.5%;" onclick="openLudoModeModal('vip')" aria-label="ژووری VIP"></button>
+            <button class="hotspot-card" style="top: 63.5%; right: 8.5%; width: 26%; height: 18%;" onclick="openLudoModeModal('vip')" aria-label="ژووری VIP"></button>
 
-            <!-- شریتی دوگمەکانی سەر سەکۆ زێڕینەکەی خوارەوە -->
-            <div class="lobby-bottom-dock">
-                <button class="dock-item-btn" onclick="showLudoLobbyNotice('🎁 بەشی چالاکی و خەڵاتە ڕۆژانەکان بەمزووانە دەکرێتەوە!')">
-                    <i class="fa-solid fa-gift" style="color:#f43f5e;"></i>
-                    <span>چالاکی</span>
-                </button>
-                <button class="dock-item-btn" onclick="showLudoLobbyNotice('🎲 کۆگای زار و پولە شاهانەکان لە قۆناغی داهاتوو دەکرێتەوە!')">
-                    <i class="fa-solid fa-dice" style="color:#38bdf8;"></i>
-                    <span>کۆگا</span>
-                </button>
-                <button class="dock-item-btn center-battle" onclick="openLudoModeModal('24players')">
-                    <i class="fa-solid fa-swords"></i>
-                    <span>یاری خێرا</span>
-                </button>
-                <button class="dock-item-btn" onclick="window.location.href='voice-room.html'">
-                    <i class="fa-solid fa-microphone-lines" style="color:#4ade80;"></i>
-                    <span>ژووری دەنگی</span>
-                </button>
-                <button class="dock-item-btn" onclick="window.location.href='index.html'">
-                    <i class="fa-solid fa-user-group" style="color:#fbbf24;"></i>
-                    <span>هاوڕێیان</span>
-                </button>
-            </div>
+            <!-- ٥ دوگمە نادیارەکەی سەر شریتی خوارەوە (چالاکی، کۆگا، یاری خێرا، ژووری دەنگی، هاوڕێیان) -->
+            <button class="dock-hotspot" style="left: 2%; width: 17%;" onclick="showLudoLobbyNotice('🎁 بەشی چالاکی و خەڵاتە ڕۆژانەکان بەمزووانە دەکرێتەوە!')" aria-label="چالاکی"></button>
+            <button class="dock-hotspot" style="left: 20.5%; width: 17%;" onclick="showLudoLobbyNotice('🎲 کۆگای زار و پولە شاهانەکان لە قۆناغی داهاتوو دەکرێتەوە!')" aria-label="کۆگا"></button>
+            <button class="dock-hotspot" style="left: 39%; width: 22%; height: 14%;" onclick="openLudoModeModal('24players')" aria-label="یاری خێرا"></button>
+            <button class="dock-hotspot" style="left: 62.5%; width: 17%;" onclick="window.location.href='voice-room.html'" aria-label="ژووری دەنگی"></button>
+            <button class="dock-hotspot" style="right: 2%; width: 17%;" onclick="window.location.href='index.html'" aria-label="هاوڕێیان"></button>
         </div>
     </section>
 
@@ -800,15 +725,12 @@
     <script src="ludo-engine.js"></script>
     <script>
         function syncLobbyProfileUI() {
-            const name = localStorage.getItem('yk_player_name') || 'یاریزان';
             const avatar = localStorage.getItem('yk_player_avatar') || 'images.png/controller.png';
             const lvl = localStorage.getItem('yk_player_level') || '1';
-            const nEl = document.getElementById('lobbyPlayerName');
             const aEl = document.getElementById('lobbyPlayerAvatar');
             const lEl = document.getElementById('lobbyPlayerLevel');
-            if (nEl) nEl.textContent = name;
             if (aEl) aEl.src = avatar;
-            if (lEl) lEl.textContent = `ئاست ${lvl}`;
+            if (lEl) lEl.textContent = lvl;
         }
 
         function openLudoModeModal(cardType) {
