@@ -1776,10 +1776,11 @@ function draw3DBall(num, x, y, r) {
             }
         }, { passive: false });
 
-        resizeCanvas();
+       resizeCanvas();
         setupHorizontalRack();
         renderLobbyCarousel();
         render7Slots('p1BallSlots', null);
         render7Slots('p2BallSlots', null);
         requestAnimationFrame(loop120FPS);
     });
+})();
