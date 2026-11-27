@@ -1086,10 +1086,17 @@
                             b1.vx -= p * nx; b1.vy -= p * ny;
                             b2.vx += p * nx; b2.vy += p * ny;
 
-                            if (b1.num === 0 && (spinX !== 0 || spinY !== 0)) {
-                                b1.vx += (nx * spinY * 2.2) + (-ny * spinX * 1.8);
-                                b1.vy += (ny * spinY * 2.2) + (nx * spinX * 1.8);
-                                spinX *= 0.25; spinY *= 0.25;
+                           if ((b1.num === 0 || b2.num === 0) && (spinX !== 0 || spinY !== 0)) {
+                                const cueB = b1.num === 0 ? b1 : b2;
+                                const dirX = b1.num === 0 ? nx : -nx;
+                                const dirY = b1.num === 0 ? ny : -ny;
+                                const spinForce = (2.5 + (selectedCue.spin || 3) * 0.45) * (p / 12);
+
+                                // خاڵ لە خوارەوە (spinY > 0) = گەڕانەوە بۆ دواوە (Backspin) | خاڵ لە سەرەوە (spinY < 0) = پێشەوە (Topspin)
+                                cueB.vx += (-dirX * spinY * spinForce * 1.45) + (-dirY * spinX * spinForce);
+                                cueB.vy += (-dirY * spinY * spinForce * 1.45) + (dirX * spinX * spinForce);
+                                spinX *= 0.15;
+                                spinY *= 0.15;
                             }
                             playSfx('hit', Math.min(1, p / 12));
                         }
@@ -1352,13 +1359,37 @@ function draw3DBall(num, x, y, r) {
         if (hitBall && !illegalTarget) {
             const tx = hitBall.x - ex, ty = hitBall.y - ey;
             const tl = Math.hypot(tx, ty) || 1;
+            const nx = tx / tl, ny = ty / tl;
+            const aimLen = 42 + (selectedCue.aim || 3) * 13;
+
+            // ١. هێڵی ئاڕاستەی تۆپە لێدراوەکە (زەرد)
             ctx.strokeStyle = '#fde047';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 2.1;
             ctx.beginPath();
             ctx.moveTo(hitBall.x, hitBall.y);
-            const aimLen = 42 + (selectedCue.aim || 3) * 13;
-            ctx.lineTo(hitBall.x + (tx / tl) * aimLen, hitBall.y + (ty / tl) * aimLen);
+            ctx.lineTo(hitBall.x + nx * aimLen, hitBall.y + ny * aimLen);
             ctx.stroke();
+
+            // ٢. هێڵی ئاڕاستەی تۆپی سپی خۆت دوای بەرکەوتن (بەپێی گۆشە و Spin)
+            const dot = dx * nx + dy * ny;
+            let cbx = dx - dot * nx;
+            let cby = dy - dot * ny;
+            const spinPower = (0.45 + (selectedCue.spin || 3) * 0.06);
+            cbx += (-nx * spinY * spinPower) + (-ny * spinX * spinPower * 0.8);
+            cby += (-ny * spinY * spinPower) + (nx * spinX * spinPower * 0.8);
+
+            const cbLen = Math.hypot(cbx, cby);
+            if (cbLen > 0.04) {
+                const cueLineLen = aimLen * 0.72;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+                ctx.lineWidth = 1.7;
+                ctx.setLineDash([4, 3]);
+                ctx.beginPath();
+                ctx.moveTo(ex, ey);
+                ctx.lineTo(ex + (cbx / cbLen) * cueLineLen, ey + (cby / cbLen) * cueLineLen);
+                ctx.stroke();
+                ctx.setLineDash([]);
+            }
         }
         ctx.restore();
 
