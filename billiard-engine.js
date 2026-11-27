@@ -420,12 +420,11 @@
         if (!holder) return;
         const isPortraitRotated = window.innerHeight > window.innerWidth;
 
-        // لەسەر مۆبایل (کاتی سوڕانەوە) مێزەکە زۆر گەورە و پڕی شاشەکە دەکات
         const maxW = isPortraitRotated
-            ? Math.max(holder.clientHeight, window.innerHeight * 0.78)
+            ? Math.max(holder.clientHeight, window.innerHeight * 0.86)
             : holder.clientWidth - 4;
         const maxH = isPortraitRotated
-            ? Math.max(holder.clientWidth, window.innerWidth * 0.74)
+            ? Math.max(holder.clientWidth, window.innerWidth * 0.80)
             : holder.clientHeight - 4;
         if (maxW <= 10 || maxH <= 10) return;
 
@@ -1760,6 +1759,23 @@ function draw3DBall(num, x, y, r) {
     };
 
     window.addEventListener('DOMContentLoaded', () => {
+        // ڕاگرتنی گەڕانەوەی بەهەڵەی مۆبایل (Swipe Back) لە کاتی نیشانەگرتن و لێداندا
+        document.documentElement.style.overscrollBehavior = 'none';
+        document.body.style.overscrollBehavior = 'none';
+        document.body.style.touchAction = 'none';
+
+        document.addEventListener('touchstart', (e) => {
+            if (!e.target.closest('.modal-card, #tablesCarousel, #cueListContainer')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!e.target.closest('.modal-card, #tablesCarousel, #cueListContainer')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
         resizeCanvas();
         setupHorizontalRack();
         renderLobbyCarousel();
@@ -1767,4 +1783,3 @@ function draw3DBall(num, x, y, r) {
         render7Slots('p2BallSlots', null);
         requestAnimationFrame(loop120FPS);
     });
-})();

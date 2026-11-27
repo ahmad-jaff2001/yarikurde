@@ -1022,6 +1022,15 @@
         if (av && document.getElementById('lobbyUserAvatar')) document.getElementById('lobbyUserAvatar').src = av;
         if (nm && document.getElementById('lobbyUserName')) document.getElementById('lobbyUserName').innerText = nm;
     })();
+    
+</script>
+<script>
+    history.pushState(null, null, location.href);
+    window.addEventListener('popstate', function () {
+        history.pushState(null, null, location.href);
+        const pm = document.getElementById('pauseModal');
+        if (pm) pm.classList.add('open');
+    });
 </script>
 </body>
 </html>
