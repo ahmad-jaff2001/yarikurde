@@ -993,9 +993,8 @@
                             shotPocketedBalls.push(b.num);
                             tubeBalls.push({ num: b.num, progress: 0 });
                         }
-                        break;
+                    break;
                     }
-                }
                 }
                 if (b.pocketed) continue;
 
