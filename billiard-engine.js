@@ -1,25 +1,40 @@
 // =============================================================================
-// YARI KURDI - ROYAL 8-BALL POOL 120FPS ENGINE (15 TABLES + ONLINE + AI)
+// YARI KURDI - 8 BALL POOL LANDSCAPE 120FPS ENGINE (CUSTOM ROYAL TABLE)
 // =============================================================================
 
 (function () {
-    // ١٥ دیزاینی مێزی جیاواز و گرانتر
     const TABLES_15 = [
-        { id: 1,  name: '١. دیوەخانی هەولێر',    currency: 'gold',     fee: 500,      prize: 1000,      felt1: '#15803d', felt2: '#064e3b', rail: '#5c2d0c', trim: '#d97706', emblem: 'ERBIL' },
-        { id: 2,  name: '٢. مێزی سلێمانی',       currency: 'gold',     fee: 1500,     prize: 3000,      felt1: '#0f766e', felt2: '#115e59', rail: '#451a03', trim: '#fbbf24', emblem: 'SULI' },
-        { id: 3,  name: '٣. کۆشکی دهۆک',         currency: 'gold',     fee: 5000,     prize: 10000,     felt1: '#1d4ed8', felt2: '#1e3a8a', rail: '#3b0764', trim: '#38bdf8', emblem: 'DUHOK' },
-        { id: 4,  name: '٤. قەڵای کەلار',         currency: 'gold',     fee: 15000,    prize: 30000,     felt1: '#b45309', felt2: '#78350f', rail: '#27272a', trim: '#ffd000', emblem: 'KALAR' },
-        { id: 5,  name: '٥. ئاگری کەرکووک',      currency: 'gold',     fee: 50000,    prize: 100000,    felt1: '#b91c1c', felt2: '#7f1d1d', rail: '#18181b', trim: '#f97316', emblem: 'KIRKUK' },
-        { id: 6,  name: '٦. زمروودی هەڵەبجە',    currency: 'gold',     fee: 150000,   prize: 300000,    felt1: '#047857', felt2: '#022c22', rail: '#312e81', trim: '#34d399', emblem: 'HALABJA' },
-        { id: 7,  name: '٧. پردی زاخۆ',          currency: 'gold',     fee: 400000,   prize: 800000,    felt1: '#6d28d9', felt2: '#4c1d95', rail: '#422006', trim: '#e879f9', emblem: 'ZAKHO' },
-        { id: 8,  name: '٨. تاڤگەی سۆران',       currency: 'gold',     fee: 1000000,  prize: 2000000,   felt1: '#0369a1', felt2: '#082f49', rail: '#0f172a', trim: '#7dd3fc', emblem: 'SORAN' },
-        { id: 9,  name: '٩. دەروازەی ڕانیە',     currency: 'gold',     fee: 3000000,  prize: 6000000,   felt1: '#4338ca', felt2: '#1e1b4b', rail: '#3f3f46', trim: '#a5b4fc', emblem: 'RANYA' },
-        { id: 10, name: '١٠. تاجی خانەقین',      currency: 'gold',     fee: 10000000, prize: 20000000,  felt1: '#9d174d', felt2: '#500724', rail: '#1c1917', trim: '#f472b6', emblem: 'KHANAQIN' },
-        { id: 11, name: '١١. سوڵتانی ئامەد',     currency: 'gold',     fee: 25000000, prize: 50000000,  felt1: '#374151', felt2: '#111827', rail: '#713f12', trim: '#fde047', emblem: 'AMED' },
-        { id: 12, name: '١٢. یاقووتی مەهاباد',   currency: 'diamonds', fee: 100,      prize: 200,       felt1: '#991b1b', felt2: '#450a0a', rail: '#09090b', trim: '#ffd000', emblem: 'MAHABAD' },
-        { id: 13, name: '١٣. ئەفسانەی سنە',      currency: 'diamonds', fee: 500,      prize: 1000,      felt1: '#5b21b6', felt2: '#2e1065', rail: '#1e1b4b', trim: '#38bdf8', emblem: 'SANANDAJ' },
-        { id: 14, name: '١٤. ئیمپراتۆری کرماشان', currency: 'diamonds', fee: 2000,     prize: 4000,      felt1: '#0f172a', felt2: '#020617', rail: '#451a03', trim: '#f59e0b', emblem: 'KERMANSHAH' },
-        { id: 15, name: '١٥. تەختی یاری کوردی VIP', currency: 'diamonds', fee: 10000, prize: 20000,     felt1: '#581c87', felt2: '#1e0536', rail: '#000000', trim: '#ffd000', emblem: 'YARI KURDI VIP' }
+        { id: 1,  name: '١. دیوەخانی شاهانەی یاری کوردی', currency: 'gold', fee: 1000,     prize: 2000,      img: 'images.png/billiard-table-1.png', felt1: '#c81e1e', felt2: '#7f1111', wood: '#3a1408', gold: '#eab308' },
+        { id: 2,  name: '٢. کۆشکی هەولێر',                currency: 'gold', fee: 2500,     prize: 5000,      img: 'images.png/billiard-table-1.png', felt1: '#15803d', felt2: '#064e3b', wood: '#451a03', gold: '#fbbf24' },
+        { id: 3,  name: '٣. مێزی سلێمانی',                currency: 'gold', fee: 5000,     prize: 10000,     img: 'images.png/billiard-table-1.png', felt1: '#0f766e', felt2: '#134e4a', wood: '#271206', gold: '#fde047' },
+        { id: 4,  name: '٤. دەریای دهۆک',                 currency: 'gold', fee: 15000,    prize: 30000,     img: 'images.png/billiard-table-1.png', felt1: '#1d4ed8', felt2: '#1e3a8a', wood: '#1e1b4b', gold: '#38bdf8' },
+        { id: 5,  name: '٥. قەڵای کەلار',                 currency: 'gold', fee: 50000,    prize: 100000,    img: 'images.png/billiard-table-1.png', felt1: '#b45309', felt2: '#78350f', wood: '#1c1917', gold: '#ffd000' },
+        { id: 6,  name: '٦. ئاگری کەرکووک',               currency: 'gold', fee: 150000,   prize: 300000,    img: 'images.png/billiard-table-1.png', felt1: '#991b1b', felt2: '#450a0a', wood: '#09090b', gold: '#f59e0b' },
+        { id: 7,  name: '٧. زمروودی هەڵەبجە',             currency: 'gold', fee: 400000,   prize: 800000,    img: 'images.png/billiard-table-1.png', felt1: '#047857', felt2: '#022c22', wood: '#312e81', gold: '#34d399' },
+        { id: 8,  name: '٨. پردی زاخۆ',                   currency: 'gold', fee: 1000000,  prize: 2000000,   img: 'images.png/billiard-table-1.png', felt1: '#6d28d9', felt2: '#3b0764', wood: '#2e1065', gold: '#e879f9' },
+        { id: 9,  name: '٩. تاڤگەی سۆران',                currency: 'gold', fee: 2500000,  prize: 5000000,   img: 'images.png/billiard-table-1.png', felt1: '#0369a1', felt2: '#082f49', wood: '#0f172a', gold: '#7dd3fc' },
+        { id: 10, name: '١٠. دەروازەی ڕانیە',             currency: 'gold', fee: 5000000,  prize: 10000000,  img: 'images.png/billiard-table-1.png', felt1: '#4338ca', felt2: '#1e1b4b', wood: '#18181b', gold: '#a5b4fc' },
+        { id: 11, name: '١١. سوڵتانی ئامەد',              currency: 'gold', fee: 10000000, prize: 20000000,  img: 'images.png/billiard-table-1.png', felt1: '#be123c', felt2: '#4c0519', wood: '#1c1917', gold: '#ffd000' },
+        { id: 12, name: '١٢. یاقووتی مەهاباد',            currency: 'diamonds', fee: 100,  prize: 200,       img: 'images.png/billiard-table-1.png', felt1: '#b91c1c', felt2: '#450a0a', wood: '#09090b', gold: '#ffd000' },
+        { id: 13, name: '١٣. ئەفسانەی سنە',               currency: 'diamonds', fee: 500,  prize: 1000,      img: 'images.png/billiard-table-1.png', felt1: '#5b21b6', felt2: '#2e1065', wood: '#0f0724', gold: '#38bdf8' },
+        { id: 14, name: '١٤. ئیمپراتۆری کرماشان',          currency: 'diamonds', fee: 2000, prize: 4000,      img: 'images.png/billiard-table-1.png', felt1: '#0f172a', felt2: '#020617', wood: '#3a1408', gold: '#f59e0b' },
+        { id: 15, name: '١٥. تەختی یاری کوردی VIP',       currency: 'diamonds', fee: 10000,prize: 20000,     img: 'images.png/billiard-table-1.png', felt1: '#7f1d1d', felt2: '#1e0505', wood: '#000000', gold: '#ffd000' }
+    ];
+
+    const CUE_STICKS = [
+        { id: 'dragon', name: 'داری ئەژدیهای زێڕین (Royal Dragon)', butt: '#1c1917', inlay: '#eab308', shaft: '#f59e0b', tip: '#38bdf8' },
+        { id: 'crimson', name: 'داری یاقووتی سوور (Crimson VIP)', butt: '#450a0a', inlay: '#fde047', shaft: '#fde68a', tip: '#ef4444' },
+        { id: 'diamond', name: 'داری ئەڵماسی شین (Diamond Pro)', butt: '#0f172a', inlay: '#38bdf8', shaft: '#e2e8f0', tip: '#0284c7' },
+        { id: 'emerald', name: 'داری زمروودی شاهانە (Emerald)', butt: '#022c22', inlay: '#34d399', shaft: '#fef3c7', tip: '#10b981' }
+    ];
+
+    const QUICK_CHATS = [
+        'لێدانێکی نایاب بوو! 🔥',
+        'بەختێکی باش هاوڕێ 🤝',
+        'ئافەرم دەستخۆش! 👏',
+        'ئاگاداربە نۆرەی منە 😎',
+        'زۆر نزیک بوو! 😮',
+        'یارییەکی خۆش بوو 🏆'
     ];
 
     const BALL_COLORS = {
@@ -29,71 +44,90 @@
         13: '#ea580c', 14: '#16a34a', 15: '#881337'
     };
 
-    // قەبارەی ستانداردی مێز (ئاسۆیی یان ستوونی بۆ مۆبایل: ستوونی 360x680 زۆر گونجاوە بۆ مۆبایل)
-    const LOGICAL_W = 360;
-    const LOGICAL_H = 660;
-    const RAIL_SIZE = 28;
+    // قەبارەی 16:9 ڕێک گونجاو لەگەڵ وێنەی مێزەکەت (billiard-table-1.png)
+    const TABLE_W = 680;
+    const TABLE_H = 380;
+    const TRACK_AREA_W = 46;
+    const LOGICAL_W = TABLE_W + TRACK_AREA_W;
+    const LOGICAL_H = TABLE_H;
+
+    const RAIL_X = 40;
+    const RAIL_Y = 44;
     const BALL_R = 11.2;
-    const POCKET_R = 20.5;
+    const POCKET_R = 25;
 
     const POCKETS = [
-        { x: RAIL_SIZE + 2, y: RAIL_SIZE + 2 },
-        { x: LOGICAL_W - RAIL_SIZE - 2, y: RAIL_SIZE + 2 },
-        { x: RAIL_SIZE - 3, y: LOGICAL_H / 2 },
-        { x: LOGICAL_W - RAIL_SIZE + 3, y: LOGICAL_H / 2 },
-        { x: RAIL_SIZE + 2, y: LOGICAL_H - RAIL_SIZE - 2 },
-        { x: LOGICAL_W - RAIL_SIZE - 2, y: LOGICAL_H - RAIL_SIZE - 2 }
+        { x: 42, y: 46 },
+        { x: TABLE_W / 2, y: 31 },
+        { x: TABLE_W - 42, y: 46 },
+        { x: 42, y: TABLE_H - 46 },
+        { x: TABLE_W / 2, y: TABLE_H - 31 },
+        { x: TABLE_W - 42, y: TABLE_H - 46 }
     ];
+
+    const tableImageCache = {};
+    function getTableImg(src) {
+        if (!src) return null;
+        if (!tableImageCache[src]) {
+            const im = new Image();
+            im.src = src;
+            tableImageCache[src] = im;
+        }
+        return tableImageCache[src];
+    }
+    getTableImg('images.png/billiard-table-1.png');
 
     const canvas = document.getElementById('poolCanvas');
     const ctx = canvas.getContext('2d');
 
     let selectedTable = TABLES_15[0];
+    let selectedCue = CUE_STICKS[0];
     let soundOn = true;
     let audioCtx = null;
 
     const me = {
         uid: localStorage.getItem('yk_player_uid') || 'p_' + Math.floor(100000 + Math.random() * 900000),
-        name: localStorage.getItem('yk_player_name') || 'یاریزان',
-        avatar: localStorage.getItem('yk_player_avatar') || 'images.png/controller.png'
+        name: localStorage.getItem('yk_player_name') || 'Ahmad',
+        avatar: localStorage.getItem('yk_player_avatar') || 'images.png/controller.png',
+        level: parseInt(localStorage.getItem('yk_player_level') || '1', 10)
     };
     localStorage.setItem('yk_player_uid', me.uid);
 
     let balls = [];
-    let pocketingAnims = [];
-    let aimAngle = -Math.PI / 2;
-    let pullPower = 0; // 0 to 1
-    let spinX = 0;     // -1 to 1
-    let spinY = 0;     // -1 to 1
+    let tubeBalls = [];
+    let aimAngle = 0;
+    let pullPower = 0;
+    let spinX = 0;
+    let spinY = 0;
 
-    let gameMode = 'bot'; // 'bot' | 'online'
+    let gameMode = 'bot';
     let matchActive = false;
     let isMoving = false;
     let ballInHand = false;
     let draggingCueBall = false;
     let aimingOnCanvas = false;
 
-    let myPlayerNum = 1; // 1 or 2
-    let currentTurn = 1; // 1 or 2
+    let myPlayerNum = 1;
+    let currentTurn = 1;
     let groupsAssigned = false;
-    let playerGroups = { 1: null, 2: null }; // 'solids' | 'stripes'
+    let playerGroups = { 1: null, 2: null };
 
     let shotFirstHitBall = null;
     let shotPocketedBalls = [];
     let cueBallPocketed = false;
 
-    // کۆنترۆڵی ئۆنڵاین (Firebase)
     let roomRef = null;
-    let activeRoomKey = null;
     let lastProcessedShotId = 0;
-    let mmFallbackTimer = null;
+    let mmTimer = null;
 
     function fmtNum(n) {
         if (window.formatCompactNumber) return window.formatCompactNumber(n);
-        return Number(n || 0).toLocaleString();
+        n = Number(n) || 0;
+        if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        return String(n);
     }
 
-    // دەنگی بێ فایلی دەرەکی (Web Audio Synthesizer)
     function playSfx(type, intensity = 1) {
         if (!soundOn) return;
         try {
@@ -108,44 +142,43 @@
             const vol = Math.min(1, Math.max(0.05, intensity));
             if (type === 'hit') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(520, now);
-                osc.frequency.exponentialRampToValueAtTime(140, now + 0.045);
+                osc.frequency.setValueAtTime(540, now);
+                osc.frequency.exponentialRampToValueAtTime(145, now + 0.045);
                 gain.gain.setValueAtTime(vol * 0.45, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-                osc.start(now);
-                osc.stop(now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
             } else if (type === 'rail') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(160, now);
+                osc.frequency.setValueAtTime(165, now);
                 osc.frequency.exponentialRampToValueAtTime(65, now + 0.06);
                 gain.gain.setValueAtTime(vol * 0.3, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-                osc.start(now);
-                osc.stop(now + 0.065);
+                osc.start(now); osc.stop(now + 0.065);
             } else if (type === 'pocket') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(280, now);
-                osc.frequency.exponentialRampToValueAtTime(110, now + 0.16);
-                gain.gain.setValueAtTime(0.4, now);
+                osc.frequency.setValueAtTime(290, now);
+                osc.frequency.exponentialRampToValueAtTime(115, now + 0.16);
+                gain.gain.setValueAtTime(0.42, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
-                osc.start(now);
-                osc.stop(now + 0.17);
+                osc.start(now); osc.stop(now + 0.17);
             }
         } catch (e) {}
     }
 
     function resizeCanvas() {
-        const holder = document.querySelector('.canvas-holder');
+        const holder = document.getElementById('tableStageHolder');
         if (!holder) return;
-        const maxH = holder.clientHeight - 4;
-        const maxW = holder.clientWidth - 4;
-        const aspect = LOGICAL_W / LOGICAL_H;
+        const isPortraitRotated = window.innerHeight > window.innerWidth;
+        const maxW = (isPortraitRotated ? holder.clientHeight : holder.clientWidth) - 4;
+        const maxH = (isPortraitRotated ? holder.clientWidth : holder.clientHeight) - 4;
+        if (maxW <= 10 || maxH <= 10) return;
 
-        let cssH = maxH;
-        let cssW = cssH * aspect;
-        if (cssW > maxW) {
-            cssW = maxW;
-            cssH = cssW / aspect;
+        const aspect = LOGICAL_W / LOGICAL_H;
+        let cssW = maxW;
+        let cssH = cssW / aspect;
+        if (cssH > maxH) {
+            cssH = maxH;
+            cssW = cssH * aspect;
         }
 
         const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
@@ -158,44 +191,41 @@
 
     window.addEventListener('resize', resizeCanvas);
 
-    // ڕێکخستنی ١٦ تۆپەکە لە سەرەتای یاری
-    function setupRack() {
+    function setupHorizontalRack() {
         balls = [];
-        pocketingAnims = [];
+        tubeBalls = [];
 
-        // تۆپی سپی (Cue Ball = 0) لە بەشی خوارەوە
         balls.push({
             num: 0,
-            x: LOGICAL_W / 2,
-            y: LOGICAL_H * 0.74,
+            x: RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25,
+            y: TABLE_H / 2,
             vx: 0, vy: 0,
             pocketed: false
         });
 
-        // سێگۆشەی ١٥ تۆپەکە لە بەشی سەرەوە
-        const apexX = LOGICAL_W / 2;
-        const apexY = LOGICAL_H * 0.27;
-        const rowDy = BALL_R * Math.sqrt(3) + 0.45;
-        const colDx = BALL_R * 2 + 0.45;
+        const apexX = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.74;
+        const apexY = TABLE_H / 2;
+        const colDx = BALL_R * Math.sqrt(3) + 0.45;
+        const rowDy = BALL_R * 2 + 0.45;
 
         const rackOrder = [
             1,
-            9, 2,
-            3, 8, 10,
-            11, 4, 12, 5,
-            6, 13, 14, 7, 15
+            2, 9,
+            10, 8, 3,
+            4, 14, 7, 11,
+            12, 6, 15, 13, 5
         ];
 
         let idx = 0;
-        for (let row = 0; row < 5; row++) {
-            const y = apexY - row * rowDy;
-            const startX = apexX - (row * colDx) / 2;
-            for (let col = 0; col <= row; col++) {
+        for (let col = 0; col < 5; col++) {
+            const x = apexX + col * colDx;
+            const startY = apexY - (col * rowDy) / 2;
+            for (let row = 0; row <= col; row++) {
                 const num = rackOrder[idx++];
                 balls.push({
                     num,
-                    x: startX + col * colDx,
-                    y: y,
+                    x: x,
+                    y: startY + row * rowDy,
                     vx: 0, vy: 0,
                     pocketed: false
                 });
@@ -203,49 +233,33 @@
         }
     }
 
-    function renderTablesLobby() {
-        const box = document.getElementById('tablesListContainer');
+    function renderLobbyCarousel() {
+        const box = document.getElementById('tablesCarousel');
         if (!box) return;
         box.innerHTML = TABLES_15.map(t => {
-            const isSel = t.id === selectedTable.id;
-            const curIcon = t.currency === 'diamonds'
+            const sel = t.id === selectedTable.id;
+            const icon = t.currency === 'diamonds'
                 ? '<i class="fa-solid fa-gem" style="color:#38bdf8;"></i>'
                 : '<i class="fa-solid fa-coins" style="color:#ffd000;"></i>';
             return `
-                <div class="table-tier-card ${isSel ? 'selected' : ''}" onclick="BilliardEngine.selectTable(${t.id})">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div class="mini-table-preview" style="background:radial-gradient(circle, ${t.felt1}, ${t.felt2}); border-color:${t.rail};">
-                            <div style="position:absolute; inset:3px; border:1px solid ${t.trim}; border-radius:4px;"></div>
-                        </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:13px; font-weight:900; color:#fff;">${t.name}</div>
-                            <div style="font-size:10.5px; color:#cbd5e1;">چوونەژوورەوە: ${curIcon} <b>${fmtNum(t.fee)}</b></div>
-                        </div>
-                    </div>
-                    <div style="text-align:left;">
-                        <div style="font-size:10px; color:#fde047;">خەڵاتی براوە</div>
-                        <div style="font-size:13.5px; font-weight:900; color:#4ade80;">${curIcon} ${fmtNum(t.prize)}</div>
-                    </div>
+                <div class="table-city-card ${sel ? 'selected' : ''}" onclick="Billiard8BP.selectTable(${t.id})">
+                    <div style="font-size:11.5px; font-weight:900; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${t.name}</div>
+                    <div class="mini-felt-box" style="background:url('${t.img}') center/cover no-repeat, radial-gradient(circle, ${t.felt1}, ${t.felt2}); border-color:${t.gold};"></div>
+                    <div style="font-size:10px; color:#cbd5e1;">چوونەژوورەوە: ${icon} <b>${fmtNum(t.fee)}</b></div>
+                    <div style="font-size:12px; font-weight:900; color:#4ade80; margin-top:2px;">خەڵات: ${icon} ${fmtNum(t.prize)}</div>
                 </div>
             `;
         }).join('');
     }
 
     function selectTable(id) {
-        const found = TABLES_15.find(t => t.id === id);
-        if (found) {
-            selectedTable = found;
-            renderTablesLobby();
-            updateTableHeaderBadge();
+        const f = TABLES_15.find(t => t.id === id);
+        if (f) {
+            selectedTable = f;
+            getTableImg(f.img);
+            document.getElementById('potPrizeTxt').innerText = fmtNum(selectedTable.prize);
+            renderLobbyCarousel();
         }
-    }
-
-    function updateTableHeaderBadge() {
-        document.getElementById('activeTableNameBadge').innerText = selectedTable.name;
-        document.getElementById('activePrizeAmount').innerText = fmtNum(selectedTable.prize);
-        const ico = document.getElementById('activePrizeIcon');
-        ico.className = selectedTable.currency === 'diamonds' ? 'fa-solid fa-gem' : 'fa-solid fa-coins';
-        ico.style.color = selectedTable.currency === 'diamonds' ? '#38bdf8' : '#ffd000';
     }
 
     function chargeEntryFee() {
@@ -254,31 +268,28 @@
             ? YariWallet.spendDiamonds(selectedTable.fee)
             : YariWallet.spendGold(selectedTable.fee);
         if (!ok) {
-            alert(selectedTable.currency === 'diamonds' ? 'ئەڵماسی پێویستت نییە بۆ ئەم مێزە!' : 'گۆڵدی پێویستت نییە بۆ ئەم مێزە!');
+            alert(selectedTable.currency === 'diamonds' ? 'ئەڵماسی پێویستت نییە!' : 'گۆڵدی پێویستت نییە!');
             YariWallet.openStore(selectedTable.currency);
             return false;
         }
         return true;
     }
 
-    function rewardWinnerPrize() {
+    function rewardWinner() {
         if (!window.YariWallet) return;
-        if (selectedTable.currency === 'diamonds') {
-            YariWallet.addDiamonds(selectedTable.prize);
-        } else {
-            YariWallet.addGold(selectedTable.prize);
-        }
+        if (selectedTable.currency === 'diamonds') YariWallet.addDiamonds(selectedTable.prize);
+        else YariWallet.addGold(selectedTable.prize);
     }
 
-    function recordMatchStats(won) {
+    function recordStats(won) {
         if (!window.firebase || !firebase.apps || !firebase.apps.length || !me.uid) return;
-        const pRef = firebase.database().ref(`players/${me.uid}`);
-        pRef.child('gamesPlayed').transaction(c => (c || 0) + 1);
-        if (won) pRef.child('gamesWon').transaction(c => (c || 0) + 1);
-        pRef.child('xp').transaction(c => (c || 0) + (won ? 60 : 15));
+        const ref = firebase.database().ref(`players/${me.uid}`);
+        ref.child('gamesPlayed').transaction(c => (c || 0) + 1);
+        if (won) ref.child('gamesWon').transaction(c => (c || 0) + 1);
+        ref.child('xp').transaction(c => (c || 0) + (won ? 60 : 15));
     }
 
-    function initMatchState(mode, myNum, p1Data, p2Data) {
+    function initMatch(mode, myNum, p1, p2) {
         gameMode = mode;
         myPlayerNum = myNum;
         currentTurn = 1;
@@ -287,146 +298,134 @@
         ballInHand = false;
         isMoving = false;
         matchActive = true;
-        aimAngle = -Math.PI / 2;
+        aimAngle = 0;
         resetSpin();
 
-        document.getElementById('p1Name').innerText = p1Data.name;
-        document.getElementById('p1Avatar').src = p1Data.avatar || 'images.png/controller.png';
-        document.getElementById('p2Name').innerText = p2Data.name;
-        document.getElementById('p2Avatar').src = p2Data.avatar || 'images.png/Royal-Billiard.png';
+        document.getElementById('p1NameTxt').innerText = p1.name;
+        document.getElementById('p1AvatarImg').src = p1.avatar || 'images.png/controller.png';
+        document.getElementById('p1LvlBadge').innerText = `★ ${p1.level || 1}`;
 
-        updateTableHeaderBadge();
-        setupRack();
-        updateHudUI();
-        resizeCanvas();
+        document.getElementById('p2NameTxt').innerText = p2.name;
+        document.getElementById('p2AvatarImg').src = p2.avatar || 'images.png/Royal-Billiard.png';
+        document.getElementById('p2LvlBadge').innerText = `★ ${p2.level || 1}`;
+
+        document.getElementById('potPrizeTxt').innerText = fmtNum(selectedTable.prize);
+
+        setupHorizontalRack();
+        updateHudSlots();
+        setTimeout(resizeCanvas, 50);
     }
 
     function startBotMatch() {
         if (!chargeEntryFee()) return;
-        cleanupOnlineRoom();
+        cleanupOnline();
         document.getElementById('lobbyModal').classList.remove('open');
         document.getElementById('resultModal').classList.remove('open');
 
-        initMatchState('bot', 1,
-            { name: me.name, avatar: me.avatar },
-            { name: 'پاڵەوانی زیرەک 🤖', avatar: 'images.png/Royal-Billiard.png' }
+        initMatch('bot', 1,
+            { name: me.name, avatar: me.avatar, level: me.level },
+            { name: 'Leopaul', avatar: 'images.png/Royal-Billiard.png', level: 114 }
         );
-        setStatus('🎱 نۆرەی تۆیە! لێدانی سەرەتا (Break) ئەنجام بدە');
+        showToast('نۆرەی تۆیە — دارەکە ئاڕاستە بکە و لێدانی سەرەتا بکە');
     }
 
-    // سیستمی ئۆنڵاین لە ڕێگەی Firebase
-    function cleanupOnlineRoom() {
-        if (mmFallbackTimer) { clearTimeout(mmFallbackTimer); mmFallbackTimer = null; }
-        if (roomRef) {
-            roomRef.off();
-            roomRef = null;
-        }
-        activeRoomKey = null;
+    // ================= سیستمی ئۆنڵاینی ڕاستەوخۆ (Firebase) =================
+    function cleanupOnline() {
+        if (mmTimer) { clearTimeout(mmTimer); mmTimer = null; }
+        if (roomRef) { roomRef.off(); roomRef = null; }
     }
 
-    function startOnlineMatch(customCode = null) {
+    function startOnlineMatch(privCode = null) {
         if (!window.firebase || !firebase.apps || !firebase.apps.length) {
             startBotMatch();
             return;
         }
         if (!chargeEntryFee()) return;
 
-        cleanupOnlineRoom();
+        cleanupOnline();
         document.getElementById('lobbyModal').classList.remove('open');
         document.getElementById('resultModal').classList.remove('open');
         document.getElementById('matchmakingModal').classList.add('open');
-        document.getElementById('mmPlayBotNowBtn').style.display = 'none';
+        document.getElementById('mmQuickStartBtn').style.display = 'none';
 
         const db = firebase.database();
 
-        if (customCode) {
-            document.getElementById('mmTitle').innerText = `ژووری هاوڕێیان (کۆد: ${customCode})`;
-            document.getElementById('mmSubtitle').innerText = 'ئەم کۆدە بدە بە هاوڕێکەت تا بێتە ناو هەمان مێز';
-            const privKey = `priv_${selectedTable.id}_${customCode}`;
-            joinOrCreateFirebaseRoom(db.ref(`billiard_matches/${privKey}`), privKey, true);
+        if (privCode) {
+            document.getElementById('mmTitleTxt').innerText = `ژووری هاوڕێیان (کۆد: ${privCode})`;
+            document.getElementById('mmSubTxt').innerText = 'هەمان کۆد بدە بە هاوڕێکەت تا بێتە ناو یارییەکە';
+            const ref = db.ref(`billiard_live/priv_${selectedTable.id}_${privCode}`);
+            ref.once('value', snap => {
+                const d = snap.val();
+                if (d && d.status === 'waiting' && d.p1 && d.p1.uid !== me.uid) {
+                    joinOnlineAsP2(ref, d.p1);
+                } else {
+                    createOnlineAsP1(ref, true);
+                }
+            });
             return;
         }
 
-        document.getElementById('mmTitle').innerText = `گەڕان لە ${selectedTable.name}...`;
-        document.getElementById('mmSubtitle').innerText = 'بەستنەوە بە یاریزانانی ئۆنڵاین';
+        document.getElementById('mmTitleTxt').innerText = `گەڕان لە ${selectedTable.name}...`;
+        document.getElementById('mmSubTxt').innerText = 'بەستنەوە بە یاریزانانی ئۆنڵاین';
 
-        const roomsRoot = db.ref('billiard_matches');
-        roomsRoot.orderByChild('tierWait').equalTo(`t_${selectedTable.id}_waiting`).limitToFirst(1).once('value', snap => {
+        const root = db.ref('billiard_live');
+        root.orderByChild('waitKey').equalTo(`t_${selectedTable.id}_wait`).limitToFirst(1).once('value', snap => {
             const val = snap.val();
             if (val) {
-                const existingKey = Object.keys(val)[0];
-                const existingRoom = val[existingKey];
-                if (existingRoom && existingRoom.p1 && existingRoom.p1.uid !== me.uid) {
-                    joinAsPlayer2(roomsRoot.child(existingKey), existingKey, existingRoom.p1);
+                const key = Object.keys(val)[0];
+                const rm = val[key];
+                if (rm && rm.p1 && rm.p1.uid !== me.uid) {
+                    joinOnlineAsP2(root.child(key), rm.p1);
                     return;
                 }
             }
-            const newRef = roomsRoot.push();
-            createAsPlayer1(newRef, newRef.key, false);
+            createOnlineAsP1(root.push(), false);
         });
     }
 
-    function joinOrCreateFirebaseRoom(ref, key, isPrivate) {
-        ref.once('value', snap => {
-            const d = snap.val();
-            if (d && d.status === 'waiting' && d.p1 && d.p1.uid !== me.uid) {
-                joinAsPlayer2(ref, key, d.p1);
-            } else {
-                createAsPlayer1(ref, key, isPrivate);
-            }
-        });
-    }
-
-    function createAsPlayer1(ref, key, isPrivate) {
+    function createOnlineAsP1(ref, isPriv) {
         roomRef = ref;
-        activeRoomKey = key;
-        const payload = {
-            tableId: selectedTable.id,
+        ref.set({
             status: 'waiting',
-            tierWait: isPrivate ? `priv_${key}` : `t_${selectedTable.id}_waiting`,
-            p1: { uid: me.uid, name: me.name, avatar: me.avatar },
+            waitKey: isPriv ? 'private' : `t_${selectedTable.id}_wait`,
+            p1: { uid: me.uid, name: me.name, avatar: me.avatar, level: me.level },
             createdAt: Date.now()
-        };
-        ref.set(payload);
+        });
         ref.onDisconnect().remove();
 
-        if (!isPrivate) {
-            mmFallbackTimer = setTimeout(() => {
-                const btn = document.getElementById('mmPlayBotNowBtn');
-                if (btn) btn.style.display = 'flex';
-            }, 4500);
+        if (!isPriv) {
+            mmTimer = setTimeout(() => {
+                const b = document.getElementById('mmQuickStartBtn');
+                if (b) b.style.display = 'block';
+            }, 4000);
         }
 
         ref.on('value', snap => {
-            const data = snap.val();
-            if (!data) return;
-            if (data.status === 'playing' && data.p2 && !matchActive) {
-                if (mmFallbackTimer) clearTimeout(mmFallbackTimer);
+            const d = snap.val();
+            if (!d) return;
+            if (d.status === 'playing' && d.p2 && !matchActive) {
+                if (mmTimer) clearTimeout(mmTimer);
                 document.getElementById('matchmakingModal').classList.remove('open');
-                initMatchState('online', 1, data.p1, data.p2);
-                setStatus('🎱 یاریزان دۆزرایەوە! نۆرەی تۆیە لێدانی سەرەتا بکەیت');
-                listenToOnlineShots(ref);
+                initMatch('online', 1, d.p1, d.p2);
+                showToast('یاری دەستی پێکرد! نۆرەی تۆیە');
+                bindOnlineEvents(ref);
             }
         });
     }
 
-    function joinAsPlayer2(ref, key, p1Data) {
+    function joinOnlineAsP2(ref, p1Data) {
         roomRef = ref;
-        activeRoomKey = key;
-        const p2Data = { uid: me.uid, name: me.name, avatar: me.avatar };
-        ref.update({
-            status: 'playing',
-            tierWait: 'started',
-            p2: p2Data
-        });
+        const p2Data = { uid: me.uid, name: me.name, avatar: me.avatar, level: me.level };
+        ref.update({ status: 'playing', waitKey: 'started', p2: p2Data });
         document.getElementById('matchmakingModal').classList.remove('open');
-        initMatchState('online', 2, p1Data, p2Data);
-        setStatus(`🎱 یاری دەستی پێکرد! نۆرەی ${p1Data.name}ـە`);
-        listenToOnlineShots(ref);
+        initMatch('online', 2, p1Data, p2Data);
+        showToast(`بەسترایەوە لەگەڵ ${p1Data.name}! چاوەڕوانی لێدانی سەرەتا بە`);
+        bindOnlineEvents(ref);
     }
 
-    function listenToOnlineShots(ref) {
+    function bindOnlineEvents(ref) {
         lastProcessedShotId = 0;
+
         ref.child('lastShot').on('value', snap => {
             const s = snap.val();
             if (!s || !s.shotId || s.shotId === lastProcessedShotId) return;
@@ -435,34 +434,66 @@
 
             if (s.cueBallPos) {
                 const cb = getCueBall();
-                if (cb) {
-                    cb.x = s.cueBallPos.x;
-                    cb.y = s.cueBallPos.y;
-                    cb.pocketed = false;
-                }
+                if (cb) { cb.x = s.cueBallPos.x; cb.y = s.cueBallPos.y; cb.pocketed = false; }
             }
             aimAngle = s.angle;
             spinX = s.spinX || 0;
             spinY = s.spinY || 0;
-            executeShotPhysics(s.power, false);
+            launchShot(s.power, false);
+        });
+
+        ref.child('syncState').on('value', snap => {
+            const st = snap.val();
+            if (!st || st.byPlayer === myPlayerNum || isMoving) return;
+            if (Array.isArray(st.balls)) {
+                st.balls.forEach(sb => {
+                    const localB = balls.find(b => b.num === sb.num);
+                    if (localB) {
+                        localB.x = sb.x;
+                        localB.y = sb.y;
+                        localB.vx = 0;
+                        localB.vy = 0;
+                        localB.pocketed = !!sb.pocketed;
+                    }
+                });
+            }
+            if (Array.isArray(st.tubeBalls)) tubeBalls = st.tubeBalls;
+            currentTurn = st.currentTurn;
+            groupsAssigned = !!st.groupsAssigned;
+            if (st.playerGroups) playerGroups = st.playerGroups;
+            ballInHand = !!st.ballInHand;
+            updateHudSlots();
+        });
+
+        ref.child('reaction').on('value', snap => {
+            const r = snap.val();
+            if (!r || !r.ts || Date.now() - r.ts > 5000) return;
+            showSpeechBubble(r.byPlayer === myPlayerNum ? 'left' : 'right', r.text);
+        });
+
+        ref.on('value', snap => {
+            if (!snap.exists() && matchActive) {
+                finishGame(myPlayerNum, 'ڕکابەرەکەت لە یارییەکە دەرچوو!');
+            }
         });
     }
 
-    function fallbackToOnlineBot() {
-        cleanupOnlineRoom();
+    function fallbackToRival() {
+        if (roomRef) roomRef.remove();
+        cleanupOnline();
         document.getElementById('matchmakingModal').classList.remove('open');
-        const kurdishRivals = ['کاروان هەولێری', 'دیار سلێمانی', 'ئارام دهۆکی', 'میران کەلاری', 'شێرکۆ کەرکووکی'];
-        const rName = kurdishRivals[Math.floor(Math.random() * kurdishRivals.length)];
-        initMatchState('bot', 1,
-            { name: me.name, avatar: me.avatar },
-            { name: rName, avatar: 'images.png/controller.png' }
+        const names = ['شێرکۆ', 'کاروان', 'دیار', 'ئارام', 'سۆران'];
+        const rName = names[Math.floor(Math.random() * names.length)];
+        initMatch('bot', 1,
+            { name: me.name, avatar: me.avatar, level: me.level },
+            { name: rName, avatar: 'images.png/controller.png', level: 88 }
         );
-        setStatus(`🎱 بەسترایەوە لەگەڵ ${rName}! نۆرەی تۆیە`);
+        showToast(`بەسترایەوە لەگەڵ ${rName}! نۆرەی تۆیە`);
     }
 
     function cancelMatchmaking() {
         if (roomRef) roomRef.remove();
-        cleanupOnlineRoom();
+        cleanupOnline();
         if (window.YariWallet) {
             if (selectedTable.currency === 'diamonds') YariWallet.addDiamonds(selectedTable.fee);
             else YariWallet.addGold(selectedTable.fee);
@@ -471,54 +502,88 @@
         document.getElementById('lobbyModal').classList.add('open');
     }
 
-    function openPrivateRoomPrompt() {
-        const code = prompt('کۆدێکی ٤ ژمارەیی بنووسە (تۆ و هاوڕێکەت هەمان کۆد بنووسن):', '7700');
-        if (code && code.trim().length > 0) {
-            startOnlineMatch(code.trim());
+    function openPrivateRoom() {
+        const code = prompt('کۆدێکی ٤ ژمارەیی بنووسە بۆ یاریکردن لەگەڵ هاوڕێکەت:', '8899');
+        if (code && code.trim()) startOnlineMatch(code.trim());
+    }
+
+    function updateHudSlots() {
+        const p1Turn = currentTurn === myPlayerNum;
+        document.getElementById('p1AvatarFrame').classList.toggle('active-turn', p1Turn);
+        document.getElementById('p2AvatarFrame').classList.toggle('active-turn', !p1Turn);
+
+        render7Slots('p1BallSlots', playerGroups[myPlayerNum]);
+        render7Slots('p2BallSlots', playerGroups[myPlayerNum === 1 ? 2 : 1]);
+    }
+
+    function render7Slots(elId, group) {
+        const container = document.getElementById(elId);
+        if (!container) return;
+        if (!group) {
+            container.innerHTML = Array(7).fill('<div class="ball-slot-circle"></div>').join('');
+            return;
+        }
+        const nums = group === 'solids' ? [1, 2, 3, 4, 5, 6, 7] : [9, 10, 11, 12, 13, 14, 15];
+        container.innerHTML = nums.map(n => {
+            const bObj = balls.find(b => b.num === n);
+            const isGone = !bObj || bObj.pocketed;
+            if (isGone) return '<div class="ball-slot-circle"></div>';
+            const isStripe = n >= 9;
+            const col = BALL_COLORS[n];
+            return `<div class="ball-slot-circle ${isStripe ? 'stripe' : ''}" style="--bcol:${col}; background:${isStripe ? '#fff' : col};"><span>${n}</span></div>`;
+        }).join('');
+    }
+
+    function showToast(msg) {
+        const el = document.getElementById('gameStatusToast');
+        if (el) el.innerText = msg;
+    }
+
+    function showSpeechBubble(side, text) {
+        const parent = document.getElementById(side === 'left' ? 'leftPlayerHud' : 'rightPlayerHud');
+        if (!parent) return;
+        const old = parent.querySelector('.floating-speech');
+        if (old) old.remove();
+        const div = document.createElement('div');
+        div.className = 'floating-speech';
+        div.style[side === 'left' ? 'right' : 'left'] = '0px';
+        div.innerText = text;
+        parent.appendChild(div);
+        setTimeout(() => div.remove(), 2600);
+    }
+
+    function sendCheer() {
+        const txt = '👍 دەستخۆش! یارییەکی ناوازەیە!';
+        showSpeechBubble('left', txt);
+        if (gameMode === 'online' && roomRef) {
+            roomRef.child('reaction').set({ byPlayer: myPlayerNum, text: txt, ts: Date.now() });
         }
     }
 
-    function getCueBall() {
-        return balls.find(b => b.num === 0);
+    function openQuickChat() {
+        const grid = document.getElementById('quickChatGrid');
+        grid.innerHTML = QUICK_CHATS.map(c => `
+            <button class="btn-8bp-blue" style="font-size:11px; padding:8px;" onclick="Billiard8BP.sendQuickChat('${c}')">${c}</button>
+        `).join('');
+        document.getElementById('quickChatModal').classList.add('open');
     }
 
-    function isMyTurn() {
-        return matchActive && !isMoving && currentTurn === myPlayerNum;
+    function sendQuickChat(text) {
+        document.getElementById('quickChatModal').classList.remove('open');
+        showSpeechBubble('left', text);
+        if (gameMode === 'online' && roomRef) {
+            roomRef.child('reaction').set({ byPlayer: myPlayerNum, text, ts: Date.now() });
+        }
     }
 
-    function setStatus(txt) {
-        const el = document.getElementById('gameStatusText');
-        if (el) el.innerText = txt;
-    }
+    function getCueBall() { return balls.find(b => b.num === 0); }
+    function isMyTurn() { return matchActive && !isMoving && currentTurn === myPlayerNum; }
 
-    function updateHudUI() {
-        document.getElementById('hudPlayer1').classList.toggle('active-turn', currentTurn === 1);
-        document.getElementById('hudPlayer2').classList.toggle('active-turn', currentTurn === 2);
-        document.getElementById('turnClockBox').innerText = currentTurn === myPlayerNum ? 'نۆرەی تۆیە' : 'نۆرەی ڕکابەر';
-
-        [1, 2].forEach(pNum => {
-            const container = document.getElementById(`p${pNum}Targets`);
-            const grp = playerGroups[pNum];
-            if (!grp) {
-                container.innerHTML = `<span style="font-size:9.5px; color:#a49ec8;">مێز کراوەیە</span>`;
-                return;
-            }
-            const remaining = balls.filter(b => !b.pocketed && (grp === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15)));
-            if (remaining.length === 0) {
-                container.innerHTML = `<span class="b-dot" style="background:#000; border-color:#ffd000;"></span> <span style="font-size:9.5px; color:#ffd000; font-weight:900;">تۆپی 8</span>`;
-            } else {
-                container.innerHTML = remaining.map(b => `<span class="b-dot ${b.num >= 9 ? 'stripe' : ''}" style="background:${BALL_COLORS[b.num]};"></span>`).join('');
-            }
-        });
-    }
-
-    // لێدانی تۆپەکە
-    function executeShotPhysics(powerRatio, broadcastIfOnline = true) {
+    function launchShot(powerRatio, broadcast = true) {
         const cb = getCueBall();
         if (!cb || cb.pocketed || isMoving) return;
 
-        const maxSpeed = 24.5;
-        const speed = Math.max(1.8, powerRatio * maxSpeed);
+        const speed = Math.max(2.0, powerRatio * 25.5);
         cb.vx = Math.cos(aimAngle) * speed;
         cb.vy = Math.sin(aimAngle) * speed;
 
@@ -530,7 +595,7 @@
 
         playSfx('hit', powerRatio);
 
-        if (broadcastIfOnline && gameMode === 'online' && roomRef) {
+        if (broadcast && gameMode === 'online' && roomRef) {
             const shotId = Date.now();
             lastProcessedShotId = shotId;
             roomRef.child('lastShot').set({
@@ -545,199 +610,199 @@
         }
     }
 
-    // هەڵسەنگاندنی یاسای 8-Ball دوای وەستانی تۆپەکان
-    function evaluateTurnEnd() {
+    function onBallsStopped() {
         isMoving = false;
         const activeP = currentTurn;
         const otherP = activeP === 1 ? 2 : 1;
         const myGrp = playerGroups[activeP];
 
-        const p8 = shotPocketedBalls.includes(8);
-        if (p8) {
-            const myRemaining = myGrp
+        if (shotPocketedBalls.includes(8)) {
+            const rem = myGrp
                 ? balls.filter(b => !b.pocketed && (myGrp === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15))).length
                 : 7;
-            const legal8 = !cueBallPocketed && myGrp && myRemaining === 0;
-            finishMatch(legal8 ? activeP : otherP, legal8 ? 'تۆپی ٨ بە یاسایی خرایە سەبەتەوە!' : 'تۆپی ٨ بە هەڵە خرایە سەبەتەوە!');
+            const win = !cueBallPocketed && myGrp && rem === 0;
+            finishGame(win ? activeP : otherP, win ? 'تۆپی ٨ بە یاسایی خرایە ناو سەبەتەوە!' : 'تۆپی ٨ پێش وادەی خۆی کەوتە خوارەوە!');
             return;
         }
 
         let foul = false;
-        let foulReason = '';
+        let reason = '';
 
         if (cueBallPocketed) {
             foul = true;
-            foulReason = 'فاول! تۆپی سپی کەوتە ناو سەبەتە';
+            reason = 'فاول! تۆپی سپی کەوتە ناو سەبەتە';
             const cb = getCueBall();
             if (cb) {
                 cb.pocketed = false;
                 cb.vx = 0; cb.vy = 0;
-                cb.x = LOGICAL_W / 2;
-                cb.y = LOGICAL_H * 0.74;
+                cb.x = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
+                cb.y = TABLE_H / 2;
             }
         } else if (!shotFirstHitBall) {
             foul = true;
-            foulReason = 'فاول! تۆپی سپی بەر هیچ تۆپێک نەکەوت';
+            reason = 'فاول! تۆپی سپی بەر هیچ تۆپێک نەکەوت';
         } else if (groupsAssigned && myGrp) {
-            const myRemaining = balls.filter(b => !b.pocketed && (myGrp === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15))).length;
-            const hitIsSolid = shotFirstHitBall >= 1 && shotFirstHitBall <= 7;
-            const hitIsStripe = shotFirstHitBall >= 9 && shotFirstHitBall <= 15;
-            if (myRemaining > 0) {
-                if ((myGrp === 'solids' && !hitIsSolid) || (myGrp === 'striids' && !hitIsStripe) || (myGrp === 'stripes' && !hitIsStripe)) {
+            const rem = balls.filter(b => !b.pocketed && (myGrp === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15))).length;
+            const isSolid = shotFirstHitBall >= 1 && shotFirstHitBall <= 7;
+            const isStripe = shotFirstHitBall >= 9 && shotFirstHitBall <= 15;
+            if (rem > 0) {
+                if ((myGrp === 'solids' && !isSolid) || (myGrp === 'stripes' && !isStripe)) {
                     foul = true;
-                    foulReason = 'فاول! سەرەتا لە تۆپی ڕکابەرت دا';
+                    reason = 'فاول! سەرەتا لە تۆپی ڕکابەرت دا';
                 }
             } else if (shotFirstHitBall !== 8) {
                 foul = true;
-                foulReason = 'فاول! دەبوو لە تۆپی ٨ بدەیت';
+                reason = 'فاول! دەبوو لە تۆپی ٨ بدەیت';
             }
         }
 
-        let scoredOwnBall = false;
+        let scoredOwn = false;
         if (!foul && shotPocketedBalls.length > 0) {
             if (!groupsAssigned) {
-                const firstPock = shotPocketedBalls.find(n => n !== 0 && n !== 8);
-                if (firstPock) {
+                const first = shotPocketedBalls.find(n => n !== 0 && n !== 8);
+                if (first) {
                     groupsAssigned = true;
-                    const isSolid = firstPock >= 1 && firstPock <= 7;
-                    playerGroups[activeP] = isSolid ? 'solids' : 'stripes';
-                    playerGroups[otherP] = isSolid ? 'stripes' : 'solids';
-                    scoredOwnBall = true;
+                    const solid = first >= 1 && first <= 7;
+                    playerGroups[activeP] = solid ? 'solids' : 'stripes';
+                    playerGroups[otherP] = solid ? 'stripes' : 'solids';
+                    scoredOwn = true;
                 }
             } else {
-                const currentGrp = playerGroups[activeP];
-                scoredOwnBall = shotPocketedBalls.some(n => currentGrp === 'solids' ? (n >= 1 && n <= 7) : (n >= 9 && n <= 15));
+                const g = playerGroups[activeP];
+                scoredOwn = shotPocketedBalls.some(n => g === 'solids' ? (n >= 1 && n <= 7) : (n >= 9 && n <= 15));
             }
         }
 
         if (foul) {
             currentTurn = otherP;
             ballInHand = true;
-            setStatus(`⚠️ ${foulReason} — تۆپی سپی بە دەست دابنێ`);
-        } else if (scoredOwnBall) {
-            setStatus(`🔥 نایابە! بەردەوام بە لە لێدان`);
+            showToast(`⚠️ ${reason} — تۆپی سپی بە دەست دابنێ`);
+        } else if (scoredOwn) {
+            showToast('🔥 نایابە! بەردەوام بە لە لێدان');
         } else {
             currentTurn = otherP;
-            setStatus(currentTurn === myPlayerNum ? '🎱 نۆرەی تۆیە!' : '⏳ نۆرەی ڕکابەرەکەتە...');
+            showToast(currentTurn === myPlayerNum ? '🎱 نۆرەی تۆیە!' : '⏳ نۆرەی ڕکابەرەکەتە...');
         }
 
         resetSpin();
-        updateHudUI();
+        updateHudSlots();
+
+        if (gameMode === 'online' && roomRef && activeP === myPlayerNum) {
+            roomRef.child('syncState').set({
+                byPlayer: myPlayerNum,
+                balls: balls.map(b => ({ num: b.num, x: b.x, y: b.y, pocketed: b.pocketed })),
+                tubeBalls,
+                currentTurn,
+                groupsAssigned,
+                playerGroups,
+                ballInHand,
+                ts: Date.now()
+            });
+        }
 
         if (matchActive && gameMode === 'bot' && currentTurn === 2) {
-            setTimeout(runSmartBotShot, 900);
+            setTimeout(runAiTurn, 850);
         }
     }
 
-    function runSmartBotShot() {
+    function runAiTurn() {
         if (!matchActive || isMoving || currentTurn !== 2) return;
         const cb = getCueBall();
         if (!cb) return;
 
-        const botGrp = playerGroups[2];
-        let candidates = balls.filter(b => !b.pocketed && b.num !== 0 && b.num !== 8);
-        if (groupsAssigned && botGrp) {
-            const own = balls.filter(b => !b.pocketed && (botGrp === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15)));
-            candidates = own.length > 0 ? own : balls.filter(b => !b.pocketed && b.num === 8);
+        const grp = playerGroups[2];
+        let targets = balls.filter(b => !b.pocketed && b.num !== 0 && b.num !== 8);
+        if (groupsAssigned && grp) {
+            const own = balls.filter(b => !b.pocketed && (grp === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15)));
+            targets = own.length > 0 ? own : balls.filter(b => !b.pocketed && b.num === 8);
         }
+        if (!targets.length) return;
 
-        if (candidates.length === 0) return;
+        let bestAng = 0;
+        let bestVal = -Infinity;
 
-        // هەڵبژاردنی باشترین تۆپ و سەبەتە
-        let bestAngle = 0;
-        let bestScore = -Infinity;
-
-        candidates.forEach(target => {
+        targets.forEach(t => {
             POCKETS.forEach(p => {
-                const dxP = p.x - target.x;
-                const dyP = p.y - target.y;
-                const distToPocket = Math.hypot(dxP, dyP);
-                const ux = dxP / distToPocket;
-                const uy = dyP / distToPocket;
+                const dxP = p.x - t.x;
+                const dyP = p.y - t.y;
+                const dP = Math.hypot(dxP, dyP) || 1;
+                const ux = dxP / dP;
+                const uy = dyP / dP;
 
-                // شوێنی Ghost Ball
-                const gx = target.x - ux * (BALL_R * 2);
-                const gy = target.y - uy * (BALL_R * 2);
+                const gx = t.x - ux * (BALL_R * 2);
+                const gy = t.y - uy * (BALL_R * 2);
 
                 const dxC = gx - cb.x;
                 const dyC = gy - cb.y;
-                const distFromCue = Math.hypot(dxC, dyC);
-                const dot = (dxC / distFromCue) * ux + (dyC / distFromCue) * uy;
+                const dC = Math.hypot(dxC, dyC) || 1;
+                const align = (dxC / dC) * ux + (dyC / dC) * uy;
 
-                const score = dot * 120 - distToPocket * 0.15 - distFromCue * 0.1;
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestAngle = Math.atan2(dyC, dxC);
+                const val = align * 130 - dP * 0.12 - dC * 0.08;
+                if (val > bestVal) {
+                    bestVal = val;
+                    bestAng = Math.atan2(dyC, dxC);
                 }
             });
         });
 
-        // بڕێکی کەم هەڵەی سروشتی تا یارییەکە خۆش بێت
-        aimAngle = bestAngle + (Math.random() - 0.5) * 0.035;
-        const pwr = Math.min(0.92, Math.max(0.42, 0.55 + Math.random() * 0.3));
-        executeShotPhysics(pwr, false);
+        aimAngle = bestAng + (Math.random() - 0.5) * 0.03;
+        launchShot(0.58 + Math.random() * 0.28, false);
     }
 
-    function finishMatch(winnerNum, reasonText) {
+    function finishGame(winnerNum, msg) {
         matchActive = false;
-        const iWon = winnerNum === myPlayerNum;
-        if (iWon) rewardWinnerPrize();
-        recordMatchStats(iWon);
+        const won = winnerNum === myPlayerNum;
+        if (won) rewardWinner();
+        recordStats(won);
 
-        document.getElementById('resEmoji').innerText = iWon ? '🏆' : '💔';
-        document.getElementById('resTitle').innerText = iWon ? 'پیرۆزە بردتەوە!' : 'ئەمجارە دۆڕایت!';
-        const curName = selectedTable.currency === 'diamonds' ? 'ئەڵماس 💎' : 'گۆڵد 🪙';
-        document.getElementById('resDesc').innerText = iWon
-            ? `${reasonText}\nخەڵاتی ${fmtNum(selectedTable.prize)} ${curName} خرایە سەر جزدانەکەت!`
-            : `${reasonText}\nجارێکی تر هەوڵ بدەرەوە!`;
+        document.getElementById('resEmojiTxt').innerText = won ? '🏆' : '💔';
+        document.getElementById('resTitleTxt').innerText = won ? 'پیرۆزە بردتەوە!' : 'ئەمجارە دۆڕایت!';
+        const unit = selectedTable.currency === 'diamonds' ? 'ئەڵماس 💎' : 'گۆڵد 🪙';
+        document.getElementById('resDescTxt').innerText = won
+            ? `${msg}\nخەڵاتی ${fmtNum(selectedTable.prize)} ${unit} خرایە سەر جزدانەکەت!`
+            : `${msg}\nجارێکی تر هەوڵ بدەرەوە!`;
         document.getElementById('resultModal').classList.add('open');
     }
 
-    // بزوێنەری فیزیای 120 FPS بە 8 هەنگاوی ورد (Sub-stepping)
     function stepPhysics() {
         if (!isMoving) return;
 
-        const SUB_STEPS = 8;
-        const minX = RAIL_SIZE + BALL_R;
-        const maxX = LOGICAL_W - RAIL_SIZE - BALL_R;
-        const minY = RAIL_SIZE + BALL_R;
-        const maxY = LOGICAL_H - RAIL_SIZE - BALL_R;
+        const STEPS = 8;
+        const minX = RAIL_X + BALL_R;
+        const maxX = TABLE_W - RAIL_X - BALL_R;
+        const minY = RAIL_Y + BALL_R;
+        const maxY = TABLE_H - RAIL_Y - BALL_R;
 
-        for (let step = 0; step < SUB_STEPS; step++) {
-            // ١. جووڵە و لێخشاندن
+        for (let s = 0; s < STEPS; s++) {
             for (const b of balls) {
                 if (b.pocketed) continue;
-                b.x += b.vx / SUB_STEPS;
-                b.y += b.vy / SUB_STEPS;
+                b.x += b.vx / STEPS;
+                b.y += b.vy / STEPS;
+                b.vx *= Math.pow(0.9865, 1 / STEPS);
+                b.vy *= Math.pow(0.9865, 1 / STEPS);
 
-                b.vx *= Math.pow(0.9865, 1 / SUB_STEPS);
-                b.vy *= Math.pow(0.9865, 1 / SUB_STEPS);
-
-                // پشکنینی کەوتنە ناو سەبەتە (Pockets)
                 for (const p of POCKETS) {
                     if (Math.hypot(b.x - p.x, b.y - p.y) < POCKET_R) {
                         b.pocketed = true;
                         b.vx = 0; b.vy = 0;
                         playSfx('pocket', 0.9);
-                        pocketingAnims.push({ num: b.num, x: p.x, y: p.y, scale: 1 });
                         if (b.num === 0) {
                             cueBallPocketed = true;
                         } else {
                             shotPocketedBalls.push(b.num);
+                            tubeBalls.push({ num: b.num, progress: 0 });
                         }
                         break;
                     }
                 }
                 if (b.pocketed) continue;
 
-                // گەڕانەوە لە لێواری مێز (Cushions)
                 if (b.x < minX) { b.x = minX; b.vx = -b.vx * 0.82; playSfx('rail', Math.abs(b.vx) / 15); }
                 if (b.x > maxX) { b.x = maxX; b.vx = -b.vx * 0.82; playSfx('rail', Math.abs(b.vx) / 15); }
                 if (b.y < minY) { b.y = minY; b.vy = -b.vy * 0.82; playSfx('rail', Math.abs(b.vy) / 15); }
                 if (b.y > maxY) { b.y = maxY; b.vy = -b.vy * 0.82; playSfx('rail', Math.abs(b.vy) / 15); }
             }
 
-            // ٢. پێکدادانی تۆپ بە تۆپ
             for (let i = 0; i < balls.length; i++) {
                 const b1 = balls[i];
                 if (b1.pocketed) continue;
@@ -748,16 +813,14 @@
                     const dx = b2.x - b1.x;
                     const dy = b2.y - b1.y;
                     const dist = Math.hypot(dx, dy);
-                    const minDist = BALL_R * 2;
+                    const minD = BALL_R * 2;
 
-                    if (dist > 0 && dist < minDist) {
+                    if (dist > 0 && dist < minD) {
                         const nx = dx / dist;
                         const ny = dy / dist;
-                        const overlap = (minDist - dist) * 0.5;
-                        b1.x -= nx * overlap;
-                        b1.y -= ny * overlap;
-                        b2.x += nx * overlap;
-                        b2.y += ny * overlap;
+                        const ov = (minD - dist) * 0.5;
+                        b1.x -= nx * ov; b1.y -= ny * ov;
+                        b2.x += nx * ov; b2.y += ny * ov;
 
                         const kx = b1.vx - b2.vx;
                         const ky = b1.vy - b2.vy;
@@ -767,19 +830,14 @@
                             if (!shotFirstHitBall && (b1.num === 0 || b2.num === 0)) {
                                 shotFirstHitBall = b1.num === 0 ? b2.num : b1.num;
                             }
+                            b1.vx -= p * nx; b1.vy -= p * ny;
+                            b2.vx += p * nx; b2.vy += p * ny;
 
-                            b1.vx -= p * nx;
-                            b1.vy -= p * ny;
-                            b2.vx += p * nx;
-                            b2.vy += p * ny;
-
-                            // زیادکردنی کاریگەریی Spin لەسەر تۆپی سپی
                             if (b1.num === 0 && (spinX !== 0 || spinY !== 0)) {
                                 b1.vx += (nx * spinY * 2.2) + (-ny * spinX * 1.8);
                                 b1.vy += (ny * spinY * 2.2) + (nx * spinX * 1.8);
-                                spinX *= 0.3; spinY *= 0.3;
+                                spinX *= 0.25; spinY *= 0.25;
                             }
-
                             playSfx('hit', Math.min(1, p / 12));
                         }
                     }
@@ -787,117 +845,58 @@
             }
         }
 
-        // وەستاندنی تۆپە زۆر هێواشەکان
-        let anyStillMoving = false;
+        let movingAny = false;
         for (const b of balls) {
             if (b.pocketed) continue;
             if (Math.hypot(b.vx, b.vy) < 0.045) {
                 b.vx = 0; b.vy = 0;
             } else {
-                anyStillMoving = true;
+                movingAny = true;
             }
         }
-
-        if (!anyStillMoving) {
-            evaluateTurnEnd();
-        }
+        if (!movingAny) onBallsStopped();
     }
 
-    // وێنەکێشانی مێز و تۆپەکان و لێزەری نیشانەگرتن بە کوالێتیی 3D
+    // ================= وێنەکێشانی مێزە تایبەتەکەت (billiard-table-1.png) =================
     function drawScene() {
         ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
 
-        // ١. چوارچێوەی دار/کانزای دەرەوەی مێزەکە
-        ctx.fillStyle = selectedTable.rail;
+        // ١. بۆری گەڕانەوەی تۆپەکان لە لای ڕاست
+        drawRightBallReturnTube();
+
+        // ٢. وێنەکێشانی وێنەی مێزە شاهانەکەی خۆت
+        const tableImg = getTableImg(selectedTable.img);
+        if (tableImg && tableImg.complete && tableImg.naturalWidth > 0) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(0, 0, TABLE_W, TABLE_H, 16);
+            ctx.clip();
+            ctx.drawImage(tableImg, 0, 0, TABLE_W, TABLE_H);
+            ctx.restore();
+        } else {
+            ctx.fillStyle = selectedTable.wood;
+            ctx.beginPath();
+            ctx.roundRect(0, 0, TABLE_W, TABLE_H, 16);
+            ctx.fill();
+            ctx.fillStyle = selectedTable.felt1;
+            ctx.fillRect(RAIL_X, RAIL_Y, TABLE_W - RAIL_X * 2, TABLE_H - RAIL_Y * 2);
+        }
+
+        // هێڵی سپی سەرەتا (Head String)
+        const headX = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
-        ctx.roundRect(0, 0, LOGICAL_W, LOGICAL_H, 22);
-        ctx.fill();
-
-        // هێڵی زێڕینی چوارچێوە
-        ctx.strokeStyle = selectedTable.trim;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(6, 6, LOGICAL_W - 12, LOGICAL_H - 12);
-
-        // ٢. قوماشی ناوەوەی مێزەکە (Felt Gradient)
-        const feltGrad = ctx.createRadialGradient(
-            LOGICAL_W / 2, LOGICAL_H / 2, 20,
-            LOGICAL_W / 2, LOGICAL_H / 2, LOGICAL_H * 0.65
-        );
-        feltGrad.addColorStop(0, selectedTable.felt1);
-        feltGrad.addColorStop(1, selectedTable.felt2);
-        ctx.fillStyle = feltGrad;
-        ctx.fillRect(RAIL_SIZE, RAIL_SIZE, LOGICAL_W - RAIL_SIZE * 2, LOGICAL_H - RAIL_SIZE * 2);
-
-        // سێبەری ناوەوەی قەراغەکان
-        ctx.strokeStyle = 'rgba(0,0,0,0.45)';
-        ctx.lineWidth = 5;
-        ctx.strokeRect(RAIL_SIZE, RAIL_SIZE, LOGICAL_W - RAIL_SIZE * 2, LOGICAL_H - RAIL_SIZE * 2);
-
-        // لۆگۆ و نەخشی ناوەڕاستی مێزەکە
-        ctx.save();
-        ctx.translate(LOGICAL_W / 2, LOGICAL_H / 2);
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-        ctx.font = '900 22px Vazirmatn, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('👑 YARI KURDI', 0, -10);
-        ctx.font = '800 13px Vazirmatn, sans-serif';
-        ctx.fillText(selectedTable.emblem, 0, 14);
-        ctx.restore();
-
-        // هێڵی سەرەتا (Head String)
-        ctx.strokeStyle = 'rgba(255,255,255,0.16)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(RAIL_SIZE, LOGICAL_H * 0.74);
-        ctx.lineTo(LOGICAL_W - RAIL_SIZE, LOGICAL_H * 0.74);
+        ctx.moveTo(headX, RAIL_Y);
+        ctx.lineTo(headX, TABLE_H - RAIL_Y);
         ctx.stroke();
 
-        // خاڵی Diamond Sights لەسەر قەراغی مێزەکە
-        ctx.fillStyle = selectedTable.trim;
-        for (let i = 1; i <= 3; i++) {
-            const yTop = RAIL_SIZE + (LOGICAL_H / 2 - RAIL_SIZE) * (i / 4);
-            const yBot = LOGICAL_H / 2 + (LOGICAL_H / 2 - RAIL_SIZE) * (i / 4);
-            [yTop, yBot].forEach(yy => {
-                ctx.beginPath(); ctx.arc(RAIL_SIZE / 2, yy, 2.2, 0, Math.PI * 2); ctx.fill();
-                ctx.beginPath(); ctx.arc(LOGICAL_W - RAIL_SIZE / 2, yy, 2.2, 0, Math.PI * 2); ctx.fill();
-            });
-        }
-
-        // ٣. وێنەکێشانی ٦ سەبەتەکە (Pockets)
-        for (const p of POCKETS) {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, POCKET_R + 2, 0, Math.PI * 2);
-            ctx.fillStyle = selectedTable.trim;
-            ctx.fill();
-
-            const pGrad = ctx.createRadialGradient(p.x, p.y, 2, p.x, p.y, POCKET_R);
-            pGrad.addColorStop(0, '#000000');
-            pGrad.addColorStop(1, '#18181b');
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, POCKET_R, 0, Math.PI * 2);
-            ctx.fillStyle = pGrad;
-            ctx.fill();
-        }
-
-        // ٤. ئەنیمەیشنی کەوتنە خوارەوەی تۆپ بۆ ناو سەبەتە
-        for (let i = pocketingAnims.length - 1; i >= 0; i--) {
-            const pa = pocketingAnims[i];
-            pa.scale -= 0.08;
-            if (pa.scale <= 0) {
-                pocketingAnims.splice(i, 1);
-                continue;
-            }
-            drawSingleBall(pa.num, pa.x, pa.y, BALL_R * pa.scale);
-        }
-
-        // ٥. وێنەکێشانی تۆپەکان
+        // ٣. تۆپەکانی سەر مێز
         for (const b of balls) {
-            if (b.pocketed) continue;
-            drawSingleBall(b.num, b.x, b.y, BALL_R);
+            if (!b.pocketed) draw3DBall(b.num, b.x, b.y, BALL_R);
         }
 
-        // نیشانەی Ball-in-Hand لەسەر تۆپی سپی
+        // نیشانەی Ball-in-Hand
         const cb = getCueBall();
         if (cb && !cb.pocketed && ballInHand && isMyTurn()) {
             ctx.strokeStyle = '#fde047';
@@ -909,17 +908,60 @@
             ctx.setLineDash([]);
         }
 
-        // ٦. هێڵی نیشانەگرتن (Aim Laser + Ghost Ball) و داری بڵیاردەکە
+        // ٤. هێڵی نیشانەگرتن و داری بڵیاردەکە
         if (cb && !cb.pocketed && isMyTurn() && !draggingCueBall) {
-            drawAimGuideAndCue(cb);
+            drawAimAndCueStick(cb);
         }
     }
 
-    function drawSingleBall(num, x, y, r) {
-        // سێبەری تۆپ
+    function drawRightBallReturnTube() {
+        const startX = TABLE_W - 2;
+        const tubeX = TABLE_W + 22;
+        const topY = 66;
+        const botY = TABLE_H - 36;
+
+        ctx.save();
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 24;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
         ctx.beginPath();
-        ctx.arc(x + 2, y + 3, r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.42)';
+        ctx.moveTo(startX, topY);
+        ctx.lineTo(tubeX, topY);
+        ctx.lineTo(tubeX, botY);
+        ctx.stroke();
+
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 18;
+        ctx.beginPath();
+        ctx.moveTo(startX, topY);
+        ctx.lineTo(tubeX, topY);
+        ctx.lineTo(tubeX, botY);
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+        ctx.lineWidth = 2;
+        for (let y = topY + 14; y < botY - 8; y += 14) {
+            ctx.beginPath();
+            ctx.moveTo(tubeX - 8, y);
+            ctx.lineTo(tubeX + 8, y);
+            ctx.stroke();
+        }
+
+        tubeBalls.forEach((tb, idx) => {
+            const targetY = botY - 4 - idx * 17;
+            if (tb.progress < 1) tb.progress = Math.min(1, tb.progress + 0.06);
+            const curY = topY + (targetY - topY) * tb.progress;
+            draw3DBall(tb.num, tubeX, curY, 8.2);
+        });
+
+        ctx.restore();
+    }
+
+    function draw3DBall(num, x, y, r) {
+        ctx.beginPath();
+        ctx.arc(x + 2, y + 2.5, r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,0,0,0.48)';
         ctx.fill();
 
         ctx.save();
@@ -930,25 +972,23 @@
         if (num === 0) {
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(x - r, y - r, r * 2, r * 2);
-            // خاڵی سووری Spin لەسەر تۆپی سپی
-            ctx.fillStyle = '#ef4444';
+            ctx.fillStyle = '#dc2626';
             ctx.beginPath();
-            ctx.arc(x + spinX * (r * 0.45), y + spinY * (r * 0.45), 2.2, 0, Math.PI * 2);
+            ctx.arc(x + spinX * (r * 0.45), y + spinY * (r * 0.45), 2.1, 0, Math.PI * 2);
             ctx.fill();
         } else {
-            const baseCol = BALL_COLORS[num] || '#fbbf24';
+            const col = BALL_COLORS[num] || '#facc15';
             if (num >= 9) {
                 ctx.fillStyle = '#f8fafc';
                 ctx.fillRect(x - r, y - r, r * 2, r * 2);
-                ctx.fillStyle = baseCol;
+                ctx.fillStyle = col;
                 ctx.fillRect(x - r, y - r * 0.55, r * 2, r * 1.1);
             } else {
-                ctx.fillStyle = baseCol;
+                ctx.fillStyle = col;
                 ctx.fillRect(x - r, y - r, r * 2, r * 2);
             }
 
-            // بازنەی سپیی ژمارەکە
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.92)';
+            ctx.fillStyle = 'rgba(255,255,255,0.92)';
             ctx.beginPath();
             ctx.arc(x, y, r * 0.48, 0, Math.PI * 2);
             ctx.fill();
@@ -960,132 +1000,129 @@
             ctx.fillText(String(num), x, y + 0.5);
         }
 
-        // بریقەی 3D لەسەر تۆپەکە
         const shine = ctx.createRadialGradient(x - r * 0.35, y - r * 0.35, 0.5, x, y, r);
-        shine.addColorStop(0, 'rgba(255,255,255,0.55)');
+        shine.addColorStop(0, 'rgba(255,255,255,0.58)');
         shine.addColorStop(0.35, 'rgba(255,255,255,0.08)');
-        shine.addColorStop(1, 'rgba(0,0,0,0.35)');
+        shine.addColorStop(1, 'rgba(0,0,0,0.38)');
         ctx.fillStyle = shine;
         ctx.fillRect(x - r, y - r, r * 2, r * 2);
         ctx.restore();
     }
 
-    function drawAimGuideAndCue(cb) {
+    function drawAimAndCueStick(cb) {
         const dx = Math.cos(aimAngle);
         const dy = Math.sin(aimAngle);
 
-        // دۆزینەوەی نزیکترین بەرکەوتنی تۆپی سپی (Raycasting)
-        let closestDist = 900;
+        let closest = 1000;
         let hitBall = null;
+        const minX = RAIL_X + BALL_R, maxX = TABLE_W - RAIL_X - BALL_R;
+        const minY = RAIL_Y + BALL_R, maxY = TABLE_H - RAIL_Y - BALL_R;
 
-        const minX = RAIL_SIZE + BALL_R;
-        const maxX = LOGICAL_W - RAIL_SIZE - BALL_R;
-        const minY = RAIL_SIZE + BALL_R;
-        const maxY = LOGICAL_H - RAIL_SIZE - BALL_R;
-
-        if (dx > 0.0001) closestDist = Math.min(closestDist, (maxX - cb.x) / dx);
-        if (dx < -0.0001) closestDist = Math.min(closestDist, (minX - cb.x) / dx);
-        if (dy > 0.0001) closestDist = Math.min(closestDist, (maxY - cb.y) / dy);
-        if (dy < -0.0001) closestDist = Math.min(closestDist, (minY - cb.y) / dy);
+        if (dx > 0.0001) closest = Math.min(closest, (maxX - cb.x) / dx);
+        if (dx < -0.0001) closest = Math.min(closest, (minX - cb.x) / dx);
+        if (dy > 0.0001) closest = Math.min(closest, (maxY - cb.y) / dy);
+        if (dy < -0.0001) closest = Math.min(closest, (minY - cb.y) / dy);
 
         for (const b of balls) {
             if (b.pocketed || b.num === 0) continue;
-            const fx = b.x - cb.x;
-            const fy = b.y - cb.y;
+            const fx = b.x - cb.x, fy = b.y - cb.y;
             const proj = fx * dx + fy * dy;
             if (proj <= 0) continue;
             const perpSq = (fx * fx + fy * fy) - proj * proj;
-            const radSum = BALL_R * 2;
-            if (perpSq < radSum * radSum) {
-                const dist = proj - Math.sqrt(radSum * radSum - perpSq);
-                if (dist > 0 && dist < closestDist) {
-                    closestDist = dist;
-                    hitBall = b;
-                }
+            const rSum = BALL_R * 2;
+            if (perpSq < rSum * rSum) {
+                const d = proj - Math.sqrt(rSum * rSum - perpSq);
+                if (d > 0 && d < closest) { closest = d; hitBall = b; }
             }
         }
 
-        const endX = cb.x + dx * closestDist;
-        const endY = cb.y + dy * closestDist;
+        const ex = cb.x + dx * closest;
+        const ey = cb.y + dy * closest;
 
-        // هێڵی لێزەری سەرەکی
+        let illegalTarget = false;
+        if (hitBall && groupsAssigned && playerGroups[myPlayerNum]) {
+            const g = playerGroups[myPlayerNum];
+            const rem = balls.filter(b => !b.pocketed && (g === 'solids' ? (b.num >= 1 && b.num <= 7) : (b.num >= 9 && b.num <= 15))).length;
+            if (rem > 0) {
+                if (hitBall.num === 8 || (g === 'solids' && hitBall.num >= 9) || (g === 'stripes' && hitBall.num <= 7)) illegalTarget = true;
+            } else if (hitBall.num !== 8) {
+                illegalTarget = true;
+            }
+        }
+
         ctx.save();
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-        ctx.lineWidth = 1.6;
-        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
+        ctx.lineWidth = 1.7;
         ctx.beginPath();
         ctx.moveTo(cb.x, cb.y);
-        ctx.lineTo(endX, endY);
+        ctx.lineTo(ex, ey);
         ctx.stroke();
-        ctx.setLineDash([]);
 
-        // بازنەی Ghost Ball و ئاڕاستەی تۆپی ئامانج
-        ctx.strokeStyle = hitBall ? '#fde047' : 'rgba(255,255,255,0.5)';
-        ctx.lineWidth = 1.6;
+        ctx.strokeStyle = illegalTarget ? '#ef4444' : '#ffffff';
+        ctx.lineWidth = 1.8;
         ctx.beginPath();
-        ctx.arc(endX, endY, BALL_R, 0, Math.PI * 2);
+        ctx.arc(ex, ey, BALL_R, 0, Math.PI * 2);
         ctx.stroke();
 
-        if (hitBall) {
-            const tx = hitBall.x - endX;
-            const ty = hitBall.y - endY;
-            const tLen = Math.hypot(tx, ty) || 1;
-            const ux = tx / tLen;
-            const uy = ty / tLen;
-
-            // هێڵی ڕۆیشتنی تۆپی ئامانج
-            ctx.strokeStyle = '#38bdf8';
+        if (hitBall && !illegalTarget) {
+            const tx = hitBall.x - ex, ty = hitBall.y - ey;
+            const tl = Math.hypot(tx, ty) || 1;
+            ctx.strokeStyle = '#fde047';
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(hitBall.x, hitBall.y);
-            ctx.lineTo(hitBall.x + ux * 75, hitBall.y + uy * 75);
+            ctx.lineTo(hitBall.x + (tx / tl) * 70, hitBall.y + (ty / tl) * 70);
             ctx.stroke();
         }
         ctx.restore();
 
-        // وێنەکێشانی داری بڵیاردەکە (Royal Cue Stick)
         ctx.save();
         ctx.translate(cb.x, cb.y);
         ctx.rotate(aimAngle + Math.PI);
-        const pullOffset = BALL_R + 8 + pullPower * 58;
+        const offset = BALL_R + 7 + pullPower * 65;
 
-        // دارەکە
-        const cueGrad = ctx.createLinearGradient(pullOffset, 0, pullOffset + 190, 0);
-        cueGrad.addColorStop(0, '#f8fafc');
-        cueGrad.addColorStop(0.04, '#0284c7');
-        cueGrad.addColorStop(0.08, '#fde68a');
-        cueGrad.addColorStop(0.55, '#b45309');
-        cueGrad.addColorStop(1, '#1e1b4b');
+        const cg = ctx.createLinearGradient(offset, 0, offset + 220, 0);
+        cg.addColorStop(0, selectedCue.tip);
+        cg.addColorStop(0.03, '#ffffff');
+        cg.addColorStop(0.06, selectedCue.shaft);
+        cg.addColorStop(0.55, selectedCue.inlay);
+        cg.addColorStop(1, selectedCue.butt);
 
-        ctx.fillStyle = cueGrad;
+        ctx.fillStyle = cg;
         ctx.beginPath();
-        ctx.moveTo(pullOffset, -2.2);
-        ctx.lineTo(pullOffset + 185, -4.8);
-        ctx.lineTo(pullOffset + 185, 4.8);
-        ctx.lineTo(pullOffset, 2.2);
+        ctx.moveTo(offset, -2.1);
+        ctx.lineTo(offset + 220, -5.2);
+        ctx.lineTo(offset + 220, 5.2);
+        ctx.lineTo(offset, 2.1);
         ctx.closePath();
         ctx.fill();
+
+        ctx.fillStyle = '#fde047';
+        ctx.fillRect(offset + 115, -3.6, 5, 7.2);
+        ctx.fillRect(offset + 165, -4.4, 6, 8.8);
         ctx.restore();
     }
 
-    // دەستکاریی نیشانەگرتن لەسەر شاشەی مێزەکە
-    function getLogicalPointerPos(e) {
+    function clientToLogical(clientX, clientY) {
         const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-            x: ((clientX - rect.left) / rect.width) * LOGICAL_W,
-            y: ((clientY - rect.top) / rect.height) * LOGICAL_H
-        };
+        const isPortraitRotated = window.innerHeight > window.innerWidth;
+        const vx = (clientX - rect.left) / rect.width;
+        const vy = (clientY - rect.top) / rect.height;
+
+        if (isPortraitRotated) {
+            return { x: vy * LOGICAL_W, y: (1 - vx) * LOGICAL_H };
+        }
+        return { x: vx * LOGICAL_W, y: vy * LOGICAL_H };
     }
 
-    function onCanvasDown(e) {
+    function onPointerDown(e) {
         if (!isMyTurn()) return;
-        const pos = getLogicalPointerPos(e);
+        const pt = e.touches ? e.touches[0] : e;
+        const pos = clientToLogical(pt.clientX, pt.clientY);
         const cb = getCueBall();
         if (!cb) return;
 
-        if (ballInHand && Math.hypot(pos.x - cb.x, pos.y - cb.y) < BALL_R * 2.4) {
+        if (ballInHand && Math.hypot(pos.x - cb.x, pos.y - cb.y) < BALL_R * 2.5) {
             draggingCueBall = true;
             return;
         }
@@ -1093,25 +1130,18 @@
         aimAngle = Math.atan2(pos.y - cb.y, pos.x - cb.x);
     }
 
-    function onCanvasMove(e) {
+    function onPointerMove(e) {
         if (!isMyTurn()) return;
-        const pos = getLogicalPointerPos(e);
+        const pt = e.touches ? e.touches[0] : e;
+        const pos = clientToLogical(pt.clientX, pt.clientY);
         const cb = getCueBall();
         if (!cb) return;
 
         if (draggingCueBall) {
-            const minX = RAIL_SIZE + BALL_R + 2;
-            const maxX = LOGICAL_W - RAIL_SIZE - BALL_R - 2;
-            const minY = RAIL_SIZE + BALL_R + 2;
-            const maxY = LOGICAL_H - RAIL_SIZE - BALL_R - 2;
-            const nx = Math.min(maxX, Math.max(minX, pos.x));
-            const ny = Math.min(maxY, Math.max(minY, pos.y));
-
-            const overlaps = balls.some(b => !b.pocketed && b.num !== 0 && Math.hypot(b.x - nx, b.y - ny) < BALL_R * 2.1);
-            if (!overlaps) {
-                cb.x = nx;
-                cb.y = ny;
-            }
+            const nx = Math.min(TABLE_W - RAIL_X - BALL_R - 2, Math.max(RAIL_X + BALL_R + 2, pos.x));
+            const ny = Math.min(TABLE_H - RAIL_Y - BALL_R - 2, Math.max(RAIL_Y + BALL_R + 2, pos.y));
+            const hit = balls.some(b => !b.pocketed && b.num !== 0 && Math.hypot(b.x - nx, b.y - ny) < BALL_R * 2.1);
+            if (!hit) { cb.x = nx; cb.y = ny; }
             return;
         }
 
@@ -1120,123 +1150,118 @@
         }
     }
 
-    function onCanvasUp() {
+    function onPointerUp() {
         draggingCueBall = false;
         aimingOnCanvas = false;
     }
 
-    canvas.addEventListener('mousedown', onCanvasDown);
-    window.addEventListener('mousemove', onCanvasMove);
-    window.addEventListener('mouseup', onCanvasUp);
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onCanvasDown(e); }, { passive: false });
-    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); onCanvasMove(e); }, { passive: false });
-    canvas.addEventListener('touchend', onCanvasUp);
+    canvas.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); onPointerDown(e); }, { passive: false });
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); onPointerMove(e); }, { passive: false });
+    canvas.addEventListener('touchend', onPointerUp);
 
-    // کۆنترۆڵی شریتی هێز (Power Bar)
-    const powerRail = document.getElementById('powerBarRail');
-    const powerFill = document.getElementById('powerBarFill');
-    const powerKnob = document.getElementById('powerBarKnob');
+    const pRail = document.getElementById('powerSliderRail');
+    const pFill = document.getElementById('powerSliderFill');
+    const pKnob = document.getElementById('powerSliderKnob');
     let pullingPower = false;
 
-    function updatePowerBarVisual(ratio) {
+    function setPowerVisual(ratio) {
         pullPower = Math.min(1, Math.max(0, ratio));
-        powerFill.style.height = `${pullPower * 100}%`;
-        const maxTravel = powerRail.clientHeight - 44;
-        powerKnob.style.top = `${6 + pullPower * maxTravel}px`;
+        pFill.style.height = `${pullPower * 100}%`;
+        const maxT = pRail.clientHeight - 42;
+        pKnob.style.top = `${4 + pullPower * maxT}px`;
     }
 
-    function handlePowerInput(e) {
+    function updatePowerFromClient(e) {
         if (!isMyTurn()) return;
-        const rect = powerRail.getBoundingClientRect();
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const ratio = (clientY - rect.top) / rect.height;
-        updatePowerBarVisual(ratio);
+        const pt = e.touches ? e.touches[0] : e;
+        const rect = pRail.getBoundingClientRect();
+        const isPortraitRotated = window.innerHeight > window.innerWidth;
+        const ratio = isPortraitRotated
+            ? 1 - (pt.clientX - rect.left) / rect.width
+            : (pt.clientY - rect.top) / rect.height;
+        setPowerVisual(ratio);
     }
 
-    function releasePowerBar() {
+    function releasePower() {
         if (!pullingPower) return;
         pullingPower = false;
         if (pullPower > 0.06 && isMyTurn()) {
-            const finalPower = pullPower;
-            updatePowerBarVisual(0);
-            executeShotPhysics(finalPower, true);
+            const p = pullPower;
+            setPowerVisual(0);
+            launchShot(p, true);
         } else {
-            updatePowerBarVisual(0);
+            setPowerVisual(0);
         }
     }
 
-    powerRail.addEventListener('mousedown', (e) => { pullingPower = true; handlePowerInput(e); });
-    window.addEventListener('mousemove', (e) => { if (pullingPower) handlePowerInput(e); });
-    window.addEventListener('mouseup', releasePowerBar);
-    powerRail.addEventListener('touchstart', (e) => { e.preventDefault(); pullingPower = true; handlePowerInput(e); }, { passive: false });
-    powerRail.addEventListener('touchmove', (e) => { e.preventDefault(); if (pullingPower) handlePowerInput(e); }, { passive: false });
-    powerRail.addEventListener('touchend', releasePowerBar);
+    pRail.addEventListener('mousedown', (e) => { pullingPower = true; updatePowerFromClient(e); });
+    window.addEventListener('mousemove', (e) => { if (pullingPower) updatePowerFromClient(e); });
+    window.addEventListener('mouseup', releasePower);
+    pRail.addEventListener('touchstart', (e) => { e.preventDefault(); pullingPower = true; updatePowerFromClient(e); }, { passive: false });
+    pRail.addEventListener('touchmove', (e) => { e.preventDefault(); if (pullingPower) updatePowerFromClient(e); }, { passive: false });
+    pRail.addEventListener('touchend', releasePower);
 
-    // نیشانەگرتنی زۆر ورد بە Slider
-    const fineAim = document.getElementById('fineAimRange');
-    let lastFineVal = 0;
-    fineAim.addEventListener('input', () => {
-        if (!isMyTurn()) return;
-        const cur = parseFloat(fineAim.value);
-        const delta = cur - lastFineVal;
-        lastFineVal = cur;
-        aimAngle += delta * 0.004;
-    });
-    fineAim.addEventListener('change', () => {
-        fineAim.value = 0;
-        lastFineVal = 0;
-    });
-
-    // کۆنترۆڵی Spin
-    const spinPad = document.getElementById('spinPadArea');
+    const spinOrb = document.getElementById('spinOrbArea');
     let draggingSpin = false;
 
-    function updateSpinFromEvent(e) {
-        const rect = spinPad.getBoundingClientRect();
-        const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left - rect.width / 2;
-        const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top - rect.height / 2;
-        const maxR = rect.width * 0.38;
-        const dist = Math.hypot(cx, cy);
-        const clampedX = dist > maxR ? (cx / dist) * maxR : cx;
-        const clampedY = dist > maxR ? (cy / dist) * maxR : cy;
+    function updateSpin(e) {
+        const pt = e.touches ? e.touches[0] : e;
+        const rect = spinOrb.getBoundingClientRect();
+        const isPortraitRotated = window.innerHeight > window.innerWidth;
+        const vx = (pt.clientX - rect.left) / rect.width - 0.5;
+        const vy = (pt.clientY - rect.top) / rect.height - 0.5;
 
-        spinX = clampedX / maxR;
-        spinY = clampedY / maxR;
-        syncSpinDots();
+        const nx = isPortraitRotated ? vy * 2 : vx * 2;
+        const ny = isPortraitRotated ? -vx * 2 : vy * 2;
+        const d = Math.hypot(nx, ny);
+        const clamped = d > 0.78 ? 0.78 / d : 1;
+
+        spinX = nx * clamped;
+        spinY = ny * clamped;
+        syncSpinVisual();
     }
 
-    function syncSpinDots() {
-        const bigDot = document.getElementById('spinBigDot');
-        const miniDot = document.getElementById('miniSpinDot');
-        if (bigDot) {
-            bigDot.style.left = `${50 + spinX * 36}%`;
-            bigDot.style.top = `${50 + spinY * 36}%`;
-        }
-        if (miniDot) {
-            miniDot.style.left = `${50 + spinX * 34}%`;
-            miniDot.style.top = `${50 + spinY * 34}%`;
-        }
+    function syncSpinVisual() {
+        const orbDot = document.getElementById('spinOrbDot');
+        const hudDot = document.getElementById('hudSpinDot');
+        if (orbDot) { orbDot.style.left = `${50 + spinX * 42}%`; orbDot.style.top = `${50 + spinY * 42}%`; }
+        if (hudDot) { hudDot.style.left = `${50 + spinX * 38}%`; hudDot.style.top = `${50 + spinY * 38}%`; }
     }
 
-    function resetSpin() {
-        spinX = 0;
-        spinY = 0;
-        syncSpinDots();
-    }
+    function resetSpin() { spinX = 0; spinY = 0; syncSpinVisual(); }
 
-    spinPad.addEventListener('mousedown', (e) => { draggingSpin = true; updateSpinFromEvent(e); });
-    window.addEventListener('mousemove', (e) => { if (draggingSpin) updateSpinFromEvent(e); });
+    spinOrb.addEventListener('mousedown', (e) => { draggingSpin = true; updateSpin(e); });
+    window.addEventListener('mousemove', (e) => { if (draggingSpin) updateSpin(e); });
     window.addEventListener('mouseup', () => { draggingSpin = false; });
-    spinPad.addEventListener('touchstart', (e) => { e.preventDefault(); draggingSpin = true; updateSpinFromEvent(e); }, { passive: false });
-    spinPad.addEventListener('touchmove', (e) => { e.preventDefault(); if (draggingSpin) updateSpinFromEvent(e); }, { passive: false });
-    spinPad.addEventListener('touchend', () => { draggingSpin = false; });
+    spinOrb.addEventListener('touchstart', (e) => { e.preventDefault(); draggingSpin = true; updateSpin(e); }, { passive: false });
+    spinOrb.addEventListener('touchmove', (e) => { e.preventDefault(); if (draggingSpin) updateSpin(e); }, { passive: false });
+    spinOrb.addEventListener('touchend', () => { draggingSpin = false; });
+
+    function openCueModal() {
+        const box = document.getElementById('cueListContainer');
+        box.innerHTML = CUE_STICKS.map(c => `
+            <div onclick="Billiard8BP.selectCue('${c.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-radius:12px; background:${c.id === selectedCue.id ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)'}; border:1.5px solid ${c.id === selectedCue.id ? '#fde047' : 'rgba(255,255,255,0.12)'}; cursor:pointer;">
+                <span style="font-size:12px; font-weight:900;">${c.name}</span>
+                <div style="width:90px; height:6px; border-radius:4px; background:linear-gradient(90deg, ${c.tip}, ${c.shaft}, ${c.inlay}, ${c.butt});"></div>
+            </div>
+        `).join('');
+        document.getElementById('cueModal').classList.add('open');
+    }
+
+    function selectCue(id) {
+        const f = CUE_STICKS.find(c => c.id === id);
+        if (f) { selectedCue = f; openCueModal(); }
+    }
 
     function openLobby() {
-        cleanupOnlineRoom();
+        cleanupOnline();
         matchActive = false;
         document.getElementById('resultModal').classList.remove('open');
         document.getElementById('matchmakingModal').classList.remove('open');
-        renderTablesLobby();
+        renderLobbyCarousel();
         document.getElementById('lobbyModal').classList.add('open');
     }
 
@@ -1248,36 +1273,41 @@
 
     function toggleSound() {
         soundOn = !soundOn;
-        document.getElementById('soundBtn').innerHTML = soundOn
-            ? '<i class="fa-solid fa-volume-high"></i>'
-            : '<i class="fa-solid fa-volume-xmark" style="color:#fb7185;"></i>';
+        document.getElementById('soundToggleMenuBtn').innerText = soundOn ? '🔊 دەنگ: کراوەیە' : '🔇 دەنگ: بێدەنگە';
     }
 
-    // لووپی سەرەکیی 120 FPS
-    function gameLoop120() {
+    function loop120FPS() {
         stepPhysics();
         drawScene();
-        requestAnimationFrame(gameLoop120);
+        requestAnimationFrame(loop120FPS);
     }
 
-    window.BilliardEngine = {
+    window.Billiard8BP = {
         selectTable,
         startOnlineMatch,
         startBotMatch,
-        openPrivateRoomPrompt,
-        fallbackToOnlineBot,
+        openPrivateRoom,
+        fallbackToRival,
         cancelMatchmaking,
         openLobby,
         rematch,
         toggleSound,
+        sendCheer,
+        openQuickChat,
+        sendQuickChat,
+        openCueModal,
+        selectCue,
+        openPauseMenu: () => document.getElementById('pauseModal').classList.add('open'),
         openSpinModal: () => document.getElementById('spinModal').classList.add('open'),
         resetSpin
     };
 
     window.addEventListener('DOMContentLoaded', () => {
         resizeCanvas();
-        setupRack();
-        renderTablesLobby();
-        requestAnimationFrame(gameLoop120);
+        setupHorizontalRack();
+        renderLobbyCarousel();
+        render7Slots('p1BallSlots', null);
+        render7Slots('p2BallSlots', null);
+        requestAnimationFrame(loop120FPS);
     });
 })();
