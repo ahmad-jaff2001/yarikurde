@@ -239,13 +239,13 @@
             }
 
             const cueLen = Math.max(40, uMax - uMin);
-            const targetLen = 275;
-            const scale = targetLen / cueLen;
+           const targetLen = 375;
+const scale = targetLen / cueLen;
 
-            // دانانی دارەکە بە شێوەی ئاسۆیی تەواو: سەری دارەکە لە چەپ (x = 14) و دەسکەکەی لە ڕاست
-            const tableCanvas = document.createElement('canvas');
-            tableCanvas.width = 310;
-            tableCanvas.height = 84;
+// دانانی دارەکە بە شێوەی ئاسۆیی تەواو: سەری دارەکە لە چەپ (x = 14) و دەسکەکەی لە ڕاست
+const tableCanvas = document.createElement('canvas');
+tableCanvas.width = 410;
+tableCanvas.height = 105;
             const tctx = tableCanvas.getContext('2d');
             tctx.imageSmoothingEnabled = true;
             tctx.imageSmoothingQuality = 'high';
