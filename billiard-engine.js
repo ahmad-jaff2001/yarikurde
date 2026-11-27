@@ -1,5 +1,5 @@
 // =============================================================================
-// YARI KURDI - 8 BALL POOL LANDSCAPE 120FPS ENGINE (CUSTOM ROYAL TABLE)
+// YARI KURDI - 8 BALL POOL LANDSCAPE 120FPS ENGINE (3D CUE SYSTEM)
 // =============================================================================
 
 (function () {
@@ -21,11 +21,38 @@
         { id: 15, name: '١٥. تەختی یاری کوردی VIP',       currency: 'diamonds', fee: 10000,prize: 20000,     img: 'images.png/billiard-table-1.png', felt1: '#7f1d1d', felt2: '#1e0505', wood: '#000000', gold: '#ffd000' }
     ];
 
+    // سیستم بۆ دەرهێنانی وێنەی ٣ ڕەهەندی دارەکان لە ناو Sprite Sheets
+    // pack1: cues-pack-1.png | pack2: cues-pack-2.png | pack3: cues-pack-3.png (هەریەکەیان 4x2 یە)
     const CUE_STICKS = [
-        { id: 'dragon', name: 'داری ئەژدیهای زێڕین (Royal Dragon)', butt: '#1c1917', inlay: '#eab308', shaft: '#f59e0b', tip: '#38bdf8' },
-        { id: 'crimson', name: 'داری یاقووتی سوور (Crimson VIP)', butt: '#450a0a', inlay: '#fde047', shaft: '#fde68a', tip: '#ef4444' },
-        { id: 'diamond', name: 'داری ئەڵماسی شین (Diamond Pro)', butt: '#0f172a', inlay: '#38bdf8', shaft: '#e2e8f0', tip: '#0284c7' },
-        { id: 'emerald', name: 'داری زمروودی شاهانە (Emerald)', butt: '#022c22', inlay: '#34d399', shaft: '#fef3c7', tip: '#10b981' }
+        // Pack 1: Classic & Pro
+        { id: 'bamboo',       name: 'بامبۆ (Bamboo)',              tier: 'classic',   currency: 'gold',     price: 0,       force: 2, aim: 2, spin: 2, pack: 'pack1', row: 0, col: 0 },
+        { id: 'broom',        name: 'گسکی جادوویی (Broom)',        tier: 'classic',   currency: 'gold',     price: 0,       force: 2, aim: 2, spin: 3, pack: 'pack1', row: 0, col: 1 },
+        { id: 'floral',       name: 'چرای زێڕین (Floral)',         tier: 'classic',   currency: 'gold',     price: 1500,    force: 3, aim: 2, spin: 2, pack: 'pack1', row: 0, col: 2 },
+        { id: 'heart',        name: 'دڵە سوورەکان (Heart)',        tier: 'classic',   currency: 'gold',     price: 2500,    force: 3, aim: 3, spin: 2, pack: 'pack1', row: 0, col: 3 },
+        { id: 'polar',        name: 'جەمسەری (Polar)',             tier: 'classic',   currency: 'gold',     price: 5000,    force: 4, aim: 3, spin: 3, pack: 'pack1', row: 1, col: 0 },
+        { id: 'crystal',      name: 'کریستاڵی شین (Crystal)',      tier: 'pro',       currency: 'gold',     price: 15000,   force: 5, aim: 4, spin: 4, pack: 'pack1', row: 1, col: 1 },
+        { id: 'royal_purp',   name: 'مۆری شاهانە (Royal)',         tier: 'pro',       currency: 'gold',     price: 50000,   force: 6, aim: 5, spin: 5, pack: 'pack1', row: 1, col: 2 },
+        { id: 'obsidian',     name: 'ئۆبسیدیان (Obsidian)',        tier: 'pro',       currency: 'gold',     price: 150000,  force: 7, aim: 6, spin: 6, pack: 'pack1', row: 1, col: 3 },
+
+        // Pack 2: Legendary VIP (Fantasy)
+        { id: 'lightning',    name: 'بروسکە (Lightning)',          tier: 'legendary', currency: 'diamonds', price: 25,      force: 8, aim: 7, spin: 7, pack: 'pack2', row: 0, col: 0 },
+        { id: 'samurai',      name: 'شمشێری سامورای (Samurai)',   tier: 'legendary', currency: 'diamonds', price: 40,      force: 8, aim: 8, spin: 7, pack: 'pack2', row: 0, col: 1 },
+        { id: 'achilles',     name: 'ئەخیلیس (Achilles)',          tier: 'legendary', currency: 'diamonds', price: 60,      force: 8, aim: 7, spin: 8, pack: 'pack2', row: 0, col: 2 },
+        { id: 'water_orb',    name: 'گۆی ئاو (Water Orb)',         tier: 'legendary', currency: 'diamonds', price: 80,      force: 7, aim: 8, spin: 8, pack: 'pack2', row: 0, col: 3 },
+        { id: 'pharaoh',      name: 'فیرعەون (Pharaoh)',           tier: 'legendary', currency: 'diamonds', price: 120,     force: 8, aim: 8, spin: 8, pack: 'pack2', row: 1, col: 0 },
+        { id: 'viking',       name: 'تەوری ڤایکینگ (Viking)',      tier: 'legendary', currency: 'diamonds', price: 160,     force: 8, aim: 8, spin: 8, pack: 'pack2', row: 1, col: 1 },
+        { id: 'dragon',       name: 'ئەژدیهای زێڕین (Dragon)',     tier: 'legendary', currency: 'diamonds', price: 250,     force: 8, aim: 8, spin: 8, pack: 'pack2', row: 1, col: 2 },
+        { id: 'crown',        name: 'تاجی زێڕین (Royal Crown)',    tier: 'legendary', currency: 'diamonds', price: 500,     force: 9, aim: 9, spin: 8, pack: 'pack2', row: 1, col: 3 },
+
+        // Pack 3: Mythical VIP (Ultra Luxury)
+        { id: 'magma',        name: 'گڕکانی فینیکس (Magma)',       tier: 'legendary', currency: 'diamonds', price: 800,     force: 9, aim: 8, spin: 9, pack: 'pack3', row: 0, col: 0 },
+        { id: 'galaxy',       name: 'گەردوونی ئەڵماس (Galaxy)',    tier: 'legendary', currency: 'diamonds', price: 1000,    force: 8, aim: 9, spin: 9, pack: 'pack3', row: 0, col: 1 },
+        { id: 'jade_viper',   name: 'ماری زمروود (Jade Viper)',    tier: 'legendary', currency: 'diamonds', price: 1200,    force: 9, aim: 9, spin: 8, pack: 'pack3', row: 0, col: 2 },
+        { id: 'clockwork',    name: 'کاتژمێری زێڕین (Clockwork)',  tier: 'legendary', currency: 'diamonds', price: 1500,    force: 9, aim: 9, spin: 9, pack: 'pack3', row: 0, col: 3 },
+        { id: 'cyber',        name: 'سایبەر پلازما (Cyber)',       tier: 'legendary', currency: 'diamonds', price: 2000,    force: 10, aim: 9, spin: 9, pack: 'pack3', row: 1, col: 0 },
+        { id: 'angel',        name: 'باڵی فریشتە (Angel Wings)',   tier: 'legendary', currency: 'diamonds', price: 3000,    force: 9, aim: 10, spin: 9, pack: 'pack3', row: 1, col: 1 },
+        { id: 'glacial',      name: 'سەهۆڵی یاقووت (Glacial)',     tier: 'legendary', currency: 'diamonds', price: 5000,    force: 10, aim: 9, spin: 10, pack: 'pack3', row: 1, col: 2 },
+        { id: 'eclipse',      name: 'خۆرگیرانی ڕەش (Eclipse)',     tier: 'legendary', currency: 'diamonds', price: 10000,   force: 10, aim: 10, spin: 10, pack: 'pack3', row: 1, col: 3 }
     ];
 
     const QUICK_CHATS = [
@@ -44,7 +71,6 @@
         13: '#ea580c', 14: '#16a34a', 15: '#881337'
     };
 
-    // قەبارەی 16:9 ڕێک گونجاو لەگەڵ وێنەی مێزەکەت (billiard-table-1.png)
     const TABLE_W = 680;
     const TABLE_H = 380;
     const TRACK_AREA_W = 46;
@@ -65,23 +91,30 @@
         { x: TABLE_W - 42, y: TABLE_H - 46 }
     ];
 
-    const tableImageCache = {};
-    function getTableImg(src) {
+    // سیستم بۆ بارکردنی وێنەکان (مێزەکان + پاکێجی دارەکان)
+    const imageCache = {};
+    function getImg(src) {
         if (!src) return null;
-        if (!tableImageCache[src]) {
+        if (!imageCache[src]) {
             const im = new Image();
             im.src = src;
-            tableImageCache[src] = im;
+            imageCache[src] = im;
         }
-        return tableImageCache[src];
+        return imageCache[src];
     }
-    getTableImg('images.png/billiard-table-1.png');
+    getTableImg = getImg; // بۆ مێزەکان
+    getImg('images.png/cues-pack-1.png');
+    getImg('images.png/cues-pack-2.png');
+    getImg('images.png/cues-pack-3.png');
 
     const canvas = document.getElementById('poolCanvas');
     const ctx = canvas.getContext('2d');
 
     let selectedTable = TABLES_15[0];
-    let selectedCue = CUE_STICKS[0];
+    let ownedCueIds = JSON.parse(localStorage.getItem('yk_owned_cues') || '["bamboo","broom"]');
+    let savedCueId = localStorage.getItem('yk_equipped_cue') || 'bamboo';
+    let selectedCue = CUE_STICKS.find(c => c.id === savedCueId) || CUE_STICKS[0];
+    let activeCueFilter = 'all';
     let soundOn = true;
     let audioCtx = null;
 
@@ -256,7 +289,7 @@
         const f = TABLES_15.find(t => t.id === id);
         if (f) {
             selectedTable = f;
-            getTableImg(f.img);
+            getImg(f.img);
             document.getElementById('potPrizeTxt').innerText = fmtNum(selectedTable.prize);
             renderLobbyCarousel();
         }
@@ -329,7 +362,6 @@
         showToast('نۆرەی تۆیە — دارەکە ئاڕاستە بکە و لێدانی سەرەتا بکە');
     }
 
-    // ================= سیستمی ئۆنڵاینی ڕاستەوخۆ (Firebase) =================
     function cleanupOnline() {
         if (mmTimer) { clearTimeout(mmTimer); mmTimer = null; }
         if (roomRef) { roomRef.off(); roomRef = null; }
@@ -583,7 +615,8 @@
         const cb = getCueBall();
         if (!cb || cb.pocketed || isMoving) return;
 
-        const speed = Math.max(2.0, powerRatio * 25.5);
+        const maxCueSpeed = 22.0 + (selectedCue.force || 3) * 0.7;
+        const speed = Math.max(2.0, powerRatio * maxCueSpeed);
         cb.vx = Math.cos(aimAngle) * speed;
         cb.vy = Math.sin(aimAngle) * speed;
 
@@ -857,15 +890,12 @@
         if (!movingAny) onBallsStopped();
     }
 
-    // ================= وێنەکێشانی مێزە تایبەتەکەت (billiard-table-1.png) =================
     function drawScene() {
         ctx.clearRect(0, 0, LOGICAL_W, LOGICAL_H);
 
-        // ١. بۆری گەڕانەوەی تۆپەکان لە لای ڕاست
         drawRightBallReturnTube();
 
-        // ٢. وێنەکێشانی وێنەی مێزە شاهانەکەی خۆت
-        const tableImg = getTableImg(selectedTable.img);
+        const tableImg = getImg(selectedTable.img);
         if (tableImg && tableImg.complete && tableImg.naturalWidth > 0) {
             ctx.save();
             ctx.beginPath();
@@ -882,7 +912,6 @@
             ctx.fillRect(RAIL_X, RAIL_Y, TABLE_W - RAIL_X * 2, TABLE_H - RAIL_Y * 2);
         }
 
-        // هێڵی سپی سەرەتا (Head String)
         const headX = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
         ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
         ctx.lineWidth = 1.2;
@@ -891,12 +920,10 @@
         ctx.lineTo(headX, TABLE_H - RAIL_Y);
         ctx.stroke();
 
-        // ٣. تۆپەکانی سەر مێز
         for (const b of balls) {
             if (!b.pocketed) draw3DBall(b.num, b.x, b.y, BALL_R);
         }
 
-        // نیشانەی Ball-in-Hand
         const cb = getCueBall();
         if (cb && !cb.pocketed && ballInHand && isMyTurn()) {
             ctx.strokeStyle = '#fde047';
@@ -908,7 +935,6 @@
             ctx.setLineDash([]);
         }
 
-        // ٤. هێڵی نیشانەگرتن و داری بڵیاردەکە
         if (cb && !cb.pocketed && isMyTurn() && !draggingCueBall) {
             drawAimAndCueStick(cb);
         }
@@ -954,7 +980,6 @@
             const curY = topY + (targetY - topY) * tb.progress;
             draw3DBall(tb.num, tubeX, curY, 8.2);
         });
-
         ctx.restore();
     }
 
@@ -1009,6 +1034,7 @@
         ctx.restore();
     }
 
+    // ================= دەرهێنانی وێنەی ٣ ڕەهەندی دارەکە لە کاتی نیشانەگرتن =================
     function drawAimAndCueStick(cb) {
         const dx = Math.cos(aimAngle);
         const dy = Math.sin(aimAngle);
@@ -1071,35 +1097,42 @@
             ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.moveTo(hitBall.x, hitBall.y);
-            ctx.lineTo(hitBall.x + (tx / tl) * 70, hitBall.y + (ty / tl) * 70);
+            const aimLen = 42 + (selectedCue.aim || 3) * 13;
+            ctx.lineTo(hitBall.x + (tx / tl) * aimLen, hitBall.y + (ty / tl) * aimLen);
             ctx.stroke();
         }
         ctx.restore();
 
+        // ڕاکێشانی وێنە ٣ ڕەهەندییەکەی دارەکە بۆ سەر مێزەکە لە شوێنی ڕاستەقینەی خۆی
         ctx.save();
         ctx.translate(cb.x, cb.y);
         ctx.rotate(aimAngle + Math.PI);
         const offset = BALL_R + 7 + pullPower * 65;
 
-        const cg = ctx.createLinearGradient(offset, 0, offset + 220, 0);
-        cg.addColorStop(0, selectedCue.tip);
-        cg.addColorStop(0.03, '#ffffff');
-        cg.addColorStop(0.06, selectedCue.shaft);
-        cg.addColorStop(0.55, selectedCue.inlay);
-        cg.addColorStop(1, selectedCue.butt);
+        const packImg = getImg(`images.png/cues-${selectedCue.pack}.png`);
+        if (packImg && packImg.complete && packImg.naturalWidth > 0) {
+            const cellW = packImg.naturalWidth / 4;
+            const cellH = packImg.naturalHeight / 2;
+            const sx = selectedCue.col * cellW;
+            const sy = selectedCue.row * cellH;
 
-        ctx.fillStyle = cg;
-        ctx.beginPath();
-        ctx.moveTo(offset, -2.1);
-        ctx.lineTo(offset + 220, -5.2);
-        ctx.lineTo(offset + 220, 5.2);
-        ctx.lineTo(offset, 2.1);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.fillStyle = '#fde047';
-        ctx.fillRect(offset + 115, -3.6, 5, 7.2);
-        ctx.fillRect(offset + 165, -4.4, 6, 8.8);
+            // دارەکە لە وێنەکەدا بە لارە (diagonal)، بۆیە کەمێک دەیسوڕێنین و گەورەی دەکەین تا ڕێک ببێتەوە
+            ctx.translate(offset, 0);
+            ctx.rotate(Math.PI / 4); // سوڕانی ٤٥ پلە
+            
+            // قەبارە و شوێنی کێشانی وێنەکە
+            const drawW = 280; 
+            const drawH = (cellH / cellW) * drawW;
+            ctx.drawImage(packImg, sx, sy, cellW, cellH, -12, -drawH + 12, drawW, drawH);
+        } else {
+            // ئەگەر وێنەکە نەدۆزرایەوە، هێڵێکی سادە دەکێشێت
+            ctx.strokeStyle = '#fde047';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.moveTo(offset, 0);
+            ctx.lineTo(offset + 220, 0);
+            ctx.stroke();
+        }
         ctx.restore();
     }
 
@@ -1240,20 +1273,113 @@
     spinOrb.addEventListener('touchmove', (e) => { e.preventDefault(); if (draggingSpin) updateSpin(e); }, { passive: false });
     spinOrb.addEventListener('touchend', () => { draggingSpin = false; });
 
+    // ================= دەرهێنانی وێنەی ٣ ڕەهەندی دارەکە بۆ ناو کارتی کۆگاکە =================
+    function buildCueCardDiv(c) {
+        return `
+            <div class="cue-svg-box" style="
+                background: url('images.png/cues-${c.pack}.png') no-repeat;
+                background-size: 400% 200%;
+                background-position: ${c.col * 33.33}% ${c.row * 100}%;
+                transform: scale(1.35) rotate(-15deg);
+                filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
+            "></div>
+        `;
+    }
+
+    function renderStatSegments(val) {
+        let html = '';
+        for (let i = 1; i <= 10; i++) {
+            html += `<span class="seg-bar ${i <= val ? 'filled' : ''}"></span>`;
+        }
+        return html;
+    }
+
+    function filterCues(filter, btnEl) {
+        activeCueFilter = filter;
+        if (btnEl) {
+            document.querySelectorAll('#cueFilterTabs .cue-tab-pill').forEach(b => b.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+        openCueModal();
+    }
+
     function openCueModal() {
         const box = document.getElementById('cueListContainer');
-        box.innerHTML = CUE_STICKS.map(c => `
-            <div onclick="Billiard8BP.selectCue('${c.id}')" style="display:flex; align-items:center; justify-content:space-between; padding:9px 12px; border-radius:12px; background:${c.id === selectedCue.id ? 'rgba(234,179,8,0.25)' : 'rgba(255,255,255,0.06)'}; border:1.5px solid ${c.id === selectedCue.id ? '#fde047' : 'rgba(255,255,255,0.12)'}; cursor:pointer;">
-                <span style="font-size:12px; font-weight:900;">${c.name}</span>
-                <div style="width:90px; height:6px; border-radius:4px; background:linear-gradient(90deg, ${c.tip}, ${c.shaft}, ${c.inlay}, ${c.butt});"></div>
-            </div>
-        `).join('');
+        if (!box) return;
+
+        const list = CUE_STICKS.filter(c => {
+            if (activeCueFilter === 'owned') return ownedCueIds.includes(c.id);
+            if (activeCueFilter === 'all') return true;
+            return c.tier === activeCueFilter;
+        });
+
+        box.innerHTML = list.map(c => {
+            const isOwned = ownedCueIds.includes(c.id);
+            const isEq = selectedCue.id === c.id;
+
+            let btnHtml = '';
+            if (isEq) {
+                btnHtml = `<button class="cue-action-btn active">دیاریکراوە ✓</button>`;
+            } else if (isOwned) {
+                btnHtml = `<button class="cue-action-btn equip" onclick="Billiard8BP.selectCue('${c.id}')">هەڵبژاردن</button>`;
+            } else {
+                const icon = c.currency === 'diamonds'
+                    ? '<i class="fa-solid fa-gem" style="color:#38bdf8;"></i>'
+                    : '<i class="fa-solid fa-coins" style="color:#ffd000;"></i>';
+                btnHtml = `<button class="cue-action-btn buy" onclick="Billiard8BP.selectCue('${c.id}')">${icon} ${fmtNum(c.price)}</button>`;
+            }
+
+            return `
+                <div class="royal-cue-card ${isEq ? 'equipped' : ''}">
+                    <i class="fa-solid fa-crown cue-card-watermark"></i>
+                    <div class="cue-card-title">${c.name}</div>
+                    <div class="cue-card-middle" style="overflow:visible;">
+                        ${buildCueCardDiv(c)}
+                        <div class="cue-stats-col">
+                            <div class="cue-stat-line" title="هێز (Force)">
+                                <span class="cue-stat-ico">⚡</span>
+                                <div class="cue-stat-segs">${renderStatSegments(c.force)}</div>
+                            </div>
+                            <div class="cue-stat-line" title="نیشانە (Aim)">
+                                <span class="cue-stat-ico">🎯</span>
+                                <div class="cue-stat-segs">${renderStatSegments(c.aim)}</div>
+                            </div>
+                            <div class="cue-stat-line" title="سوڕان (Spin)">
+                                <span class="cue-stat-ico">🔴</span>
+                                <div class="cue-stat-segs">${renderStatSegments(c.spin)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    ${btnHtml}
+                </div>
+            `;
+        }).join('');
+
         document.getElementById('cueModal').classList.add('open');
     }
 
     function selectCue(id) {
-        const f = CUE_STICKS.find(c => c.id === id);
-        if (f) { selectedCue = f; openCueModal(); }
+        const cue = CUE_STICKS.find(c => c.id === id);
+        if (!cue) return;
+
+        if (!ownedCueIds.includes(cue.id)) {
+            if (window.YariWallet) {
+                const ok = cue.currency === 'diamonds'
+                    ? YariWallet.spendDiamonds(cue.price)
+                    : YariWallet.spendGold(cue.price);
+                if (!ok) {
+                    alert(cue.currency === 'diamonds' ? 'ئەڵماسی پێویستت نییە بۆ کڕینی ئەم دارە!' : 'گۆڵدی پێویستت نییە بۆ کڕینی ئەم دارە!');
+                    YariWallet.openStore(cue.currency);
+                    return;
+                }
+            }
+            ownedCueIds.push(cue.id);
+            localStorage.setItem('yk_owned_cues', JSON.stringify(ownedCueIds));
+        }
+
+        selectedCue = cue;
+        localStorage.setItem('yk_equipped_cue', cue.id);
+        openCueModal();
     }
 
     function openLobby() {
@@ -1295,6 +1421,7 @@
         sendCheer,
         openQuickChat,
         sendQuickChat,
+        filterCues,
         openCueModal,
         selectCue,
         openPauseMenu: () => document.getElementById('pauseModal').classList.add('open'),

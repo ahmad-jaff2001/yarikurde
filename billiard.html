@@ -593,6 +593,203 @@
             transform: translate(-50%, -50%);
             pointer-events: none;
         }
+        /* ================= کۆگای دارە شاهانەکان (Royal Cue Shop) ================= */
+        .royal-cue-shop-box {
+            width: 97%;
+            max-width: 740px;
+            height: 93%;
+            background: radial-gradient(circle at top, #271156 0%, #0d0622 70%, #070314 100%);
+            border: 2px solid #ffb800;
+            border-radius: 22px;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.96), 0 0 30px rgba(168, 85, 247, 0.3);
+            overflow: hidden;
+        }
+
+        .cue-shop-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 184, 0, 0.25);
+            padding-bottom: 6px;
+            flex-shrink: 0;
+        }
+
+        .cue-tabs-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+        .cue-tabs-row::-webkit-scrollbar { display: none; }
+
+        .cue-tab-pill {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 184, 0, 0.28);
+            color: #d8b4fe;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+        }
+        .cue-tab-pill.active {
+            background: linear-gradient(135deg, #ffd000, #ff8800);
+            color: #1a0f00;
+            border-color: #fef08a;
+            font-weight: 900;
+        }
+
+        .cues-4col-grid {
+            flex: 1;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 2px 2px 6px;
+        }
+        .cues-4col-grid::-webkit-scrollbar { width: 4px; }
+        .cues-4col-grid::-webkit-scrollbar-thumb { background: #ffb800; border-radius: 8px; }
+
+        .royal-cue-card {
+            background:
+                radial-gradient(circle at 38% 45%, rgba(168, 85, 247, 0.36) 0%, rgba(22, 10, 52, 0.96) 72%),
+                linear-gradient(180deg, #1f0e47, #0b051d);
+            border: 1.5px solid rgba(255, 184, 0, 0.34);
+            border-radius: 15px;
+            padding: 7px 7px 6px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 16px rgba(147, 51, 234, 0.22), 0 6px 14px rgba(0, 0, 0, 0.65);
+            transition: transform 0.18s, border-color 0.18s;
+        }
+        .royal-cue-card.equipped {
+            border: 2px solid #ffd000;
+            background:
+                radial-gradient(circle at 40% 45%, rgba(255, 184, 0, 0.28) 0%, rgba(36, 15, 78, 0.98) 75%);
+            box-shadow: 0 0 18px rgba(255, 184, 0, 0.45);
+        }
+
+        .cue-card-watermark {
+            position: absolute;
+            top: 50%;
+            left: 34%;
+            transform: translate(-50%, -50%);
+            font-size: 46px;
+            color: rgba(255, 184, 0, 0.08);
+            pointer-events: none;
+        }
+
+        .cue-card-title {
+            font-size: 10.5px;
+            font-weight: 900;
+            color: #fde047;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 3px #000;
+            z-index: 2;
+        }
+
+        .cue-card-middle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            margin: 3px 0;
+            z-index: 2;
+        }
+
+        .cue-svg-box {
+            width: 66px;
+            height: 66px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.85));
+        }
+
+        /* ٣ شریتەکەی هێز، نیشانە و سوڕان */
+        .cue-stats-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .cue-stat-line {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .cue-stat-ico {
+            width: 12px;
+            font-size: 8.5px;
+            color: #e9d5ff;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .cue-stat-segs {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 1.5px;
+            flex: 1;
+            height: 7px;
+            background: rgba(0, 0, 0, 0.55);
+            padding: 1px;
+            border-radius: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .seg-bar {
+            border-radius: 1px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+        .seg-bar.filled {
+            background: linear-gradient(180deg, #fde047, #f59e0b);
+            box-shadow: 0 0 4px rgba(250, 204, 21, 0.6);
+        }
+
+        .cue-action-btn {
+            width: 100%;
+            border: none;
+            border-radius: 9px;
+            padding: 4px 6px;
+            font-size: 10.5px;
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            z-index: 2;
+        }
+        .cue-action-btn.buy {
+            background: linear-gradient(180deg, #4ade80, #16a34a);
+            color: #052e16;
+            border: 1px solid #bbf7d0;
+        }
+        .cue-action-btn.equip {
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: #fff;
+            border: 1px solid #c4b5fd;
+        }
+        .cue-action-btn.active {
+            background: linear-gradient(135deg, #ffd000, #f59e0b);
+            color: #1a0f00;
+            border: 1px solid #fef08a;
+        }
     </style>
 </head>
 <body>
@@ -740,12 +937,32 @@
         </div>
     </div>
 
-    <!-- ================= مۆداڵی ٤: هەڵبژاردنی دار (Cues) ================= -->
+   <!-- ================= مۆداڵی ٤: هەڵبژاردنی دار (Royal Cues Shop) ================= -->
     <div class="modal-backdrop" id="cueModal" onclick="if(event.target===this) this.classList.remove('open')">
-        <div class="royal-dialog" style="max-width:420px; text-align:center;">
-            <div style="font-size:15px; font-weight:900; color:#fde047; margin-bottom:8px;">هەڵبژاردنی داری بڵیارد (Cue Sticks)</div>
-            <div id="cueListContainer" style="display:flex; flex-direction:column; gap:7px; max-height:190px; overflow-y:auto;"></div>
-            <button class="btn-8bp-green" style="margin-top:10px;" onclick="document.getElementById('cueModal').classList.remove('open')">داخستن</button>
+        <div class="royal-cue-shop-box">
+            <div class="cue-shop-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:16px;">👑</span>
+                    <span style="font-size:14.5px; font-weight:900; color:#fde047;">کۆگای دارە شاهانەکان (Royal Cues)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <div style="background:rgba(0,0,0,0.5); border:1px solid rgba(255,184,0,0.4); border-radius:10px; padding:3px 9px; font-size:11px; font-weight:900;">
+                        <i class="fa-solid fa-coins" style="color:#ffd000;"></i> <span data-wallet="gold" style="color:#ffd000;">0</span> •
+                        <i class="fa-solid fa-gem" style="color:#38bdf8;"></i> <span data-wallet="diamonds" style="color:#38bdf8;">0</span>
+                    </div>
+                    <button onclick="document.getElementById('cueModal').classList.remove('open')" style="background:rgba(239,68,68,0.28); border:1px solid #f87171; color:#fff; width:28px; height:28px; border-radius:8px; cursor:pointer; font-weight:900;">✕</button>
+                </div>
+            </div>
+
+            <div class="cue-tabs-row" id="cueFilterTabs">
+                <button class="cue-tab-pill active" onclick="Billiard8BP.filterCues('all', this)">هەموویان (40)</button>
+                <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('classic', this)">کلاسیک</button>
+                <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('pro', this)">پێشکەوتوو</button>
+                <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('legendary', this)">ئەفسانەیی VIP</button>
+                <button class="cue-tab-pill" onclick="Billiard8BP.filterCues('owned', this)">دارەکانی من</button>
+            </div>
+
+            <div class="cues-4col-grid" id="cueListContainer"></div>
         </div>
     </div>
 
