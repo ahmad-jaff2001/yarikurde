@@ -40,7 +40,26 @@
             justify-content: center;
             overflow-x: hidden;
         }
+.hud-xp-fill {
+            position: absolute;
+            top: 2.55%;
+            left: 22.8%;
+            width: 19.2%;
+            height: 1.55%;
+            background: rgba(15, 23, 42, 0.55);
+            border-radius: 999px;
+            overflow: hidden;
+            z-index: 20;
+            pointer-events: none;
+        }
 
+        .hud-xp-fill-bar {
+            height: 100%;
+            width: 35%;
+            background: linear-gradient(90deg, #fde047, #f59e0b);
+            border-radius: 999px;
+            transition: width 0.4s ease;
+        }
         /* =========================================================
            لۆبیی شاهانەی لۆدۆ (Yari Kurdi Royal Ludo Lobby)
            ========================================================= */
@@ -594,7 +613,7 @@
             <!-- ١. کارتی زەرد: ٢ و ٤ یاریزان -->
             <button class="hotspot-card" style="top: 37.5%; left: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('24players')" aria-label="٢ و ٤ یاریزان"></button>
 
-            <!-- ٢. کارتی مۆر: تیپ -->
+            <!-- ٢. کارتی مۆر تیم -->
             <button class="hotspot-card" style="top: 37.5%; right: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('team')" aria-label="تیپ"></button>
 
             <!-- ٣. کارتی سەوز: پاڵەوانێتی -->
