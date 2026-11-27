@@ -1,5 +1,5 @@
 // =============================================================================
-// YARI KURDI - 8 BALL POOL LANDSCAPE 120FPS ENGINE (REALISTIC 3D CUES)
+// YARI KURDI - 8 BALL POOL LANDSCAPE 120FPS ENGINE (CLEAN 3D CUES)
 // =============================================================================
 
 (function () {
@@ -89,7 +89,6 @@
         { x: TABLE_W - 42, y: TABLE_H - 46 }
     ];
 
-    // بارکردنی وێنەی مێزەکان
     const imageCache = {};
     function getImg(src) {
         if (!src) return null;
@@ -101,14 +100,14 @@
         return imageCache[src];
     }
 
-    // دەرهێنانی وێنە ٣ ڕەهەندییەکانی دارەکان و سڕینەوەی خۆکاری باکگراوندی مۆر (Chroma Key)
-    const cueSprites = {}; // { [cueId]: { tableCanvas, tipX, shopDataUrl } }
+    // دەرهێنانی دارە ٣ ڕەهەندییەکان و سڕینەوەی تەواوی پاشبنەمای مۆر (BFS Flood-Fill)
+    const cueSprites = {};
 
     function processCueCell(img, cue) {
         try {
             const cw = Math.floor(img.naturalWidth / 4);
             const ch = Math.floor(img.naturalHeight / 2);
-            if (cw < 10 || ch < 10) return;
+            if (cw < 20 || ch < 20) return;
 
             const cellCanvas = document.createElement('canvas');
             cellCanvas.width = cw;
@@ -118,49 +117,151 @@
 
             const imgData = cctx.getImageData(0, 0, cw, ch);
             const d = imgData.data;
+            const total = cw * ch;
 
-            // وەرگرتنی ڕەنگی باکگراوندی مۆر لە گۆشەی سەرەوەی چەپ
-            const bgR = d[0], bgG = d[1], bgB = d[2];
+            // پشکنینی ڕەنگی پاشبنەمای مۆر
+            function isPurpleBg(idx) {
+                const p = idx * 4;
+                const r = d[p], g = d[p + 1], b = d[p + 2];
+                const maxC = Math.max(r, g, b);
+                // پاشبنەمای مۆری وێنەکان: شین لە سەوز زیاترە، سوور لە سەوز زیاترە و زۆر ڕووناک نییە
+                return maxC < 145 && b > g + 10 && r >= g - 4 && Math.abs(r - b) < 85;
+            }
 
-            for (let i = 0; i < d.length; i += 4) {
-                const dr = d[i] - bgR;
-                const dg = d[i + 1] - bgG;
-                const db = d[i + 2] - bgB;
-                const dist = Math.sqrt(dr * dr + dg * dg + db * db);
+            // سڕینەوەی هەموو پاشبنەما مۆرەکە لە لێوارەکانەوە بەرەو ناوەوە (Flood-Fill)
+            const visited = new Uint8Array(total);
+            const queue = new Int32Array(total);
+            let head = 0, tail = 0;
 
-                if (dist < 26) {
-                    d[i + 3] = 0; // شەفافکردنی تەواوی باکگراوند
-                } else if (dist < 52) {
-                    d[i + 3] = Math.round(((dist - 26) / 26) * 255); // لێواری نەرم
+            for (let x = 0; x < cw; x++) {
+                const topIdx = x;
+                const botIdx = (ch - 1) * cw + x;
+                if (!visited[topIdx] && isPurpleBg(topIdx)) { visited[topIdx] = 1; queue[tail++] = topIdx; }
+                if (!visited[botIdx] && isPurpleBg(botIdx)) { visited[botIdx] = 1; queue[tail++] = botIdx; }
+            }
+            for (let y = 0; y < ch; y++) {
+                const leftIdx = y * cw;
+                const rightIdx = y * cw + (cw - 1);
+                if (!visited[leftIdx] && isPurpleBg(leftIdx)) { visited[leftIdx] = 1; queue[tail++] = leftIdx; }
+                if (!visited[rightIdx] && isPurpleBg(rightIdx)) { visited[rightIdx] = 1; queue[tail++] = rightIdx; }
+            }
+
+            while (head < tail) {
+                const cur = queue[head++];
+                d[cur * 4 + 3] = 0;
+                const cx = cur % cw;
+                const cy = (cur - cx) / cw;
+
+                if (cx > 0) {
+                    const n = cur - 1;
+                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
+                }
+                if (cx < cw - 1) {
+                    const n = cur + 1;
+                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
+                }
+                if (cy > 0) {
+                    const n = cur - cw;
+                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
+                }
+                if (cy < ch - 1) {
+                    const n = cur + cw;
+                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
                 }
             }
-            cctx.putImageData(imgData, 0, 0);
 
-            // دروستکردنی سپرایتی ئاسۆیی بۆ سەر مێزی یارییەکە (سەری دارەکە لە چەپ و دەسکەکەی لە ڕاست)
-            const tableCanvas = document.createElement('canvas');
-            tableCanvas.width = 310;
-            tableCanvas.height = 80;
-            const tctx = tableCanvas.getContext('2d');
-            tctx.translate(tableCanvas.width / 2, tableCanvas.height / 2);
-            tctx.rotate(-3 * Math.PI / 4);
-            const scale = 265 / Math.hypot(cw, ch);
-            tctx.drawImage(cellCanvas, (-cw * scale) / 2, (-ch * scale) / 2, cw * scale, ch * scale);
-
-            // دۆزینەوەی یەکەم پیکسڵی سەری دارەکە (tipX) تا ڕێک لە تەنیشت تۆپی سپی بوەستێت
-            const tData = tctx.getImageData(0, 0, tableCanvas.width, tableCanvas.height).data;
-            let tipX = 24;
-            outer: for (let x = 0; x < tableCanvas.width; x++) {
-                for (let y = 0; y < tableCanvas.height; y++) {
-                    if (tData[(y * tableCanvas.width + x) * 4 + 3] > 60) {
-                        tipX = x;
-                        break outer;
+            // نەرمکردنی لێوارەکانی دارەکە (Anti-aliasing)
+            for (let y = 1; y < ch - 1; y++) {
+                for (let x = 1; x < cw - 1; x++) {
+                    const idx = y * cw + x;
+                    if (visited[idx]) continue;
+                    const nearTransparent = visited[idx - 1] || visited[idx + 1] || visited[idx - cw] || visited[idx + cw];
+                    if (nearTransparent) {
+                        const p = idx * 4;
+                        if (d[p + 2] > d[p + 1] + 8 && Math.max(d[p], d[p + 1], d[p + 2]) < 155) {
+                            d[p + 3] = 95;
+                        }
                     }
                 }
             }
 
+            cctx.putImageData(imgData, 0, 0);
+
+            // دۆزینەوەی تەوەرەی ڕاستەقینەی دارەکە و سەری باریکەکەی (Tip)
+            let sumX = 0, sumY = 0, count = 0;
+            for (let y = 0; y < ch; y++) {
+                for (let x = 0; x < cw; x++) {
+                    if (d[(y * cw + x) * 4 + 3] > 140) {
+                        sumX += x;
+                        sumY += y;
+                        count++;
+                    }
+                }
+            }
+
+            let theta = -Math.atan2(ch, cw);
+            let meanX = cw / 2, meanY = ch / 2;
+            let uMin = -Math.hypot(cw, ch) * 0.4, uMax = Math.hypot(cw, ch) * 0.4;
+
+            if (count > 30) {
+                meanX = sumX / count;
+                meanY = sumY / count;
+                let cxx = 0, cyy = 0, cxy = 0;
+                for (let y = 0; y < ch; y++) {
+                    for (let x = 0; x < cw; x++) {
+                        if (d[(y * cw + x) * 4 + 3] > 140) {
+                            const dx = x - meanX;
+                            const dy = y - meanY;
+                            cxx += dx * dx;
+                            cyy += dy * dy;
+                            cxy += dx * dy;
+                        }
+                    }
+                }
+                theta = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
+                // دڵنیابوون لەوەی ئاڕاستەکە بەرەو سەرەوەی ڕاستە (سەری دارەکە)
+                if (Math.cos(theta) - Math.sin(theta) < 0) {
+                    theta += Math.PI;
+                }
+
+                const cosT = Math.cos(theta), sinT = Math.sin(theta);
+                uMin = Infinity;
+                uMax = -Infinity;
+                for (let y = 0; y < ch; y++) {
+                    for (let x = 0; x < cw; x++) {
+                        if (d[(y * cw + x) * 4 + 3] > 140) {
+                            const u = (x - meanX) * cosT + (y - meanY) * sinT;
+                            if (u < uMin) uMin = u;
+                            if (u > uMax) uMax = u;
+                        }
+                    }
+                }
+            }
+
+            const cueLen = Math.max(40, uMax - uMin);
+            const targetLen = 275;
+            const scale = targetLen / cueLen;
+
+            // دانانی دارەکە بە شێوەی ئاسۆیی تەواو: سەری دارەکە لە چەپ (x = 14) و دەسکەکەی لە ڕاست
+            const tableCanvas = document.createElement('canvas');
+            tableCanvas.width = 310;
+            tableCanvas.height = 84;
+            const tctx = tableCanvas.getContext('2d');
+            tctx.imageSmoothingEnabled = true;
+            tctx.imageSmoothingQuality = 'high';
+
+            const tipXInCell = meanX + uMax * Math.cos(theta);
+            const tipYInCell = meanY + uMax * Math.sin(theta);
+
+            tctx.translate(14, tableCanvas.height / 2);
+            tctx.rotate(Math.PI - theta);
+            tctx.scale(scale, scale);
+            tctx.translate(-tipXInCell, -tipYInCell);
+            tctx.drawImage(cellCanvas, 0, 0);
+
             cueSprites[cue.id] = {
                 tableCanvas,
-                tipX,
+                tipX: 14,
                 shopDataUrl: cellCanvas.toDataURL('image/png')
             };
 
@@ -175,9 +276,7 @@
             `images.png/cues-pack-${packNum}.png`,
             `images.png/cues-pack${packNum}.png`,
             `images.png/cues-pack-${packNum}.jpeg`,
-            `images.png/cues-pack-${packNum}.jpg`,
-            `images.png/cues-pack${packNum}.jpeg`,
-            `images.png/cues-pack${packNum}.jpg`
+            `images.png/cues-pack-${packNum}.jpg`
         ];
         let idx = 0;
         const img = new Image();
@@ -1190,7 +1289,7 @@
         }
         ctx.restore();
 
-        // وێنەکێشانی دارە ٣ ڕەهەندییە ڕاستەقینەکە بەبێ هیچ پاشبنەمایەکی مۆر
+        // وێنەکێشانی دارە ٣ ڕەهەندییەکە بەبێ هیچ باکگراوندێک و ڕێک لەسەر هێڵی نیشانەگرتن
         ctx.save();
         ctx.translate(cb.x, cb.y);
         ctx.rotate(aimAngle + Math.PI);
@@ -1198,13 +1297,12 @@
 
         const sprite = cueSprites[selectedCue.id];
         if (sprite && sprite.tableCanvas) {
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.72)';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.75)';
             ctx.shadowBlur = 7;
             ctx.shadowOffsetX = 3;
             ctx.shadowOffsetY = 5;
             ctx.drawImage(sprite.tableCanvas, offset - sprite.tipX, -sprite.tableCanvas.height / 2);
         } else {
-            // وێنەکێشانی پاشەکەوتی ٣ ڕەهەندی ئەگەر هێشتا فایلەکان بەرز نەکرابنەوە
             const [cTip, cShaft, cInlay, cButt] = selectedCue.colors || ['#38bdf8', '#fde68a', '#eab308', '#1c1917'];
             ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
             ctx.shadowBlur = 6;
@@ -1224,7 +1322,6 @@
             ctx.closePath();
             ctx.fill();
 
-            // دەسکی دارەکە (Butt)
             ctx.fillStyle = cButt;
             ctx.beginPath();
             ctx.moveTo(offset + 125, -3.9);
@@ -1234,7 +1331,6 @@
             ctx.closePath();
             ctx.fill();
 
-            // ئەڵقە زێڕینەکان و سەری دارەکە
             ctx.fillStyle = cInlay;
             ctx.fillRect(offset + 123, -4.0, 5, 8.0);
             ctx.fillRect(offset + 228, -5.6, 5, 11.2);
