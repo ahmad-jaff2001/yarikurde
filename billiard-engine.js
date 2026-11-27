@@ -119,16 +119,18 @@
             const d = imgData.data;
             const total = cw * ch;
 
-            // پشکنینی ڕەنگی پاشبنەمای مۆر
+            // وەرگرتنی ڕەنگی پاشبنەما لە هەر ٤ گۆشەکەوە تا دارە ڕەشەکان (وەک Eclipse) نەسڕێنەوە
+            const corners = [0, (cw - 1) * 4, ((ch - 1) * cw) * 4, ((ch - 1) * cw + (cw - 1)) * 4];
+            let bgR = 0, bgG = 0, bgB = 0;
+            corners.forEach(p => { bgR += d[p]; bgG += d[p + 1]; bgB += d[p + 2]; });
+            bgR /= 4; bgG /= 4; bgB /= 4;
+
             function isPurpleBg(idx) {
                 const p = idx * 4;
-                const r = d[p], g = d[p + 1], b = d[p + 2];
-                const maxC = Math.max(r, g, b);
-                // پاشبنەمای مۆری وێنەکان: شین لە سەوز زیاترە، سوور لە سەوز زیاترە و زۆر ڕووناک نییە
-                return maxC < 145 && b > g + 10 && r >= g - 4 && Math.abs(r - b) < 85;
+                const dist = Math.hypot(d[p] - bgR, d[p + 1] - bgG, d[p + 2] - bgB);
+                return dist < 28;
             }
 
-            // سڕینەوەی هەموو پاشبنەما مۆرەکە لە لێوارەکانەوە بەرەو ناوەوە (Flood-Fill)
             const visited = new Uint8Array(total);
             const queue = new Int32Array(total);
             let head = 0, tail = 0;
@@ -152,54 +154,36 @@
                 const cx = cur % cw;
                 const cy = (cur - cx) / cw;
 
-                if (cx > 0) {
-                    const n = cur - 1;
-                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
-                }
-                if (cx < cw - 1) {
-                    const n = cur + 1;
-                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
-                }
-                if (cy > 0) {
-                    const n = cur - cw;
-                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
-                }
-                if (cy < ch - 1) {
-                    const n = cur + cw;
-                    if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; }
-                }
+                if (cx > 0) { const n = cur - 1; if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+                if (cx < cw - 1) { const n = cur + 1; if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+                if (cy > 0) { const n = cur - cw; if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; } }
+                if (cy < ch - 1) { const n = cur + cw; if (!visited[n] && isPurpleBg(n)) { visited[n] = 1; queue[tail++] = n; } }
             }
 
-            // نەرمکردنی لێوارەکانی دارەکە (Anti-aliasing)
+            // نەرمکردنی لێوارەکانی دارەکە
             for (let y = 1; y < ch - 1; y++) {
                 for (let x = 1; x < cw - 1; x++) {
                     const idx = y * cw + x;
                     if (visited[idx]) continue;
-                    const nearTransparent = visited[idx - 1] || visited[idx + 1] || visited[idx - cw] || visited[idx + cw];
-                    if (nearTransparent) {
+                    if (visited[idx - 1] || visited[idx + 1] || visited[idx - cw] || visited[idx + cw]) {
                         const p = idx * 4;
-                        if (d[p + 2] > d[p + 1] + 8 && Math.max(d[p], d[p + 1], d[p + 2]) < 155) {
-                            d[p + 3] = 95;
-                        }
+                        const dist = Math.hypot(d[p] - bgR, d[p + 1] - bgG, d[p + 2] - bgB);
+                        if (dist < 46) d[p + 3] = Math.round(((dist - 28) / 18) * 255);
                     }
                 }
             }
 
             cctx.putImageData(imgData, 0, 0);
 
-            // دۆزینەوەی تەوەرەی ڕاستەقینەی دارەکە و سەری باریکەکەی (Tip)
+            // دۆزینەوەی ناوەڕاست و گۆشەی ڕاستەقینەی دارەکە بەرەو سەرەوەی ڕاست
             let sumX = 0, sumY = 0, count = 0;
             for (let y = 0; y < ch; y++) {
                 for (let x = 0; x < cw; x++) {
-                    if (d[(y * cw + x) * 4 + 3] > 140) {
-                        sumX += x;
-                        sumY += y;
-                        count++;
-                    }
+                    if (d[(y * cw + x) * 4 + 3] > 140) { sumX += x; sumY += y; count++; }
                 }
             }
 
-            let theta = -Math.atan2(ch, cw);
+            let theta = -Math.PI / 4;
             let meanX = cw / 2, meanY = ch / 2;
             let uMin = -Math.hypot(cw, ch) * 0.4, uMax = Math.hypot(cw, ch) * 0.4;
 
@@ -210,23 +194,17 @@
                 for (let y = 0; y < ch; y++) {
                     for (let x = 0; x < cw; x++) {
                         if (d[(y * cw + x) * 4 + 3] > 140) {
-                            const dx = x - meanX;
-                            const dy = y - meanY;
-                            cxx += dx * dx;
-                            cyy += dy * dy;
-                            cxy += dx * dy;
+                            const dx = x - meanX, dy = y - meanY;
+                            cxx += dx * dx; cyy += dy * dy; cxy += dx * dy;
                         }
                     }
                 }
-                theta = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
-                // دڵنیابوون لەوەی ئاڕاستەکە بەرەو سەرەوەی ڕاستە (سەری دارەکە)
-                if (Math.cos(theta) - Math.sin(theta) < 0) {
-                    theta += Math.PI;
-                }
+                let calcTheta = 0.5 * Math.atan2(2 * cxy, cxx - cyy);
+                if (Math.cos(calcTheta) - Math.sin(calcTheta) < 0) calcTheta += Math.PI;
+                if (Math.abs(Math.sin(calcTheta + Math.PI / 4)) < 0.35) theta = calcTheta;
 
                 const cosT = Math.cos(theta), sinT = Math.sin(theta);
-                uMin = Infinity;
-                uMax = -Infinity;
+                uMin = Infinity; uMax = -Infinity;
                 for (let y = 0; y < ch; y++) {
                     for (let x = 0; x < cw; x++) {
                         if (d[(y * cw + x) * 4 + 3] > 140) {
@@ -239,13 +217,13 @@
             }
 
             const cueLen = Math.max(40, uMax - uMin);
-           const targetLen = 375;
-const scale = targetLen / cueLen;
+            const targetLen = 375;
+            const scale = targetLen / cueLen;
 
-// دانانی دارەکە بە شێوەی ئاسۆیی تەواو: سەری دارەکە لە چەپ (x = 14) و دەسکەکەی لە ڕاست
-const tableCanvas = document.createElement('canvas');
-tableCanvas.width = 410;
-tableCanvas.height = 105;
+            // درێژییەکە وەک خۆی دەمێنێتەوە بەڵام پانییەکەی باریکتر دەکرێتەوە (0.62)
+            const tableCanvas = document.createElement('canvas');
+            tableCanvas.width = 410;
+            tableCanvas.height = 76;
             const tctx = tableCanvas.getContext('2d');
             tctx.imageSmoothingEnabled = true;
             tctx.imageSmoothingQuality = 'high';
@@ -254,8 +232,8 @@ tableCanvas.height = 105;
             const tipYInCell = meanY + uMax * Math.sin(theta);
 
             tctx.translate(14, tableCanvas.height / 2);
+            tctx.scale(scale, scale * 0.62);
             tctx.rotate(Math.PI - theta);
-            tctx.scale(scale, scale);
             tctx.translate(-tipXInCell, -tipYInCell);
             tctx.drawImage(cellCanvas, 0, 0);
 
@@ -654,6 +632,7 @@ tableCanvas.height = 105;
             if (s.cueBallPos) {
                 const cb = getCueBall();
                 if (cb) { cb.x = s.cueBallPos.x; cb.y = s.cueBallPos.y; cb.pocketed = false; }
+                
             }
             aimAngle = s.angle;
             spinX = s.spinX || 0;
@@ -852,12 +831,13 @@ tableCanvas.height = 105;
             foul = true;
             reason = 'فاول! تۆپی سپی کەوتە ناو سەبەتە';
             const cb = getCueBall();
-            if (cb) {
-                cb.pocketed = false;
-                cb.vx = 0; cb.vy = 0;
-                cb.x = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
-                cb.y = TABLE_H / 2;
-            }
+           if (cb) {
+            cb.pocketed = false;
+            cb.sinking = null;
+            cb.vx = 0; cb.vy = 0;
+            cb.x = RAIL_X + (TABLE_W - RAIL_X * 2) * 0.25;
+            cb.y = TABLE_H / 2;
+        }
         } else if (!shotFirstHitBall) {
             foul = true;
             reason = 'فاول! تۆپی سپی بەر هیچ تۆپێک نەکەوت';
@@ -1004,6 +984,7 @@ tableCanvas.height = 105;
                 for (const p of POCKETS) {
                     if (Math.hypot(b.x - p.x, b.y - p.y) < POCKET_R) {
                         b.pocketed = true;
+                        b.sinking = { px: p.x, py: p.y, startX: b.x, startY: b.y, t: 0 };
                         b.vx = 0; b.vy = 0;
                         playSfx('pocket', 0.9);
                         if (b.num === 0) {
@@ -1014,6 +995,7 @@ tableCanvas.height = 105;
                         }
                         break;
                     }
+                }
                 }
                 if (b.pocketed) continue;
 
@@ -1108,7 +1090,27 @@ tableCanvas.height = 105;
         ctx.stroke();
 
         for (const b of balls) {
-            if (!b.pocketed) draw3DBall(b.num, b.x, b.y, BALL_R);
+            if (b.sinking) {
+                b.sinking.t += 0.065;
+                const t = Math.min(1, b.sinking.t);
+                const ease = 1 - Math.pow(1 - t, 2);
+                const sx = b.sinking.startX + (b.sinking.px - b.sinking.startX) * ease;
+                const sy = b.sinking.startY + (b.sinking.py - b.sinking.startY) * ease;
+                const sr = Math.max(2.5, BALL_R * (1 - t * 0.75));
+
+                draw3DBall(b.num, sx, sy, sr);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(sx, sy, sr + 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 0, 0, ${t * 0.88})`;
+                ctx.fill();
+                ctx.restore();
+
+                if (t >= 1) b.sinking = null;
+            } else if (!b.pocketed) {
+                draw3DBall(b.num, b.x, b.y, BALL_R);
+            }
         }
 
         const cb = getCueBall();
