@@ -1191,21 +1191,33 @@
                 b.vx *= Math.pow(friction, 1 / STEPS);
                 b.vy *= Math.pow(friction, 1 / STEPS);
 
-                // ڕاکێشانی لێواری کونەکان (Pocket Gravity Lip)
+                // ڕاکێشانی لێواری کونەکان و کەوتنەخوارەوەی سروشتی (Pocket Lip & Gravity Drop)
                 for (const p of POCKETS) {
                     const pdx = p.x - b.x;
                     const pdy = p.y - b.y;
                     const pDist = Math.hypot(pdx, pdy);
 
-                    if (pDist < POCKET_R + 4 && pDist >= POCKET_R - 1) {
-                        b.vx += (pdx / pDist) * 0.045;
-                        b.vy += (pdy / pDist) * 0.045;
+                    // کاتێک تۆپەکە دەگاتە لێواری کونەکە، بەرەو ناوەوە خلۆر دەبێتەوە
+                    if (pDist < POCKET_R + 3 && pDist >= POCKET_R * 0.56) {
+                        const pull = 0.085 * (1 - pDist / (POCKET_R + 3));
+                        b.vx += (pdx / (pDist || 1)) * pull;
+                        b.vy += (pdy / (pDist || 1)) * pull;
                     }
 
-                    if (pDist < POCKET_R - 1) {
+                    // کاتێک تۆپەکە دەگاتە ناو قووڵایی کونەکە، دەست دەکات بە کەوتنەخوارەوە
+                    if (pDist < POCKET_R * 0.56) {
                         b.pocketed = true;
-                        b.sinking = { px: p.x, py: p.y, startX: b.x, startY: b.y, t: 0 };
-                        b.vx = 0; b.vy = 0;
+                        b.sinking = {
+                            px: p.x,
+                            py: p.y,
+                            startX: b.x,
+                            startY: b.y,
+                            vx: b.vx * 0.35,
+                            vy: b.vy * 0.35,
+                            t: 0
+                        };
+                        b.vx = 0;
+                        b.vy = 0;
                         playSfx('pocket', 0.95);
                         triggerHaptic('pocket', 1);
                         if (b.num === 0) {
@@ -1217,6 +1229,7 @@
                         break;
                     }
                 }
+               
                 if (b.pocketed) continue;
 
                 if (b.x < minX) {
@@ -1367,30 +1380,38 @@
             ctx.fill();
         }
 
-        for (const b of balls) {
-            if (b.sinking) {
-                b.sinking.t += 0.065;
+        if (b.sinking) {
+                b.sinking.t += 0.028;
                 const t = Math.min(1, b.sinking.t);
-                const ease = 1 - Math.pow(1 - t, 2);
-                const sx = b.sinking.startX + (b.sinking.px - b.sinking.startX) * ease;
-                const sy = b.sinking.startY + (b.sinking.py - b.sinking.startY) * ease;
-                const sr = Math.max(2.5, BALL_R * (1 - t * 0.75));
-                b.rollPhase = (b.rollPhase + 0.25) % (Math.PI * 2);
+                // خێرابوونی کەوتنەخوارەوە بەهۆی هێزی کێشکردن (Gravity Acceleration)
+                const gravEase = t * t;
+                const driftDecay = Math.pow(1 - t, 2);
+
+                b.sinking.startX += (b.sinking.vx || 0) * driftDecay;
+                b.sinking.startY += (b.sinking.vy || 0) * driftDecay;
+
+                const sx = b.sinking.startX + (b.sinking.px - b.sinking.startX) * gravEase;
+                const sy = b.sinking.startY + (b.sinking.py - b.sinking.startY) * gravEase;
+                const sr = Math.max(1.8, BALL_R * (1 - gravEase * 0.72));
+                b.rollPhase = (b.rollPhase + 0.16 * (1 - t * 0.4)) % (Math.PI * 2);
+
+                // بڕینی سنووری کونەکە تا تۆپەکە لە قووڵایی کونەکەدا بشاردرێتەوە نەک بەسەر لێوارەکاندا بڕوات
+                ctx.save();
+                ctx.beginPath();
+                ctx.arc(b.sinking.px, b.sinking.py, POCKET_R - 1, 0, Math.PI * 2);
+                ctx.clip();
 
                 draw3DBall(b.num, sx, sy, sr, b);
 
-                ctx.save();
+                // تاریکبوونی پلەبەندی لە کاتی دابەزین بۆ قووڵایی کونەکە
                 ctx.beginPath();
-                ctx.arc(sx, sy, sr + 0.5, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(0, 0, 0, ${t * 0.88})`;
+                ctx.arc(sx, sy, sr + 1, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(0.95, gravEase * 1.05)})`;
                 ctx.fill();
                 ctx.restore();
 
                 if (t >= 1) b.sinking = null;
-            } else if (!b.pocketed) {
-                draw3DBall(b.num, b.x, b.y, BALL_R, b);
             }
-        }
 
         // کێشانی تۆزی گەچ و بریقەی بەرکەوتنی تۆپەکان
         for (const pt of particles) {
