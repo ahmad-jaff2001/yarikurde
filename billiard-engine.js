@@ -92,13 +92,13 @@
     const POCKET_R = 25;
 
     const POCKETS = [
-        { x: 42, y: 46 },
-        { x: TABLE_W / 2, y: 31 },
-        { x: TABLE_W - 42, y: 46 },
-        { x: 42, y: TABLE_H - 46 },
-        { x: TABLE_W / 2, y: TABLE_H - 31 },
-        { x: TABLE_W - 42, y: TABLE_H - 46 }
-    ];
+     { x: 42, y: 46 },
+     { x: TABLE_W / 2, y: 41 },
+     { x: TABLE_W - 42, y: 46 },
+     { x: 42, y: TABLE_H - 46 },
+     { x: TABLE_W / 2, y: TABLE_H - 41 },
+     { x: TABLE_W - 42, y: TABLE_H - 46 }
+ ];
 
     const imageCache = {};
     function getImg(src) {
@@ -1198,14 +1198,14 @@
                     const pDist = Math.hypot(pdx, pdy);
 
                     // کاتێک تۆپەکە دەگاتە لێواری کونەکە، بەرەو ناوەوە خلۆر دەبێتەوە
-                    if (pDist < POCKET_R + 3 && pDist >= POCKET_R * 0.56) {
-                        const pull = 0.085 * (1 - pDist / (POCKET_R + 3));
-                        b.vx += (pdx / (pDist || 1)) * pull;
-                        b.vy += (pdy / (pDist || 1)) * pull;
-                    }
+                 if (pDist < POCKET_R + 4 && pDist >= POCKET_R * 0.82) {
+                     const pull = 0.095 * (1 - pDist / (POCKET_R + 4));
+                     b.vx += (pdx / (pDist || 1)) * pull;
+                     b.vy += (pdy / (pDist || 1)) * pull;
+                 }
 
-                    // کاتێک تۆپەکە دەگاتە ناو قووڵایی کونەکە، دەست دەکات بە کەوتنەخوارەوە
-                    if (pDist < POCKET_R * 0.56) {
+                 // کاتێک تۆپەکە دەگاتە ناو قووڵایی کونەکە، دەست دەکات بە کەوتنەخوارەوە
+                 if (pDist < POCKET_R * 0.82) {
                         b.pocketed = true;
                         b.sinking = {
                             px: p.x,
@@ -1380,10 +1380,10 @@
             ctx.fill();
         }
 
-        if (b.sinking) {
+       for (const b of balls) {
+            if (b.sinking) {
                 b.sinking.t += 0.028;
                 const t = Math.min(1, b.sinking.t);
-                // خێرابوونی کەوتنەخوارەوە بەهۆی هێزی کێشکردن (Gravity Acceleration)
                 const gravEase = t * t;
                 const driftDecay = Math.pow(1 - t, 2);
 
@@ -1395,7 +1395,6 @@
                 const sr = Math.max(1.8, BALL_R * (1 - gravEase * 0.72));
                 b.rollPhase = (b.rollPhase + 0.16 * (1 - t * 0.4)) % (Math.PI * 2);
 
-                // بڕینی سنووری کونەکە تا تۆپەکە لە قووڵایی کونەکەدا بشاردرێتەوە نەک بەسەر لێوارەکاندا بڕوات
                 ctx.save();
                 ctx.beginPath();
                 ctx.arc(b.sinking.px, b.sinking.py, POCKET_R - 1, 0, Math.PI * 2);
@@ -1403,7 +1402,6 @@
 
                 draw3DBall(b.num, sx, sy, sr, b);
 
-                // تاریکبوونی پلەبەندی لە کاتی دابەزین بۆ قووڵایی کونەکە
                 ctx.beginPath();
                 ctx.arc(sx, sy, sr + 1, 0, Math.PI * 2);
                 ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(0.95, gravEase * 1.05)})`;
@@ -1411,7 +1409,10 @@
                 ctx.restore();
 
                 if (t >= 1) b.sinking = null;
+            } else if (!b.pocketed) {
+                draw3DBall(b.num, b.x, b.y, BALL_R, b);
             }
+        }
 
         // کێشانی تۆزی گەچ و بریقەی بەرکەوتنی تۆپەکان
         for (const pt of particles) {
