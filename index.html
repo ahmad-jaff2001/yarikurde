@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>یاری کوردی | Yari Kurdi</title>
+    <link rel="icon" href="images.png/controller.png">
 
     <link rel="preload" as="image" href="images.png/background.png">
-<link rel="preload" as="image" href="images.png/gamer-hero.png">
+    <link rel="preload" as="image" href="images.png/gamer-hero.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -29,15 +30,15 @@
         }
 
         body {
-    background: linear-gradient(to bottom, rgba(5, 3, 15, 0.65), rgba(5, 3, 15, 0.95)), 
-                url('images.png/background.png') no-repeat center top / cover;
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    padding-bottom: 95px;
-}
+            background: linear-gradient(to bottom, rgba(5, 3, 15, 0.65), rgba(5, 3, 15, 0.95)), 
+                        url('images.png/background.png') no-repeat center top / cover;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding-bottom: 95px;
+        }
 
         .app-container {
             width: 100%;
@@ -379,7 +380,7 @@
             z-index: 100;
         }
 
-       .nav-item {
+        .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -407,8 +408,6 @@
             box-shadow: 0 0 20px rgba(255, 184, 0, 0.45), inset 0 0 12px rgba(255, 184, 0, 0.3);
             color: #ffd000;
         }
-
-     
 
         .toast {
             position: fixed;
@@ -440,7 +439,7 @@
                 <div class="brand-logo">
                     <i class="fa-solid fa-crown"></i>
                 </div>
-                <div class="brand-title">یاری <span>کوردی</span></div>
+                <div class="brand-title" id="appMainBrandTitle" data-no-translate="true">یاری <span>کوردی</span></div>
             </div>
 
             <div class="header-actions">
@@ -448,23 +447,26 @@
                     <i class="fa-solid fa-bell"></i>
                     <span class="notif-badge">3</span>
                 </div>
-               <div class="profile-pic" onclick="window.location.href='profile.html'">
+                <div class="profile-pic" onclick="window.location.href='profile.html'">
                     <img id="homeProfileAvatar" src="images.png/controller.png" alt="Profile">
                     <span class="online-dot"></span>
                 </div>
             </div>
         </header>
-<div style="display:flex; gap:10px; align-items:center; justify-content:center; padding:10px;">
-    <div style="display:flex; align-items:center; gap:8px; background:rgba(18,12,42,0.85); border:1.5px solid rgba(255,184,0,0.45); padding:6px 14px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
-       <i class="fa-solid fa-coins" style="color:#ffd000;"></i>
-        <span data-wallet="gold" style="color:#ffd000; font-weight:900; font-size:14px;">5,000</span>
-<button onclick="YariWallet.openStore('gold')" style="background:linear-gradient(135deg,#ffd000,#ff8800); border:none; border-radius:50%; width:20px; height:20px; font-weight:900; color:#1a0f00; cursor:pointer;">+</button>    </div>
-    <div style="display:flex; align-items:center; gap:8px; background:rgba(18,12,42,0.85); border:1.5px solid rgba(56,189,248,0.45); padding:6px 14px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
-        <span style="font-size:16px;">💎</span>
-        <span data-wallet="diamonds" style="color:#38bdf8; font-weight:900; font-size:14px;">50</span>
-        <button onclick="if(YariWallet.exchangeDiamondsToGold(5)) alert('٥ ئەڵماس گۆڕدرا بۆ ٥٠٠ گۆڵد!'); else alert('ئەڵماسی پێویستت نییە!');" style="background:linear-gradient(135deg,#38bdf8,#0284c7); border:none; border-radius:50%; width:20px; height:20px; font-weight:900; color:#fff; cursor:pointer;">+</button>
-    </div>
-</div>
+
+        <div style="display:flex; gap:10px; align-items:center; justify-content:center; padding:10px;">
+            <div style="display:flex; align-items:center; gap:8px; background:rgba(18,12,42,0.85); border:1.5px solid rgba(255,184,0,0.45); padding:6px 14px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+                <i class="fa-solid fa-coins" style="color:#ffd000;"></i>
+                <span data-wallet="gold" style="color:#ffd000; font-weight:900; font-size:14px;">5,000</span>
+                <button onclick="YariWallet.openStore('gold')" style="background:linear-gradient(135deg,#ffd000,#ff8800); border:none; border-radius:50%; width:20px; height:20px; font-weight:900; color:#1a0f00; cursor:pointer;">+</button>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; background:rgba(18,12,42,0.85); border:1.5px solid rgba(56,189,248,0.45); padding:6px 14px; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.5);">
+                <span style="font-size:16px;">💎</span>
+                <span data-wallet="diamonds" style="color:#38bdf8; font-weight:900; font-size:14px;">50</span>
+                <button onclick="if(YariWallet.exchangeDiamondsToGold(5)) alert('٥ ئەڵماس گۆڕدرا بۆ ٥٠٠ گۆڵد!'); else alert('ئەڵماسی پێویستت نییە!');" style="background:linear-gradient(135deg,#38bdf8,#0284c7); border:none; border-radius:50%; width:20px; height:20px; font-weight:900; color:#fff; cursor:pointer;">+</button>
+            </div>
+        </div>
+
         <section class="hero-banner">
             <div class="hero-content">
                 <div class="mic-badge">
@@ -472,7 +474,7 @@
                 </div>
                 <h1 class="hero-title">ژووری <span>گفتوگۆ و دەنگ</span></h1>
                 <p class="hero-sub">قسە بکە • یاری بکە • هاوڕێ بگرە</p>
-              <button class="join-btn" onclick="window.location.href='rooms.html'">
+                <button class="join-btn" onclick="window.location.href='rooms.html'">
                     <span>ئێستا بەشداربە</span>
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
@@ -494,21 +496,22 @@
                     </div>
                 </div>
             </div>
-            <div class="game-card" onclick="openGame('billiard.html', 'بڵیاردی شاهانە')" style="border: 1.5px solid rgba(255, 184, 0, 0.5);">
-    <img src="images.png/Royal-Billiard.png" alt="Billiard" class="bg-img">
-    <div class="card-overlay">
-        <div class="card-top-icon" style="background: linear-gradient(135deg, #ffd000, #ff8800); color: #1a0f00;">
-            <i class="fa-solid fa-crown"></i>
-        </div>
-        <div class="card-footer">
-            <div>
-                <div class="game-name">بڵیاردی شاهانە</div>
-                <div class="game-desc">8 Ball Pool • ١٥ مێز و ئۆنڵاین</div>
+
+            <div class="game-card card-chess" onclick="openGame('billiard.html', 'بڵیاردی شاهانە')">
+                <img src="images.png/Royal-Billiard.png" alt="Billiard" class="bg-img">
+                <div class="card-overlay">
+                    <div class="card-top-icon" style="background: linear-gradient(135deg, #ffd000, #ff8800); color: #1a0f00;">
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+                    <div class="card-footer">
+                        <div>
+                            <div class="game-name">بڵیاردی شاهانە</div>
+                            <div class="game-desc">8 Ball Pool • ١٥ مێز و ئۆنڵاین</div>
+                        </div>
+                        <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
+                    </div>
+                </div>
             </div>
-            <div class="play-arrow"><i class="fa-solid fa-chevron-left"></i></div>
-        </div>
-    </div>
-</div>
 
             <div class="game-card card-domino" onclick="openGame('domino.html', 'دۆمینە')">
                 <img src="images.png/domino.jpg" alt="Dominoes" class="bg-img">
@@ -538,7 +541,7 @@
                 </div>
             </div>
 
-          <div class="game-card card-domino" onclick="openGame('okay.html', 'ئۆکەی')">
+            <div class="game-card card-domino" onclick="openGame('okay.html', 'ئۆکەی')">
                 <img src="images.png/okay.png" alt="ئۆکەی" class="bg-img">
                 <div class="card-overlay">
                     <div class="card-top-icon"><i class="fa-solid fa-crown"></i></div>
@@ -552,7 +555,7 @@
                 </div>
             </div>
 
-      <div class="game-card card-halo" onclick="openGame('halo-game.html', 'یاری هەڵۆ')">
+            <div class="game-card card-halo" onclick="openGame('halo-game.html', 'یاری هەڵۆ')">
                 <img src="images.png/hallo.png" alt="یاری هەڵۆ" class="bg-img">
                 <div class="card-overlay">
                     <div class="card-top-icon"><i class="fa-solid fa-feather-pointed"></i></div>
@@ -579,18 +582,20 @@
         </div>
 
         <a href="#" class="nav-item" id="ykNavChatTrigger">
-    <i class="fa-solid fa-paper-plane"></i>
-    <span class="nav-text">نامەکان</span>
-</a>
-        </div>
+            <i class="fa-solid fa-paper-plane"></i>
+            <span class="nav-text">نامەکان</span>
+        </a>
+
         <div class="nav-item" onclick="setActiveNav(this, 'ڕیزبەندی')">
             <i class="fa-solid fa-trophy"></i>
             <span>ڕیزبەندی</span>
         </div>
+
         <div class="nav-item" onclick="setActiveNav(this, 'هاوڕێکان')">
             <i class="fa-solid fa-user-group"></i>
             <span>هاوڕێکان</span>
         </div>
+
         <div class="nav-item" onclick="setActiveNav(this, 'ڕێکخستن')">
             <i class="fa-solid fa-gear"></i>
             <span>ڕێکخستن</span>
@@ -606,13 +611,21 @@
                 toast.classList.remove('show');
             }, 2500);
         }
-function openGame(fileUrl, gameName) {
-    if (fileUrl === 'ludo.html' || fileUrl === 'chess.html' || fileUrl === 'domino.html' || fileUrl === 'okay.html' || fileUrl === 'halo-game.html') {
-        window.location.href = fileUrl;
-    } else {
-        showMessage(`ئامادەکردنی یاری ${gameName}...`);
-    }
-}
+
+        function openGame(fileUrl, gameName) {
+            if (
+                fileUrl === 'billiard.html' ||
+                fileUrl === 'ludo.html' ||
+                fileUrl === 'chess.html' ||
+                fileUrl === 'domino.html' ||
+                fileUrl === 'okay.html' ||
+                fileUrl === 'halo-game.html'
+            ) {
+                window.location.href = fileUrl;
+            } else {
+                showMessage(`ئامادەکردنی یاری ${gameName}...`);
+            }
+        }
 
         function setActiveNav(element, tabName) {
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -621,38 +634,55 @@ function openGame(fileUrl, gameName) {
                 showMessage(`بەشی ${tabName}`);
             }
         }
-        function syncHomeProfileAvatar() {
-    const savedAvatar = localStorage.getItem('yk_player_avatar');
-    const avatarImg = document.getElementById('homeProfileAvatar');
-    if (savedAvatar && avatarImg) {
-        avatarImg.src = savedAvatar;
-    }
-}
-syncHomeProfileAvatar();
-window.addEventListener('pageshow', syncHomeProfileAvatar);
-    </script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-<script src="online-engine.js"></script>
-<script src="auth-engine.js"></script>
-<script src="wallet-engine.js"></script>
-<script src="admin-engine.js"></script>
-<script src="settings-engine.js"></script>
-<script src="friends-engine.js"></script>
-<script src="chat-engine.js"></script>
-<script>
-    window.addEventListener('pagehide', function () {
-        if (window.firebase && firebase.apps && firebase.apps.length) {
-            try { firebase.database().goOffline(); } catch (e) {}
-        }
-    });
 
-    window.addEventListener('pageshow', function (event) {
-        if (event.persisted && window.firebase && firebase.apps && firebase.apps.length) {
-            try { firebase.database().goOnline(); } catch (e) {}
+        function syncHomeProfileAvatar() {
+            const savedAvatar = localStorage.getItem('yk_player_avatar');
+            const avatarImg = document.getElementById('homeProfileAvatar');
+            if (savedAvatar && avatarImg) {
+                avatarImg.src = savedAvatar;
+            }
         }
-    });
-</script>
+        syncHomeProfileAvatar();
+        window.addEventListener('pageshow', syncHomeProfileAvatar);
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="online-engine.js"></script>
+    <script src="auth-engine.js"></script>
+    <script src="wallet-engine.js"></script>
+    <script src="admin-engine.js"></script>
+    <script src="settings-engine.js"></script>
+    <script src="friends-engine.js"></script>
+    <script src="chat-engine.js"></script>
+
+    <script>
+        // پاراستنی ناوی «یاری کوردی» لە گۆڕینی خۆکار
+        (function lockBrandTitle() {
+            const el = document.getElementById('appMainBrandTitle');
+            if (!el) return;
+            const correctHTML = 'یاری <span>کوردی</span>';
+            el.innerHTML = correctHTML;
+            const obs = new MutationObserver(() => {
+                if (el.innerHTML !== correctHTML) {
+                    el.innerHTML = correctHTML;
+                }
+            });
+            obs.observe(el, { childList: true, subtree: true, characterData: true });
+        })();
+
+        window.addEventListener('pagehide', function () {
+            if (window.firebase && firebase.apps && firebase.apps.length) {
+                try { firebase.database().goOffline(); } catch (e) {}
+            }
+        });
+
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted && window.firebase && firebase.apps && firebase.apps.length) {
+                try { firebase.database().goOnline(); } catch (e) {}
+            }
+        });
+    </script>
 </body>
 </html>
