@@ -744,7 +744,8 @@
     <script src="online-engine.js"></script>
     <script src="ludo-engine.js"></script>
     <script>
-       function formatLobbyNum(n) {
+       
+        function formatLobbyNum(n) {
             if (window.formatCompactNumber) return window.formatCompactNumber(n);
             n = Number(n) || 0;
             if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -752,63 +753,98 @@
             return String(n);
         }
 
-        function syncLobbyProfileUI() {
-            const uid = localStorage.getItem('yk_player_uid');
-            const aEl = document.getElementById('lobbyPlayerAvatar');
-            const lEl = document.getElementById('lobbyPlayerLevel');
+        function updateLobbyCountersFromStorage() {
             const gEl = document.getElementById('lobbyGoldTxt');
             const dEl = document.getElementById('lobbyDiamondTxt');
-            const xpBar = document.getElementById('lobbyXpBar');
+            const aEl = document.getElementById('lobbyPlayerAvatar');
+            const lEl = document.getElementById('lobbyPlayerLevel');
 
+            // خوێندنەوەی ئەڤاتار و ئاست
             const cachedAvatar = localStorage.getItem('yk_player_avatar');
             const cachedLvl = parseInt(localStorage.getItem('yk_player_level') || '1', 10);
             if (aEl && cachedAvatar) aEl.src = cachedAvatar;
             if (lEl) lEl.textContent = cachedLvl;
 
+            // خوێندنەوەی گۆڵد و ئەڵماس لە هەموو سەرچاوە ناوخۆییەکان (YariWallet یان localStorage)
+            let goldVal = Number(localStorage.getItem('yk_gold') || localStorage.getItem('yk_player_gold') || 0);
+            let diaVal = Number(localStorage.getItem('yk_diamonds') || localStorage.getItem('yk_player_diamonds') || 0);
+
             if (window.YariWallet) {
-                if (typeof YariWallet.getGold === 'function' && gEl) {
-                    gEl.textContent = formatLobbyNum(YariWallet.getGold());
-                } else if (YariWallet.gold !== undefined && gEl) {
-                    gEl.textContent = formatLobbyNum(YariWallet.gold);
+                if (typeof YariWallet.getBalance === 'function') {
+                    const bal = YariWallet.getBalance();
+                    if (bal) {
+                        if (bal.gold !== undefined) goldVal = Number(bal.gold);
+                        if (bal.diamonds !== undefined) diaVal = Number(bal.diamonds);
+                    }
                 }
-                if (typeof YariWallet.getDiamonds === 'function' && dEl) {
-                    dEl.textContent = formatLobbyNum(YariWallet.getDiamonds());
-                } else if (YariWallet.diamonds !== undefined && dEl) {
-                    dEl.textContent = formatLobbyNum(YariWallet.diamonds);
-                }
+                if (YariWallet.gold !== undefined) goldVal = Number(YariWallet.gold);
+                if (YariWallet.diamonds !== undefined) diaVal = Number(YariWallet.diamonds);
             }
 
-            if (window.firebase && firebase.apps && firebase.apps.length && uid) {
-                firebase.database().ref(`players/${uid}`).on('value', snap => {
-                    const p = snap.val();
-                    if (!p) return;
+            if (gEl) gEl.textContent = formatLobbyNum(goldVal);
+            if (dEl) dEl.textContent = formatLobbyNum(diaVal);
+        }
 
-                    if (p.avatar) {
-                        localStorage.setItem('yk_player_avatar', p.avatar);
-                        if (aEl) aEl.src = p.avatar;
-                    }
-                    if (p.name) {
-                        localStorage.setItem('yk_player_name', p.name);
-                    }
+        let lobbyFirebaseBound = false;
+        function syncLobbyProfileUI() {
+            updateLobbyCountersFromStorage();
 
-                    const xp = Number(p.xp) || 0;
-                    const level = p.level || Math.max(1, Math.floor(xp / 250) + 1);
-                    localStorage.setItem('yk_player_level', String(level));
-                    if (lEl) lEl.textContent = level;
+            // چاوەڕێکردن تا Firebase بە تەواوی ئامادە دەبێت پاشان پەیوەستکردنی ڕاستەوخۆ بە پڕۆفایلەکەتەوە
+            const tryBindFirebase = setInterval(() => {
+                if (lobbyFirebaseBound) {
+                    clearInterval(tryBindFirebase);
+                    return;
+                }
 
-                    if (xpBar) {
-                        const pct = Math.min(100, Math.max(12, ((xp % 250) / 250) * 100));
-                        xpBar.style.width = `${pct}%`;
-                    }
+                const uid = localStorage.getItem('yk_player_uid');
+                const db = window.ykDB || (window.firebase && firebase.apps && firebase.apps.length ? firebase.database() : null);
 
-                    if (p.gold !== undefined && gEl) {
-                        gEl.textContent = formatLobbyNum(p.gold);
-                    }
-                    if (p.diamonds !== undefined && dEl) {
-                        dEl.textContent = formatLobbyNum(p.diamonds);
-                    }
-                });
-            }
+                if (db && uid) {
+                    lobbyFirebaseBound = true;
+                    clearInterval(tryBindFirebase);
+
+                    db.ref(`players/${uid}`).on('value', snap => {
+                        const p = snap.val();
+                        if (!p) return;
+
+                        const aEl = document.getElementById('lobbyPlayerAvatar');
+                        const lEl = document.getElementById('lobbyPlayerLevel');
+                        const gEl = document.getElementById('lobbyGoldTxt');
+                        const dEl = document.getElementById('lobbyDiamondTxt');
+                        const xpBar = document.getElementById('lobbyXpBar');
+
+                        if (p.avatar) {
+                            localStorage.setItem('yk_player_avatar', p.avatar);
+                            if (aEl) aEl.src = p.avatar;
+                        }
+                        if (p.name) {
+                            localStorage.setItem('yk_player_name', p.name);
+                        }
+
+                        const xp = Number(p.xp) || 0;
+                        const level = p.level || Math.max(1, Math.floor(xp / 250) + 1);
+                        localStorage.setItem('yk_player_level', String(level));
+                        if (lEl) lEl.textContent = level;
+
+                        if (xpBar) {
+                            const pct = Math.min(100, Math.max(12, ((xp % 250) / 250) * 100));
+                            xpBar.style.width = `${pct}%`;
+                        }
+
+                        if (p.gold !== undefined) {
+                            localStorage.setItem('yk_gold', String(p.gold));
+                            if (gEl) gEl.textContent = formatLobbyNum(p.gold);
+                        }
+                        if (p.diamonds !== undefined) {
+                            localStorage.setItem('yk_diamonds', String(p.diamonds));
+                            if (dEl) dEl.textContent = formatLobbyNum(p.diamonds);
+                        }
+                    });
+                }
+            }, 300);
+
+            // نوێکردنەوەی بەردەوام لە کاتی کڕینی گۆڵد یان ئەڵماس لە ناو لۆبییەکەدا
+            setInterval(updateLobbyCountersFromStorage, 1500);
         }
 
         function openLudoModeModal(cardType) {
