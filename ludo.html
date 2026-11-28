@@ -190,8 +190,8 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* =========================================================
-           شاشەی هەڵبژاردنی شێوازی یاری (ludo-mode-select.jpg)
+       /* =========================================================
+           شاشەی هەڵبژاردنی شێوازی یاری (ludo-mode-select-clean.jpg)
            ========================================================= */
         .mode-visual-backdrop {
             position: fixed;
@@ -210,18 +210,17 @@
             width: 100%;
             height: 100dvh;
             max-width: 480px;
-            background: url('images.png/ludo-mode-select.jpg') no-repeat center center / 100% 100%;
+            background: url('images.png/ludo-mode-select-clean.jpg') no-repeat center center / 100% 100%;
             box-shadow: 0 0 60px rgba(0, 0, 0, 0.96);
             overflow: hidden;
         }
 
-        /* دوگمەی داخستن ✕ */
         .ms-close-btn {
             position: absolute;
-            top: 1.8%;
-            right: 2.8%;
+            top: 1.5%;
+            right: 2.5%;
             width: 12.5%;
-            height: 7.2%;
+            height: 7.0%;
             background: transparent;
             border: none;
             border-radius: 14px;
@@ -230,10 +229,9 @@
         }
         .ms-close-btn:active { transform: scale(0.9); }
 
-        /* هەڵبژاردنی بۆت یان ئۆنڵاین لە سەرەوەی لای چەپ */
         .ms-opponent-switch {
             position: absolute;
-            top: 2.5%;
+            top: 2.2%;
             left: 3.5%;
             display: inline-flex;
             background: rgba(7, 25, 72, 0.92);
@@ -263,29 +261,27 @@
             font-weight: 900;
         }
 
-        /* کارتەکانی ٢ یاریزان و ٤ یاریزان */
+        /* کارتەکانی ٢ یاریزان و ٤ یاریزان (بێ هیچ سێبەرێکی ناشرین) */
         .ms-player-card {
             position: absolute;
-            top: 8.5%;
-            width: 37.5%;
+            top: 8.6%;
+            width: 37.2%;
             height: 24.5%;
             border-radius: 18px;
-            background: rgba(4, 14, 44, 0.42);
-            border: 2px solid transparent;
+            background: transparent;
+            border: 2.5px solid transparent;
             cursor: pointer;
             z-index: 20;
             transition: all 0.16s ease;
         }
 
         .ms-player-card.selected {
-            background: transparent;
-            border: 2.5px solid #ffd000;
-            box-shadow: 0 0 24px rgba(255, 208, 0, 0.85), inset 0 0 14px rgba(255, 208, 0, 0.3);
+            border-color: #ffd000;
+            box-shadow: 0 0 24px rgba(255, 208, 0, 0.9), inset 0 0 14px rgba(255, 208, 0, 0.25);
         }
 
         .ms-player-card:active { transform: scale(0.96); }
 
-        /* دوگمەی پرسیار ? */
         .ms-help-btn {
             position: absolute;
             width: 7.5%;
@@ -298,23 +294,22 @@
         }
         .ms-help-btn:active { transform: scale(0.88); }
 
-        /* ٤ دوگمەی شێوازی یاری (کلاسیک، تیر، خێرا، مامۆستا) */
+        /* ٤ دوگمەی شێوازی یاری */
         .ms-style-btn {
             position: absolute;
             width: 36.2%;
             height: 7.6%;
             border-radius: 14px;
-            background: rgba(4, 14, 44, 0.36);
-            border: 2px solid transparent;
+            background: transparent;
+            border: 2.5px solid transparent;
             cursor: pointer;
             z-index: 20;
             transition: all 0.15s ease;
         }
 
         .ms-style-btn.selected {
-            background: rgba(255, 208, 0, 0.08);
-            border: 2.5px solid #ffd000;
-            box-shadow: 0 0 18px rgba(255, 208, 0, 0.75);
+            border-color: #ffd000;
+            box-shadow: 0 0 18px rgba(255, 208, 0, 0.8), inset 0 0 10px rgba(255, 208, 0, 0.2);
         }
 
         .ms-style-btn.selected::after {
@@ -336,7 +331,7 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.6);
         }
 
-        /* بەشی زاری جادوویی */
+        /* زاری جادوویی (سەحی سەوز لە ناو چوارگۆشە بەتاڵەکەدا) */
         .ms-magic-toggle {
             position: absolute;
             top: 67.2%;
@@ -347,59 +342,61 @@
             border: none;
             border-radius: 16px;
             cursor: pointer;
-            z-index: 20;
+            z-index: 22;
         }
 
-        .ms-magic-uncheck-cover {
+        .ms-magic-check-mark {
             position: absolute;
-            top: 68.4%;
+            top: 68.5%;
             left: 12.3%;
             width: 10.2%;
-            height: 5.2%;
-            border-radius: 10px;
-            background: linear-gradient(180deg, #0b2a6e, #061844);
-            border: 2px solid #ffd000;
-            z-index: 19;
+            height: 5.1%;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #22c55e, #15803d);
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 12px rgba(34, 197, 94, 0.7);
+            z-index: 20;
             pointer-events: none;
+            transition: opacity 0.15s ease, transform 0.15s ease;
         }
 
-        /* بەشی کەم و زیادکردنی گرەو (- / 500 / +) */
+        /* کەم و زیادکردنی گرەو لە ناو بۆشاییە پاکەکەی تەنیشت سکەکە */
         .ms-bet-step-btn {
             position: absolute;
-            top: 77.9%;
+            top: 78.0%;
             width: 10.2%;
-            height: 5.4%;
+            height: 5.3%;
             background: transparent;
             border: none;
             border-radius: 10px;
             cursor: pointer;
             z-index: 25;
         }
-        .ms-bet-step-btn:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.2);
-        }
+        .ms-bet-step-btn:active { transform: scale(0.9); }
 
         .ms-bet-display {
             position: absolute;
-            top: 78.3%;
-            left: 46.2%;
-            width: 24.5%;
-            height: 4.6%;
-            background: linear-gradient(180deg, #0b3382 0%, #06215c 100%);
-            border-radius: 10px;
+            top: 78.0%;
+            left: 46.5%;
+            width: 28.0%;
+            height: 5.3%;
+            background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 19px;
+            font-size: 21px;
             font-weight: 900;
             color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.95), 0 0 10px rgba(255, 208, 0, 0.45);
             z-index: 20;
             pointer-events: none;
         }
 
-        /* دوگمەی دەستپێکردن */
         .ms-start-btn {
             position: absolute;
             top: 86.8%;
@@ -849,7 +846,7 @@
             <button id="msStyleMaster" class="ms-style-btn" style="top: 55.6%; left: 51.6%;" onclick="selectVisualStyle('master')" aria-label="مامۆستا"></button>
 
             <!-- زاری جادوویی -->
-            <div id="msMagicUncheckCover" class="ms-magic-uncheck-cover hidden"></div>
+            <div id="msMagicCheckMark" class="ms-magic-check-mark">✓</div>
             <button class="ms-magic-toggle" onclick="toggleVisualMagicDice()" aria-label="زاری جادوویی"></button>
             <button class="ms-help-btn" style="top: 68.8%; left: 82.5%;" onclick="openLudoInfoModal('✨ زاری جادوویی', 'کاتێک زاری جادوویی چالاک بێت، لە ناو یارییەکەدا توانای تایبەتت دەبێت بۆ هەڵبژاردنی ژمارەی دڵخواز یان پاراستنی داشەکانت!')" aria-label="زانیاری زاری جادوویی"></button>
 
@@ -1029,10 +1026,10 @@
             document.getElementById('msStyleMaster')?.classList.toggle('selected', cfg.style === 'master');
 
             // زاری جادوویی
-            const uncheckCover = document.getElementById('msMagicUncheckCover');
-            if (uncheckCover) {
-                uncheckCover.classList.toggle('hidden', cfg.magicDice);
-            }
+           const checkMark = document.getElementById('msMagicCheckMark');
+if (checkMark) {
+    checkMark.classList.toggle('hidden', !cfg.magicDice);
+}
 
             // بڕی گرەو
             const betVal = LUDO_BET_LEVELS[cfg.betIndex] || 500;
