@@ -766,8 +766,16 @@
             if (lEl) lEl.textContent = cachedLvl;
 
             if (window.YariWallet) {
-                if (gEl) gEl.textContent = formatLobbyNum(YariWallet.getGold());
-                if (dEl) dEl.textContent = formatLobbyNum(YariWallet.getDiamonds());
+                if (typeof YariWallet.getGold === 'function' && gEl) {
+                    gEl.textContent = formatLobbyNum(YariWallet.getGold());
+                } else if (YariWallet.gold !== undefined && gEl) {
+                    gEl.textContent = formatLobbyNum(YariWallet.gold);
+                }
+                if (typeof YariWallet.getDiamonds === 'function' && dEl) {
+                    dEl.textContent = formatLobbyNum(YariWallet.getDiamonds());
+                } else if (YariWallet.diamonds !== undefined && dEl) {
+                    dEl.textContent = formatLobbyNum(YariWallet.diamonds);
+                }
             }
 
             if (window.firebase && firebase.apps && firebase.apps.length && uid) {
