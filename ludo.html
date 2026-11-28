@@ -72,12 +72,7 @@
             overflow: hidden;
         }
 
-        /* شاردنەوەی شریتە ڕەشەکەی XP بۆ ئەوەی شریتەکەی ناو وێنەکە دەربکەوێت */
-        .hud-xp-fill, .hud-xp-fill-bar {
-            display: none !important;
-        }
-
-       /* ئەڤاتاری یاریزان ڕێک لە ناو بازنە زێڕینەکە */
+        /* ئەڤاتاری یاریزان ڕێک لە ناو بازنە زێڕینەکە */
         .hud-avatar-overlay {
             position: absolute;
             top: 0.75%;
@@ -98,7 +93,7 @@
             display: block;
         }
 
-        /* ژمارەی ئاست ڕێک لە ناوەڕاستی ئەستێرەکە (داپۆشینی ژمارە 1ـی وێنەکە) */
+        /* ژمارەی ئاست ڕێک لە ناوەڕاستی ئەستێرە زەردەکە */
         .hud-level-overlay {
             position: absolute;
             top: 1.95%;
@@ -195,13 +190,241 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* پەنجەرەی هەڵبژاردنی مۆد */
+        /* =========================================================
+           شاشەی هەڵبژاردنی شێوازی یاری (ludo-mode-select.jpg)
+           ========================================================= */
+        .mode-visual-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 15, 42, 0.94);
+            backdrop-filter: blur(8px);
+            z-index: 6000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.22s ease;
+        }
+
+        .mode-visual-stage {
+            position: relative;
+            width: 100%;
+            height: 100dvh;
+            max-width: 480px;
+            background: url('images.png/ludo-mode-select.jpg') no-repeat center center / 100% 100%;
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.96);
+            overflow: hidden;
+        }
+
+        /* دوگمەی داخستن ✕ */
+        .ms-close-btn {
+            position: absolute;
+            top: 1.8%;
+            right: 2.8%;
+            width: 12.5%;
+            height: 7.2%;
+            background: transparent;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            z-index: 30;
+        }
+        .ms-close-btn:active { transform: scale(0.9); }
+
+        /* هەڵبژاردنی بۆت یان ئۆنڵاین لە سەرەوەی لای چەپ */
+        .ms-opponent-switch {
+            position: absolute;
+            top: 2.5%;
+            left: 3.5%;
+            display: inline-flex;
+            background: rgba(7, 25, 72, 0.92);
+            border: 1.8px solid #ffd000;
+            border-radius: 16px;
+            padding: 3px;
+            gap: 3px;
+            z-index: 30;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+        }
+
+        .ms-opp-opt {
+            background: transparent;
+            border: none;
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 5px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .ms-opp-opt.active {
+            background: linear-gradient(135deg, #ffd000, #f59e0b);
+            color: #271300;
+            font-weight: 900;
+        }
+
+        /* کارتەکانی ٢ یاریزان و ٤ یاریزان */
+        .ms-player-card {
+            position: absolute;
+            top: 8.5%;
+            width: 37.5%;
+            height: 24.5%;
+            border-radius: 18px;
+            background: rgba(4, 14, 44, 0.42);
+            border: 2px solid transparent;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.16s ease;
+        }
+
+        .ms-player-card.selected {
+            background: transparent;
+            border: 2.5px solid #ffd000;
+            box-shadow: 0 0 24px rgba(255, 208, 0, 0.85), inset 0 0 14px rgba(255, 208, 0, 0.3);
+        }
+
+        .ms-player-card:active { transform: scale(0.96); }
+
+        /* دوگمەی پرسیار ? */
+        .ms-help-btn {
+            position: absolute;
+            width: 7.5%;
+            height: 4.5%;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 25;
+        }
+        .ms-help-btn:active { transform: scale(0.88); }
+
+        /* ٤ دوگمەی شێوازی یاری (کلاسیک، تیر، خێرا، مامۆستا) */
+        .ms-style-btn {
+            position: absolute;
+            width: 36.2%;
+            height: 7.6%;
+            border-radius: 14px;
+            background: rgba(4, 14, 44, 0.36);
+            border: 2px solid transparent;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.15s ease;
+        }
+
+        .ms-style-btn.selected {
+            background: rgba(255, 208, 0, 0.08);
+            border: 2.5px solid #ffd000;
+            box-shadow: 0 0 18px rgba(255, 208, 0, 0.75);
+        }
+
+        .ms-style-btn.selected::after {
+            content: '✓';
+            position: absolute;
+            top: -10px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fde047, #d97706);
+            border: 2px solid #fffbeb;
+            color: #451a03;
+            font-size: 13px;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+        }
+
+        /* بەشی زاری جادوویی */
+        .ms-magic-toggle {
+            position: absolute;
+            top: 67.2%;
+            left: 7.0%;
+            width: 74.0%;
+            height: 7.4%;
+            background: transparent;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        .ms-magic-uncheck-cover {
+            position: absolute;
+            top: 68.4%;
+            left: 12.3%;
+            width: 10.2%;
+            height: 5.2%;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #0b2a6e, #061844);
+            border: 2px solid #ffd000;
+            z-index: 19;
+            pointer-events: none;
+        }
+
+        /* بەشی کەم و زیادکردنی گرەو (- / 500 / +) */
+        .ms-bet-step-btn {
+            position: absolute;
+            top: 77.9%;
+            width: 10.2%;
+            height: 5.4%;
+            background: transparent;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 25;
+        }
+        .ms-bet-step-btn:active {
+            transform: scale(0.9);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .ms-bet-display {
+            position: absolute;
+            top: 78.3%;
+            left: 46.2%;
+            width: 24.5%;
+            height: 4.6%;
+            background: linear-gradient(180deg, #0b3382 0%, #06215c 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* دوگمەی دەستپێکردن */
+        .ms-start-btn {
+            position: absolute;
+            top: 86.8%;
+            left: 14.0%;
+            width: 72.0%;
+            height: 9.8%;
+            background: transparent;
+            border: none;
+            border-radius: 28px;
+            cursor: pointer;
+            z-index: 25;
+            transition: transform 0.14s ease;
+        }
+        .ms-start-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 28px rgba(255, 208, 0, 0.85);
+        }
+
+        /* پەنجەرەی ئاگادارکردنەوە و ڕوونکردنەوەی بچووک */
         .sub-modal-backdrop {
             position: fixed;
             inset: 0;
             background: rgba(3, 18, 45, 0.84);
             backdrop-filter: blur(10px);
-            z-index: 6000;
+            z-index: 7000;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -217,30 +440,6 @@
             padding: 20px;
             box-shadow: 0 22px 55px rgba(0, 0, 0, 0.9);
             text-align: center;
-        }
-
-        .mode-choice-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 14px 0;
-        }
-
-        .mode-choice-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 2px solid rgba(255, 208, 0, 0.45);
-            border-radius: 18px;
-            padding: 14px 10px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .mode-choice-btn:active { transform: scale(0.95); }
-        .mode-choice-btn.active {
-            background: rgba(255, 208, 0, 0.22);
-            border-color: #ffd000;
-            box-shadow: 0 0 18px rgba(255, 208, 0, 0.35);
         }
 
         /* =========================================================
@@ -607,44 +806,72 @@
             <button class="hud-plus-hitbox" style="left: 92%;" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')" aria-label="زیادکردنی ئەڵماس"></button>
 
             <!-- ٥ دوگمە نادیارەکەی سەر کارتەکانی ناوەڕاست -->
-            <button class="hotspot-card" style="top: 37.5%; left: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('24players')" aria-label="٢ و ٤ یاریزان"></button>
-            <button class="hotspot-card" style="top: 37.5%; right: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('team')" aria-label="تیپ"></button>
-            <button class="hotspot-card" style="top: 63.5%; left: 8.5%; width: 26%; height: 18%;" onclick="openLudoModeModal('tournament')" aria-label="پاڵەوانێتی"></button>
-            <button class="hotspot-card" style="top: 63.5%; left: 37%; width: 26%; height: 18%;" onclick="openLudoModeModal('private')" aria-label="ژووری تایبەت"></button>
-            <button class="hotspot-card" style="top: 63.5%; right: 8.5%; width: 26%; height: 18%;" onclick="openLudoModeModal('vip')" aria-label="ژووری VIP"></button>
+            <button class="hotspot-card" style="top: 37.5%; left: 10%; width: 38.5%; height: 24%;" onclick="openVisualModeSelector()" aria-label="٢ و ٤ یاریزان"></button>
+            <button class="hotspot-card" style="top: 37.5%; right: 10%; width: 38.5%; height: 24%;" onclick="openLudoInfoModal('⚔️ یاری تیپ (2v2)', 'ئەم بەشە (٢ بەرامبەر ٢ لەگەڵ هاوڕێکەت) لە قۆناغی داهاتوودا دەخرێتە ئیش.')" aria-label="تیپ"></button>
+            <button class="hotspot-card" style="top: 63.5%; left: 8.5%; width: 26%; height: 18%;" onclick="openLudoInfoModal('🏆 پاڵەوانێتی شاهانە', 'پاڵەوانێتی ٨ یاریزانی بۆ بردنەوەی جامی زێڕین لە قۆناغی داهاتوودا دەکرێتەوە.')" aria-label="پاڵەوانێتی"></button>
+            <button class="hotspot-card" style="top: 63.5%; left: 37%; width: 26%; height: 18%;" onclick="startDirectOnlineMode()" aria-label="ژووری تایبەت"></button>
+            <button class="hotspot-card" style="top: 63.5%; right: 8.5%; width: 26%; height: 18%;" onclick="openVisualModeSelector(5000)" aria-label="ژووری VIP"></button>
 
             <!-- ٥ دوگمە نادیارەکەی سەر شریتی خوارەوە -->
-            <button class="dock-hotspot" style="left: 2%; width: 17%;" onclick="showLudoLobbyNotice('🎁 بەشی چالاکی و خەڵاتە ڕۆژانەکان بەمزووانە دەکرێتەوە!')" aria-label="چالاکی"></button>
-            <button class="dock-hotspot" style="left: 20.5%; width: 17%;" onclick="showLudoLobbyNotice('🎲 کۆگای زار و پولە شاهانەکان لە قۆناغی داهاتوو دەکرێتەوە!')" aria-label="کۆگا"></button>
-            <button class="dock-hotspot" style="left: 39%; width: 22%; height: 14%;" onclick="openLudoModeModal('24players')" aria-label="یاری خێرا"></button>
+            <button class="dock-hotspot" style="left: 2%; width: 17%;" onclick="openLudoInfoModal('✨ چالاکی ڕۆژانە', '🎁 بەشی چالاکی و خەڵاتە ڕۆژانەکان بەمزووانە دەکرێتەوە!')" aria-label="چالاکی"></button>
+            <button class="dock-hotspot" style="left: 20.5%; width: 17%;" onclick="openLudoInfoModal('🎲 کۆگای شاهانە', '🎲 کۆگای زار و پولە شاهانەکان لە قۆناغی داهاتوو دەکرێتەوە!')" aria-label="کۆگا"></button>
+            <button class="dock-hotspot" style="left: 39%; width: 22%; height: 14%;" onclick="openVisualModeSelector()" aria-label="یاری خێرا"></button>
             <button class="dock-hotspot" style="left: 62.5%; width: 17%;" onclick="window.location.href='voice-room.html'" aria-label="ژووری دەنگی"></button>
             <button class="dock-hotspot" style="right: 2%; width: 17%;" onclick="window.location.href='index.html'" aria-label="هاوڕێیان"></button>
         </div>
     </section>
 
-    <!-- پەنجەرەی هەڵبژاردنی مۆد لە لۆبییەکەدا -->
+    <!-- =========================================================
+         قۆناغی ٢: شاشەی هەڵبژاردنی ٢ و ٤ یاریزان (ludo-mode-select.jpg)
+         ========================================================= -->
+    <section id="ludoVisualModeScreen" class="mode-visual-backdrop hidden">
+        <div class="mode-visual-stage">
+            <!-- دوگمەی داخستن ✕ -->
+            <button class="ms-close-btn" onclick="closeVisualModeSelector()" aria-label="داخستن"></button>
+
+            <!-- هەڵبژاردنی جۆری ڕکابەر (بۆت یان ئۆنڵاین) -->
+            <div class="ms-opponent-switch">
+                <button id="msOppBot" class="ms-opp-opt active" onclick="setVisualOpponent('bot')">🤖 دژی بۆت</button>
+                <button id="msOppOnline" class="ms-opp-opt" onclick="setVisualOpponent('online')">🌍 ئۆنڵاین</button>
+            </div>
+
+            <!-- ٢ یاریزان (چەپ) و ٤ یاریزان (ڕاست) -->
+            <button id="msCard2P" class="ms-player-card selected" style="left: 10.5%;" onclick="selectVisualPlayers(2)" aria-label="٢ یاریزان"></button>
+            <button id="msCard4P" class="ms-player-card" style="left: 52.0%;" onclick="selectVisualPlayers(4)" aria-label="٤ یاریزان"></button>
+
+            <!-- دوگمەی ? بۆ شێوازی یاری -->
+            <button class="ms-help-btn" style="top: 39.2%; left: 82.0%;" onclick="openLudoInfoModal('🎲 شێوازەکانی یاری', '• کلاسیک: یاسای ڕەسەنی لۆدۆ.\n• تیر: جووڵەی خێرا و هێرشبردن.\n• خێرا: تەنها یەک تاج بەسە بۆ بردنەوە.\n• مامۆستا: یاری ستراتیژی و پڕۆفیشناڵ.')" aria-label="زانیاری شێوازی یاری"></button>
+
+            <!-- ٤ دوگمەی شێوازی یاری -->
+            <button id="msStyleClassic" class="ms-style-btn selected" style="top: 46.2%; left: 12.2%;" onclick="selectVisualStyle('classic')" aria-label="کلاسیک"></button>
+            <button id="msStyleArrow" class="ms-style-btn" style="top: 46.2%; left: 51.6%;" onclick="selectVisualStyle('arrow')" aria-label="تیر"></button>
+            <button id="msStyleQuick" class="ms-style-btn" style="top: 55.6%; left: 12.2%;" onclick="selectVisualStyle('quick')" aria-label="خێرا"></button>
+            <button id="msStyleMaster" class="ms-style-btn" style="top: 55.6%; left: 51.6%;" onclick="selectVisualStyle('master')" aria-label="مامۆستا"></button>
+
+            <!-- زاری جادوویی -->
+            <div id="msMagicUncheckCover" class="ms-magic-uncheck-cover hidden"></div>
+            <button class="ms-magic-toggle" onclick="toggleVisualMagicDice()" aria-label="زاری جادوویی"></button>
+            <button class="ms-help-btn" style="top: 68.8%; left: 82.5%;" onclick="openLudoInfoModal('✨ زاری جادوویی', 'کاتێک زاری جادوویی چالاک بێت، لە ناو یارییەکەدا توانای تایبەتت دەبێت بۆ هەڵبژاردنی ژمارەی دڵخواز یان پاراستنی داشەکانت!')" aria-label="زانیاری زاری جادوویی"></button>
+
+            <!-- کەم و زیادکردنی گرەو (- / 500 / +) -->
+            <button class="ms-bet-step-btn" style="left: 11.8%;" onclick="changeVisualBet(-1)" aria-label="کەمکردنی گرەو"></button>
+            <div id="msBetAmountTxt" class="ms-bet-display">500</div>
+            <button class="ms-bet-step-btn" style="left: 78.0%;" onclick="changeVisualBet(1)" aria-label="زیادکردنی گرەو"></button>
+
+            <!-- دوگمەی دەستپێکردن -->
+            <button class="ms-start-btn" onclick="launchVisualSelectedMatch()" aria-label="دەستپێکردن"></button>
+        </div>
+    </section>
+
+    <!-- پەنجەرەی زانیاری و ئاگادارکردنەوە -->
     <div id="ludoModeSelectModal" class="sub-modal-backdrop hidden">
         <div class="sub-modal-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <h3 id="modeModalTitle" style="font-size:18px; font-weight:900; color:#ffd000;">٢ و ٤ یاریزان</h3>
+                <h3 id="modeModalTitle" style="font-size:18px; font-weight:900; color:#ffd000;">✨ یاری کوردی</h3>
                 <button onclick="closeLudoModeModal()" style="background:rgba(255,255,255,0.12); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-weight:900;">✕</button>
             </div>
-            <p id="modeModalDesc" style="font-size:12.5px; color:#cbd5e1; line-height:1.6;">شێوازی یاریکردنەکەت هەڵبژێرە بۆ چوونە ناو تەختەی لۆدۆ:</p>
-
-            <div id="modeModalBody">
-                <div class="mode-choice-grid">
-                    <button class="mode-choice-btn active" onclick="startLudoFromLobby('bot')">
-                        <div style="font-size:26px; margin-bottom:4px;">🤖</div>
-                        <div style="font-size:13px; font-weight:900; color:#fde047;">دژی بۆتی زیرەک</div>
-                        <div style="font-size:10.5px; color:#a7f3d0; margin-top:2px;">بێ بەرامبەر (1v1)</div>
-                    </button>
-                    <button class="mode-choice-btn" onclick="startLudoFromLobby('online')">
-                        <div style="font-size:26px; margin-bottom:4px;">🌍</div>
-                        <div style="font-size:13px; font-weight:900; color:#38bdf8;">ئۆنڵاین (1v1)</div>
-                        <div style="font-size:10.5px; color:#a7f3d0; margin-top:2px;">لەگەڵ یاریزانان</div>
-                    </button>
-                </div>
-            </div>
+            <p id="modeModalDesc" style="font-size:13px; color:#e2e8f0; line-height:1.8; white-space:pre-line; text-align:right; margin: 10px 0;"></p>
+            <button class="win-btn" onclick="closeLudoModeModal()">باشە</button>
         </div>
     </div>
 
@@ -731,6 +958,130 @@
     <script src="online-engine.js"></script>
     <script src="ludo-engine.js"></script>
     <script>
+        /* =========================================================
+           بەڕێوەبردنی هەڵبژاردنەکانی شاشەی (ludo-mode-select.jpg)
+           ========================================================= */
+        const LUDO_BET_LEVELS = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
+        window.ludoMatchConfig = {
+            opponent: 'bot',     // 'bot' یان 'online'
+            players: 2,          // 2 یان 4
+            style: 'classic',    // 'classic', 'arrow', 'quick', 'master'
+            magicDice: true,
+            betIndex: 2          // 500
+        };
+
+        function openVisualModeSelector(defaultBet) {
+            if (defaultBet) {
+                const idx = LUDO_BET_LEVELS.indexOf(defaultBet);
+                if (idx !== -1) window.ludoMatchConfig.betIndex = idx;
+            }
+            updateVisualModeUI();
+            document.getElementById('ludoVisualModeScreen')?.classList.remove('hidden');
+        }
+
+        function closeVisualModeSelector() {
+            document.getElementById('ludoVisualModeScreen')?.classList.add('hidden');
+        }
+
+        function setVisualOpponent(type) {
+            window.ludoMatchConfig.opponent = type;
+            updateVisualModeUI();
+        }
+
+        function selectVisualPlayers(count) {
+            window.ludoMatchConfig.players = count;
+            updateVisualModeUI();
+        }
+
+        function selectVisualStyle(styleKey) {
+            window.ludoMatchConfig.style = styleKey;
+            updateVisualModeUI();
+        }
+
+        function toggleVisualMagicDice() {
+            window.ludoMatchConfig.magicDice = !window.ludoMatchConfig.magicDice;
+            updateVisualModeUI();
+        }
+
+        function changeVisualBet(dir) {
+            let next = window.ludoMatchConfig.betIndex + dir;
+            if (next < 0) next = 0;
+            if (next >= LUDO_BET_LEVELS.length) next = LUDO_BET_LEVELS.length - 1;
+            window.ludoMatchConfig.betIndex = next;
+            updateVisualModeUI();
+        }
+
+        function updateVisualModeUI() {
+            const cfg = window.ludoMatchConfig;
+
+            // بۆت یان ئۆنڵاین
+            document.getElementById('msOppBot')?.classList.toggle('active', cfg.opponent === 'bot');
+            document.getElementById('msOppOnline')?.classList.toggle('active', cfg.opponent === 'online');
+
+            // ٢ یاریزان یان ٤ یاریزان
+            document.getElementById('msCard2P')?.classList.toggle('selected', cfg.players === 2);
+            document.getElementById('msCard4P')?.classList.toggle('selected', cfg.players === 4);
+
+            // شێوازی یاری
+            document.getElementById('msStyleClassic')?.classList.toggle('selected', cfg.style === 'classic');
+            document.getElementById('msStyleArrow')?.classList.toggle('selected', cfg.style === 'arrow');
+            document.getElementById('msStyleQuick')?.classList.toggle('selected', cfg.style === 'quick');
+            document.getElementById('msStyleMaster')?.classList.toggle('selected', cfg.style === 'master');
+
+            // زاری جادوویی
+            const uncheckCover = document.getElementById('msMagicUncheckCover');
+            if (uncheckCover) {
+                uncheckCover.classList.toggle('hidden', cfg.magicDice);
+            }
+
+            // بڕی گرەو
+            const betVal = LUDO_BET_LEVELS[cfg.betIndex] || 500;
+            const betEl = document.getElementById('msBetAmountTxt');
+            if (betEl) betEl.textContent = betVal.toLocaleString('en-US');
+        }
+
+        function launchVisualSelectedMatch() {
+            const cfg = window.ludoMatchConfig;
+            const betVal = LUDO_BET_LEVELS[cfg.betIndex] || 500;
+            localStorage.setItem('yk_ludo_config', JSON.stringify({
+                ...cfg,
+                bet: betVal
+            }));
+
+            closeVisualModeSelector();
+            document.getElementById('ludoRoyalLobby')?.classList.add('hidden-lobby');
+
+            if (cfg.opponent === 'online') {
+                if (typeof openLudoOnlineLobby === 'function') openLudoOnlineLobby();
+            } else {
+                if (typeof initLudoGame === 'function') initLudoGame();
+            }
+        }
+
+        function startDirectOnlineMode() {
+            document.getElementById('ludoRoyalLobby')?.classList.add('hidden-lobby');
+            if (typeof openLudoOnlineLobby === 'function') openLudoOnlineLobby();
+        }
+
+        function openLudoInfoModal(title, msg) {
+            document.getElementById('modeModalTitle').textContent = title;
+            document.getElementById('modeModalDesc').textContent = msg;
+            document.getElementById('ludoModeSelectModal')?.classList.remove('hidden');
+        }
+
+        function closeLudoModeModal() {
+            document.getElementById('ludoModeSelectModal')?.classList.add('hidden');
+        }
+
+        function backToLudoLobby() {
+            if (typeof ludoTurnInterval !== 'undefined') clearInterval(ludoTurnInterval);
+            if (typeof ludoState !== 'undefined') ludoState.winner = 'paused';
+            document.getElementById('ludoRoyalLobby')?.classList.remove('hidden-lobby');
+        }
+
+        /* =========================================================
+           هاوکاتکردنی پڕۆفایل، گۆڵد و ئەڵماس لە سەرەوەی لۆبی
+           ========================================================= */
         function formatLobbyNum(n) {
             if (window.formatCompactNumber) return window.formatCompactNumber(n);
             n = Number(n) || 0;
@@ -823,84 +1174,9 @@
             setInterval(updateLobbyCountersFromStorage, 1500);
         }
 
-        function openLudoModeModal(cardType) {
-            const modal = document.getElementById('ludoModeSelectModal');
-            const title = document.getElementById('modeModalTitle');
-            const desc = document.getElementById('modeModalDesc');
-            const body = document.getElementById('modeModalBody');
-
-            if (cardType === '24players') {
-                title.textContent = '🎲 ٢ و ٤ یاریزان';
-                desc.textContent = 'شێوازی یاریکردنەکەت هەڵبژێرە بۆ چوونە ناو یاری:';
-                body.innerHTML = `
-                    <div class="mode-choice-grid">
-                        <button class="mode-choice-btn active" onclick="startLudoFromLobby('bot')">
-                            <div style="font-size:26px; margin-bottom:4px;">🤖</div>
-                            <div style="font-size:13px; font-weight:900; color:#fde047;">دژی بۆتی زیرەک</div>
-                            <div style="font-size:10.5px; color:#a7f3d0; margin-top:2px;">بێ بەرامبەر (1v1)</div>
-                        </button>
-                        <button class="mode-choice-btn" onclick="startLudoFromLobby('online')">
-                            <div style="font-size:26px; margin-bottom:4px;">🌍</div>
-                            <div style="font-size:13px; font-weight:900; color:#38bdf8;">ئۆنڵاین (1v1)</div>
-                            <div style="font-size:10.5px; color:#a7f3d0; margin-top:2px;">لەگەڵ یاریزانان</div>
-                        </button>
-                    </div>
-                `;
-            } else if (cardType === 'private') {
-                title.textContent = '🔐 ژووری تایبەت';
-                desc.textContent = 'ژوورێکی تایبەت دروست بکە یان کۆدی هاوڕێکەت بنووسە بۆ یاریکردن پێکەوە:';
-                body.innerHTML = `
-                    <button class="win-btn" onclick="startLudoFromLobby('online')">🌐 کردنەوەی ژووری هاوڕێیان (کۆد)</button>
-                `;
-            } else if (cardType === 'vip') {
-                title.textContent = '👑 ژووری VIP';
-                desc.textContent = 'مێزی شاهانەی VIP بە خەڵاتی گەورە (لە قۆناغی داهاتوو بە گرەوی تایبەت دەکرێتەوە):';
-                body.innerHTML = `
-                    <button class="win-btn" onclick="startLudoFromLobby('online')">👑 چوونەژوورەوە بۆ یاری VIP</button>
-                `;
-            } else if (cardType === 'team') {
-                title.textContent = '⚔️ یاری تیپ (2v2)';
-                desc.textContent = 'ئەم بەشە (٢ بەرامبەر ٢ لەگەڵ هاوڕێکەت) لە قۆناغی داهاتوودا دەخرێتە ئیش.';
-                body.innerHTML = `<button class="win-btn" onclick="closeLudoModeModal()">باشە</button>`;
-            } else if (cardType === 'tournament') {
-                title.textContent = '🏆 پاڵەوانێتی شاهانە';
-                desc.textContent = 'پاڵەوانێتی ٨ یاریزانی بۆ بردنەوەی جامی زێڕین لە قۆناغی داهاتوودا دەکرێتەوە.';
-                body.innerHTML = `<button class="win-btn" onclick="closeLudoModeModal()">باشە</button>`;
-            }
-
-            modal.classList.remove('hidden');
-        }
-
-        function closeLudoModeModal() {
-            document.getElementById('ludoModeSelectModal')?.classList.add('hidden');
-        }
-
-        function showLudoLobbyNotice(msg) {
-            const modal = document.getElementById('ludoModeSelectModal');
-            document.getElementById('modeModalTitle').textContent = '✨ یاری کوردی';
-            document.getElementById('modeModalDesc').textContent = msg;
-            document.getElementById('modeModalBody').innerHTML = `<button class="win-btn" onclick="closeLudoModeModal()">باشە</button>`;
-            modal.classList.remove('hidden');
-        }
-
-        function startLudoFromLobby(mode) {
-            closeLudoModeModal();
-            document.getElementById('ludoRoyalLobby')?.classList.add('hidden-lobby');
-            if (mode === 'online') {
-                if (typeof openLudoOnlineLobby === 'function') openLudoOnlineLobby();
-            } else {
-                if (typeof initLudoGame === 'function') initLudoGame();
-            }
-        }
-
-        function backToLudoLobby() {
-            if (typeof ludoTurnInterval !== 'undefined') clearInterval(ludoTurnInterval);
-            if (typeof ludoState !== 'undefined') ludoState.winner = 'paused';
-            document.getElementById('ludoRoyalLobby')?.classList.remove('hidden-lobby');
-        }
-
         window.addEventListener('DOMContentLoaded', () => {
             syncLobbyProfileUI();
+            updateVisualModeUI();
         });
     </script>
 </body>
