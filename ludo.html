@@ -1110,7 +1110,7 @@
             let diaVal = Number(localStorage.getItem('yk_diamonds') || localStorage.getItem('yk_player_diamonds') || 0);
 
             if (window.YariWallet) {
-                ifif (typeof YariWallet.getBalance === 'function') {
+               if (typeof YariWallet.getBalance === 'function') {
                     const bal = YariWallet.getBalance();
                     if (bal) {
                         if (bal.gold !== undefined) goldVal = Number(bal.gold);
