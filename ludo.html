@@ -190,7 +190,7 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-       /* =========================================================
+        /* =========================================================
            شاشەی هەڵبژاردنی شێوازی یاری (ludo-mode-select-clean.jpg)
            ========================================================= */
         .mode-visual-backdrop {
@@ -422,6 +422,7 @@
             transform: scale(0.95);
             box-shadow: 0 0 28px rgba(255, 208, 0, 0.85);
         }
+
         /* پەنجەرەی ئاگادارکردنەوە و ڕوونکردنەوەی بچووک */
         .sub-modal-backdrop {
             position: fixed;
@@ -809,10 +810,13 @@
             <div id="lobbyDiamondTxt" class="hud-diamond-val" data-wallet-diamonds>0</div>
             <button class="hud-plus-hitbox" style="left: 92%;" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')" aria-label="زیادکردنی ئەڵماس"></button>
 
-           <button id="msStyleClassic" class="ms-style-btn selected" style="top: 43.3%; left: 12.6%;" onclick="selectVisualStyle('classic')" aria-label="کلاسیک"></button>
-<button id="msStyleArrow" class="ms-style-btn" style="top: 43.3%; left: 51.8%;" onclick="selectVisualStyle('arrow')" aria-label="تیر"></button>
-<button id="msStyleQuick" class="ms-style-btn" style="top: 53.3%; left: 12.6%;" onclick="selectVisualStyle('quick')" aria-label="خێرا"></button>
-<button id="msStyleMaster" class="ms-style-btn" style="top: 53.3%; left: 51.8%;" onclick="selectVisualStyle('master')" aria-label="مامۆستا"></button>
+            <!-- ٥ دوگمە نادیارەکەی سەر کارتەکانی ناوەڕاست -->
+            <button class="hotspot-card" style="top: 37.5%; left: 10%; width: 38.5%; height: 24%;" onclick="openVisualModeSelector()" aria-label="٢ و ٤ یاریزان"></button>
+            <button class="hotspot-card" style="top: 37.5%; right: 10%; width: 38.5%; height: 24%;" onclick="openLudoInfoModal('⚔️ یاری تیپ (2v2)', 'ئەم بەشە (٢ بەرامبەر ٢ لەگەڵ هاوڕێکەت) لە قۆناغی داهاتوودا دەخرێتە ئیش.')" aria-label="تیپ"></button>
+            <button class="hotspot-card" style="top: 63.5%; left: 8.5%; width: 26%; height: 18%;" onclick="openLudoInfoModal('🏆 پاڵەوانێتی شاهانە', 'پاڵەوانێتی ٨ یاریزانی بۆ بردنەوەی جامی زێڕین لە قۆناغی داهاتوودا دەکرێتەوە.')" aria-label="پاڵەوانێتی"></button>
+            <button class="hotspot-card" style="top: 63.5%; left: 37%; width: 26%; height: 18%;" onclick="startDirectOnlineMode()" aria-label="ژووری تایبەت"></button>
+            <button class="hotspot-card" style="top: 63.5%; right: 8.5%; width: 26%; height: 18%;" onclick="openVisualModeSelector(5000)" aria-label="ژووری VIP"></button>
+
             <!-- ٥ دوگمە نادیارەکەی سەر شریتی خوارەوە -->
             <button class="dock-hotspot" style="left: 2%; width: 17%;" onclick="openLudoInfoModal('✨ چالاکی ڕۆژانە', '🎁 بەشی چالاکی و خەڵاتە ڕۆژانەکان بەمزووانە دەکرێتەوە!')" aria-label="چالاکی"></button>
             <button class="dock-hotspot" style="left: 20.5%; width: 17%;" onclick="openLudoInfoModal('🎲 کۆگای شاهانە', '🎲 کۆگای زار و پولە شاهانەکان لە قۆناغی داهاتوو دەکرێتەوە!')" aria-label="کۆگا"></button>
@@ -823,7 +827,7 @@
     </section>
 
     <!-- =========================================================
-         قۆناغی ٢: شاشەی هەڵبژاردنی ٢ و ٤ یاریزان (ludo-mode-select.jpg)
+         قۆناغی ٢: شاشەی هەڵبژاردنی ٢ و ٤ یاریزان (ludo-mode-select-clean.jpg)
          ========================================================= -->
     <section id="ludoVisualModeScreen" class="mode-visual-backdrop hidden">
         <div class="mode-visual-stage">
@@ -837,24 +841,24 @@
             </div>
 
             <!-- ٢ یاریزان (چەپ) و ٤ یاریزان (ڕاست) -->
-            <button id="msCard2P" class="ms-player-card selected" style="left: 10.5%;" onclick="selectVisualPlayers(2)" aria-label="٢ یاریزان"></button>
-            <button id="msCard4P" class="ms-player-card" style="left: 52.0%;" onclick="selectVisualPlayers(4)" aria-label="٤ یاریزان"></button>
+            <button id="msCard2P" class="ms-player-card selected" style="left: 10.0%;" onclick="selectVisualPlayers(2)" aria-label="٢ یاریزان"></button>
+            <button id="msCard4P" class="ms-player-card" style="left: 51.8%;" onclick="selectVisualPlayers(4)" aria-label="٤ یاریزان"></button>
 
             <!-- دوگمەی ? بۆ شێوازی یاری -->
             <button class="ms-help-btn" style="top: 39.2%; left: 82.0%;" onclick="openLudoInfoModal('🎲 شێوازەکانی یاری', '• کلاسیک: یاسای ڕەسەنی لۆدۆ.\n• تیر: جووڵەی خێرا و هێرشبردن.\n• خێرا: تەنها یەک تاج بەسە بۆ بردنەوە.\n• مامۆستا: یاری ستراتیژی و پڕۆفیشناڵ.')" aria-label="زانیاری شێوازی یاری"></button>
 
             <!-- ٤ دوگمەی شێوازی یاری -->
-            <button id="msStyleClassic" class="ms-style-btn selected" style="top: 46.2%; left: 12.2%;" onclick="selectVisualStyle('classic')" aria-label="کلاسیک"></button>
-            <button id="msStyleArrow" class="ms-style-btn" style="top: 46.2%; left: 51.6%;" onclick="selectVisualStyle('arrow')" aria-label="تیر"></button>
-            <button id="msStyleQuick" class="ms-style-btn" style="top: 55.6%; left: 12.2%;" onclick="selectVisualStyle('quick')" aria-label="خێرا"></button>
-            <button id="msStyleMaster" class="ms-style-btn" style="top: 55.6%; left: 51.6%;" onclick="selectVisualStyle('master')" aria-label="مامۆستا"></button>
+            <button id="msStyleClassic" class="ms-style-btn selected" style="top: 43.3%; left: 12.6%;" onclick="selectVisualStyle('classic')" aria-label="کلاسیک"></button>
+            <button id="msStyleArrow" class="ms-style-btn" style="top: 43.3%; left: 51.8%;" onclick="selectVisualStyle('arrow')" aria-label="تیر"></button>
+            <button id="msStyleQuick" class="ms-style-btn" style="top: 53.3%; left: 12.6%;" onclick="selectVisualStyle('quick')" aria-label="خێرا"></button>
+            <button id="msStyleMaster" class="ms-style-btn" style="top: 53.3%; left: 51.8%;" onclick="selectVisualStyle('master')" aria-label="مامۆستا"></button>
 
             <!-- زاری جادوویی -->
             <div id="msMagicCheckMark" class="ms-magic-check-mark">✓</div>
             <button class="ms-magic-toggle" onclick="toggleVisualMagicDice()" aria-label="زاری جادوویی"></button>
             <button class="ms-help-btn" style="top: 68.8%; left: 82.5%;" onclick="openLudoInfoModal('✨ زاری جادوویی', 'کاتێک زاری جادوویی چالاک بێت، لە ناو یارییەکەدا توانای تایبەتت دەبێت بۆ هەڵبژاردنی ژمارەی دڵخواز یان پاراستنی داشەکانت!')" aria-label="زانیاری زاری جادوویی"></button>
 
-            <!-- کەم و زیادکردنی گرەو (- / 500 / +) -->
+            <!-- کەم و زیادکردنی گرەو (- / بڕ / +) -->
             <button class="ms-bet-step-btn" style="left: 11.8%;" onclick="changeVisualBet(-1)" aria-label="کەمکردنی گرەو"></button>
             <div id="msBetAmountTxt" class="ms-bet-display">500</div>
             <button class="ms-bet-step-btn" style="left: 78.0%;" onclick="changeVisualBet(1)" aria-label="زیادکردنی گرەو"></button>
@@ -960,15 +964,15 @@
     <script src="ludo-engine.js"></script>
     <script>
         /* =========================================================
-           بەڕێوەبردنی هەڵبژاردنەکانی شاشەی (ludo-mode-select.jpg)
+           بەڕێوەبردنی هەڵبژاردنەکانی شاشەی (ludo-mode-select-clean.jpg)
            ========================================================= */
         const LUDO_BET_LEVELS = [100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000];
         window.ludoMatchConfig = {
-            opponent: 'bot',     // 'bot' یان 'online'
-            players: 2,          // 2 یان 4
-            style: 'classic',    // 'classic', 'arrow', 'quick', 'master'
+            opponent: 'bot',
+            players: 2,
+            style: 'classic',
             magicDice: true,
-            betIndex: 2          // 500
+            betIndex: 2
         };
 
         function openVisualModeSelector(defaultBet) {
@@ -1030,10 +1034,10 @@
             document.getElementById('msStyleMaster')?.classList.toggle('selected', cfg.style === 'master');
 
             // زاری جادوویی
-           const checkMark = document.getElementById('msMagicCheckMark');
-if (checkMark) {
-    checkMark.classList.toggle('hidden', !cfg.magicDice);
-}
+            const checkMark = document.getElementById('msMagicCheckMark');
+            if (checkMark) {
+                checkMark.classList.toggle('hidden', !cfg.magicDice);
+            }
 
             // بڕی گرەو
             const betVal = LUDO_BET_LEVELS[cfg.betIndex] || 500;
@@ -1106,7 +1110,7 @@ if (checkMark) {
             let diaVal = Number(localStorage.getItem('yk_diamonds') || localStorage.getItem('yk_player_diamonds') || 0);
 
             if (window.YariWallet) {
-                if (typeof YariWallet.getBalance === 'function') {
+                ifif (typeof YariWallet.getBalance === 'function') {
                     const bal = YariWallet.getBalance();
                     if (bal) {
                         if (bal.gold !== undefined) goldVal = Number(bal.gold);
