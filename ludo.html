@@ -40,27 +40,6 @@
             justify-content: center;
             overflow-x: hidden;
         }
-/* شریتی پڕبوونی ئاست (XP Bar) */
-        .hud-xp-fill {
-            position: absolute;
-            top: 2.38%;
-            left: 23.2%;
-            width: 19.6%;
-            height: 1.55%;
-            background: rgba(15, 23, 42, 0.45);
-            border-radius: 999px;
-            overflow: hidden;
-            z-index: 20;
-            pointer-events: none;
-        }
-
-        .hud-xp-fill-bar {
-            height: 100%;
-            width: 35%;
-            background: linear-gradient(90deg, #fde047, #f59e0b);
-            border-radius: 999px;
-            transition: width 0.4s ease;
-        }
 
         /* =========================================================
            لۆبیی شاهانەی لۆدۆ (Yari Kurdi Royal Ludo Lobby)
@@ -93,12 +72,17 @@
             overflow: hidden;
         }
 
-        /* ئەڤاتاری یاریزان ڕێک لە ناوەڕاستی بازنە زێڕینەکە */
+        /* شاردنەوەی شریتە ڕەشەکەی XP بۆ ئەوەی شریتەکەی ناو وێنەکە دەربکەوێت */
+        .hud-xp-fill, .hud-xp-fill-bar {
+            display: none !important;
+        }
+
+        /* ئەڤاتاری یاریزان ڕێک لە ناو بازنە زێڕینەکە */
         .hud-avatar-overlay {
             position: absolute;
-            top: 1.05%;
-            left: 2.8%;
-            width: 11.4%;
+            top: 0.9%;
+            left: 2.25%;
+            width: 12.1%;
             aspect-ratio: 1 / 1;
             border-radius: 50%;
             overflow: hidden;
@@ -114,11 +98,11 @@
             display: block;
         }
 
-        /* ژمارەی ئاست ڕێک لە ناو ئەستێرە زەردەکە */
+        /* ژمارەی ئاست ڕێک لە ناوەڕاستی ئەستێرە زەردەکە */
         .hud-level-overlay {
             position: absolute;
             top: 2.15%;
-            left: 17.5%;
+            left: 17.9%;
             width: 4.8%;
             text-align: center;
             font-size: 13px;
@@ -605,7 +589,6 @@
          ========================================================= -->
     <section id="ludoRoyalLobby" class="ludo-lobby-screen">
         <div class="lobby-stage">
-            <div class="hud-xp-fill"><div id="lobbyXpBar" class="hud-xp-fill-bar"></div></div>
             <!-- پڕۆفایل، ئاست، گۆڵد و ئەڵماس لەسەر شریتی سەرەوەی وێنەکە -->
             <div class="hud-avatar-overlay" onclick="window.location.href='profile.html'" title="پڕۆفایل">
                 <img id="lobbyPlayerAvatar" src="images.png/controller.png" alt="">
@@ -619,22 +602,13 @@
             <button class="hud-plus-hitbox" style="left: 92%;" onclick="if(window.YariWallet) YariWallet.openStore('diamonds')" aria-label="زیادکردنی ئەڵماس"></button>
 
             <!-- ٥ دوگمە نادیارەکەی سەر کارتەکانی ناوەڕاست -->
-            <!-- ١. کارتی زەرد: ٢ و ٤ یاریزان -->
             <button class="hotspot-card" style="top: 37.5%; left: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('24players')" aria-label="٢ و ٤ یاریزان"></button>
-
-            <!-- ٢. کارتی مۆر تیم -->
             <button class="hotspot-card" style="top: 37.5%; right: 10%; width: 38.5%; height: 24%;" onclick="openLudoModeModal('team')" aria-label="تیپ"></button>
-
-            <!-- ٣. کارتی سەوز: پاڵەوانێتی -->
             <button class="hotspot-card" style="top: 63.5%; left: 8.5%; width: 26%; height: 18%;" onclick="openLudoModeModal('tournament')" aria-label="پاڵەوانێتی"></button>
-
-            <!-- ٤. کارتی شین: ژووری تایبەت -->
             <button class="hotspot-card" style="top: 63.5%; left: 37%; width: 26%; height: 18%;" onclick="openLudoModeModal('private')" aria-label="ژووری تایبەت"></button>
-
-            <!-- ٥. کارتی سوور: ژووری VIP -->
             <button class="hotspot-card" style="top: 63.5%; right: 8.5%; width: 26%; height: 18%;" onclick="openLudoModeModal('vip')" aria-label="ژووری VIP"></button>
 
-            <!-- ٥ دوگمە نادیارەکەی سەر شریتی خوارەوە (چالاکی، کۆگا، یاری خێرا، ژووری دەنگی، هاوڕێیان) -->
+            <!-- ٥ دوگمە نادیارەکەی سەر شریتی خوارەوە -->
             <button class="dock-hotspot" style="left: 2%; width: 17%;" onclick="showLudoLobbyNotice('🎁 بەشی چالاکی و خەڵاتە ڕۆژانەکان بەمزووانە دەکرێتەوە!')" aria-label="چالاکی"></button>
             <button class="dock-hotspot" style="left: 20.5%; width: 17%;" onclick="showLudoLobbyNotice('🎲 کۆگای زار و پولە شاهانەکان لە قۆناغی داهاتوو دەکرێتەوە!')" aria-label="کۆگا"></button>
             <button class="dock-hotspot" style="left: 39%; width: 22%; height: 14%;" onclick="openLudoModeModal('24players')" aria-label="یاری خێرا"></button>
@@ -752,7 +726,6 @@
     <script src="online-engine.js"></script>
     <script src="ludo-engine.js"></script>
     <script>
-       
         function formatLobbyNum(n) {
             if (window.formatCompactNumber) return window.formatCompactNumber(n);
             n = Number(n) || 0;
@@ -767,13 +740,11 @@
             const aEl = document.getElementById('lobbyPlayerAvatar');
             const lEl = document.getElementById('lobbyPlayerLevel');
 
-            // خوێندنەوەی ئەڤاتار و ئاست
             const cachedAvatar = localStorage.getItem('yk_player_avatar');
             const cachedLvl = parseInt(localStorage.getItem('yk_player_level') || '1', 10);
             if (aEl && cachedAvatar) aEl.src = cachedAvatar;
             if (lEl) lEl.textContent = cachedLvl;
 
-            // خوێندنەوەی گۆڵد و ئەڵماس لە هەموو سەرچاوە ناوخۆییەکان (YariWallet یان localStorage)
             let goldVal = Number(localStorage.getItem('yk_gold') || localStorage.getItem('yk_player_gold') || 0);
             let diaVal = Number(localStorage.getItem('yk_diamonds') || localStorage.getItem('yk_player_diamonds') || 0);
 
@@ -797,7 +768,6 @@
         function syncLobbyProfileUI() {
             updateLobbyCountersFromStorage();
 
-            // چاوەڕێکردن تا Firebase بە تەواوی ئامادە دەبێت پاشان پەیوەستکردنی ڕاستەوخۆ بە پڕۆفایلەکەتەوە
             const tryBindFirebase = setInterval(() => {
                 if (lobbyFirebaseBound) {
                     clearInterval(tryBindFirebase);
@@ -819,7 +789,6 @@
                         const lEl = document.getElementById('lobbyPlayerLevel');
                         const gEl = document.getElementById('lobbyGoldTxt');
                         const dEl = document.getElementById('lobbyDiamondTxt');
-                        const xpBar = document.getElementById('lobbyXpBar');
 
                         if (p.avatar) {
                             localStorage.setItem('yk_player_avatar', p.avatar);
@@ -834,11 +803,6 @@
                         localStorage.setItem('yk_player_level', String(level));
                         if (lEl) lEl.textContent = level;
 
-                        if (xpBar) {
-                            const pct = Math.min(100, Math.max(12, ((xp % 250) / 250) * 100));
-                            xpBar.style.width = `${pct}%`;
-                        }
-
                         if (p.gold !== undefined) {
                             localStorage.setItem('yk_gold', String(p.gold));
                             if (gEl) gEl.textContent = formatLobbyNum(p.gold);
@@ -851,7 +815,6 @@
                 }
             }, 300);
 
-            // نوێکردنەوەی بەردەوام لە کاتی کڕینی گۆڵد یان ئەڵماس لە ناو لۆبییەکەدا
             setInterval(updateLobbyCountersFromStorage, 1500);
         }
 
@@ -926,14 +889,13 @@
         }
 
         function backToLudoLobby() {
+            if (typeof ludoTurnInterval !== 'undefined') clearInterval(ludoTurnInterval);
+            if (typeof ludoState !== 'undefined') ludoState.winner = 'paused';
             document.getElementById('ludoRoyalLobby')?.classList.remove('hidden-lobby');
         }
 
         window.addEventListener('DOMContentLoaded', () => {
             syncLobbyProfileUI();
-            if (typeof initLudoGame === 'function') {
-                initLudoGame();
-            }
         });
     </script>
 </body>
